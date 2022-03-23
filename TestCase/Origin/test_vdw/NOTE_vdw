@@ -1,0 +1,19 @@
+__NOTE__
+
+vdw_pos1  ->
+	atom1=N 
+	atom2=O
+	r_atom1= 1.60
+	r_atom2= 1.55
+	surf_dist=0.4
+	
+	dist atom1-atom2 = 3.6
+	
+vdw_neg1 ->	
+	atom1=N 
+	atom2=O
+	r_atom1= 1.60
+	r_atom2= 1.55
+	surf_dist = 2.0
+	
+	dist atom1-atom2 = 5.2

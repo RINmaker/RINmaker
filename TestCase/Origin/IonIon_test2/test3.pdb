@@ -1,0 +1,25 @@
+ATOM      1     LYS     1       0.465   5.934   0.282  0.00  0.00      PSDO C  
+ATOM      2     LYS     1       2.197   5.333   6.363  0.00  0.00      PSDO C  
+ATOM      3     LYS     1       5.680   2.630   3.408  0.00  0.00      PSDO C  
+TER   
+ATOM      4     ARG     1       3.731   2.439   6.820  0.00  0.00      PSDO C  
+ATOM      5     ARG     1       6.290   0.046   4.943  0.00  0.00      PSDO C  
+ATOM      6     ARG     1       6.334   5.430   0.261  0.00  0.00      PSDO C  
+TER   
+ATOM      7     HIS     1       2.496   3.484   3.810  0.00  0.00      PSDO C  
+ATOM      8     HIS     1       3.740   4.460   2.567  0.00  0.00      PSDO C  
+ATOM      9     HIS     1       4.302   6.512   6.772  0.00  0.00      PSDO C  
+TER   
+ATOM     10     GLU     1       6.383   3.331   6.953  0.00  0.00      PSDO C  
+TER   
+ATOM     11     ASP     1       6.466   3.112   5.582  0.00  0.00      PSDO C  
+TER   
+ATOM     12     LYS     1       1.531   6.603   6.196  0.00  0.00      PSDO C  
+TER   
+ATOM     13     ARG     1       2.805   1.648   3.718  0.00  0.00      PSDO C  
+TER   
+ATOM     14     HIS     1       0.425   3.765   6.727  0.00  0.00      PSDO C  
+TER   
+ATOM     15     GLU     1       2.582   6.033   4.758  0.00  0.00      PSDO C  
+TER   
+END

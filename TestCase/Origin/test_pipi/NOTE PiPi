@@ -1,0 +1,34 @@
+__TEST PI-PI STACK__
+Trattasi di un benzene di un anello fenilalaninico
+pipi_pos1 --> tutte e 4 le regole
+	Rcen = 1 ang
+	beta_ang = 0
+	gamma_ang= 0
+	
+pipi_pos2 -->
+	distanza Rcm = 2.0 Ang
+	beta = 45
+	gamma = 0
+	dist_atomi = a coppie tutti minori di 4.5
+
+
+pipi_neg1 -->  (distanza dei centroidi non rispettata)
+	distanza Rcm > 8 
+
+pipi_neg2 --> (angoli beta e gamma non rispettati)
+	distanza Rcm= 4
+	beta = 70 
+	gamma = 50
+	dist_atomi = a coppie tutti minori di 4.5
+	
+pip_neg3 --> (angolo beta non rispettato)
+	distanza Rcm= 4
+	beta = 80 
+	gamma = 0
+	dist_atomi = a coppie minori di 4.5
+
+pip_neg4 --> (angolo gamma non rispettato)
+	distanza Rcm= 4
+	beta = 20 
+	gamma = 60
+	dist_atomi = a coppie minori di 4.5

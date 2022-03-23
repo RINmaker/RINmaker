@@ -1,0 +1,4 @@
+ionion_pos1 --> 1 legame tra LYS-GLU
+ionion_pos2 --> 2 legami LYS-GLU, GLU-ARG
+ionion_neg1 --> 0 legami (LYS-GLU)
+ionion_neg2 --> 0 legami (come ionion_pos2 ma distanza non rispettata)

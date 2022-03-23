@@ -1,0 +1,12 @@
+__NOTE__
+vdw_test_neg2
+
+2 bonds vdw:
+
+1) N - S  
+	surface distance: /
+	distance : 11.8
+
+2) N - O
+	surface distance: /
+	distance: 12.4

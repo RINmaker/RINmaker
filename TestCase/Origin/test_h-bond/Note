@@ -1,0 +1,31 @@
+
+
+____TEST CON UN LEGAME H-BOND_____
+
+In questo primo set vengono provate le regole degli h-bond una alla volta su un legame
+semplice con un donatore, il conseguente idrogeno e l'accettore.
+
+hbond_pos1 --> PASSED
+
+	{ Angolo: 41.2
+	  Distanza: 1.5 }
+	  
+hbond_neg1 --> PASSED 
+
+ 	{Angolo: 22 degree
+	 Distanza: 8 Angstrom}
+	 
+hbond_neg2 --> NO ( Trova comunque il legame. Non dovrebbe perchè l'angolo HDA è ampiamente
+			maggiore di 63 gradi )
+
+	{Angolo: 143 degree
+	 Distanza: 1.5 Angstrom}
+
+
+_____TEST CON DUE LEGAMI H-BOND___
+  
+ In questo set vengono testati h-bond usando il donatore delLa lisina, che può formare fino a tre h-bond.
+
+hbond_pos4 --> PASSED ( Un legame h-bond solo ) 
+hbond_pos2 --> NO (Dovrebbero esserci 2 legami h-bond. Ne trova uno solo Vedere immagine hpos2.png)
+hbond_pos3 --> NO (dovrebbero esserci 3 legami h-bond. Ne trova solo due. Vedere immagine hpos3.png)

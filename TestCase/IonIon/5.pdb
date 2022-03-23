@@ -1,0 +1,7 @@
+ATOM      1  OE1 GLU     1       6.386   3.320   4.583  0.00  0.00           O  
+TER   
+ATOM      2  NZ  LYS     4       4.453   3.416   4.336  0.00  0.00           N  
+TER   
+ATOM      3  NH2 ARG     7       8.355   3.075   5.025  0.00  0.00           N  
+TER   
+END

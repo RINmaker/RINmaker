@@ -1,0 +1,15 @@
+__NOTE__
+vdw_test_pos3
+Atoms in chain 
+3 bonds vdw:
+
+1) N - O  
+	surface distance: 2.0
+	distance : 5.2
+
+2) O - S
+	surface distance: 2.0
+	distance: 5.4
+3) S - N
+	s.dist: 2.0
+	dist:   5.5

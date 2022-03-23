@@ -1,0 +1,18 @@
+{
+  "FileVersion": 2,
+  "Id": "23891675-0070-4d83-9b7d-3080f65f4271",
+  "Items": [
+    {
+      "Id": "60fb69c9-935c-45b1-a58d-a0a257732af0",
+      "Command": "--help"
+    },
+    {
+      "Id": "09b421a8-1981-4aba-abb6-6639b204e32a",
+      "Command": "\"D:\\Lorenzo\\Documents\\Unive\\Cassetto\\Crediti_06_-_Punti_06_su_06_-_Tirocinio\\RING\\Data\\2cjr.pdb\""
+    },
+    {
+      "Id": "ac1837dd-b35d-439f-8f30-1a42b14dbc16",
+      "Command": "-o \"D:\\Lorenzo\\Documents\\Unive\\Cassetto\\Crediti_06_-_Punti_06_su_06_-_Tirocinio\\RING\\Xml\\2cjr.xml\""
+    }
+  ]
+}
