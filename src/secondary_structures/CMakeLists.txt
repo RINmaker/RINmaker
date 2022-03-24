@@ -1,0 +1,2 @@
+add_library(secondary_structures structure.cpp)
+target_include_directories(secondary_structures PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

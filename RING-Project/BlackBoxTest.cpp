@@ -2,8 +2,8 @@
 
 #include "BlackBoxTest.h"
 #include "gtest/gtest.h"
-#include "main.h"
-#include "pdb_data.h"
+#include "../src/main.h"
+#include "../src/pdb_data.h"
 
 #define MY_DBL_EPSILON 0.00005
 
@@ -79,7 +79,7 @@ public:
 class BlackBoxTest : public testing::Test {
 
 private:
-	inline static const fs::path testCaseFolder = "TestCase/";
+	inline static const fs::path testCaseFolder = "test_case/";
 
 protected:
 	static void SetUpTestSuite() { }
@@ -103,12 +103,12 @@ protected:
 
 
 TEST_F(BlackBoxTest, IonIon1) {
-	Result r = SetUp("IonIon/1.pdb");
+	Result r = SetUp("ionion/1.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "IONIC"; }), 0);
 }
 TEST_F(BlackBoxTest, IonIon2) {
-	Result r = SetUp("IonIon/2.pdb");
+	Result r = SetUp("ionion/2.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "IONIC"; }), 2);
 	EXPECT_TRUE(r.containEdge([](const edge& e) { 
@@ -121,12 +121,12 @@ TEST_F(BlackBoxTest, IonIon2) {
 		}));
 }
 TEST_F(BlackBoxTest, IonIon3) {
-	Result r = SetUp("IonIon/3.pdb");
+	Result r = SetUp("ionion/3.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "IONIC"; }), 3);
 }
 TEST_F(BlackBoxTest, IonIon4) {
-	Result r = SetUp("IonIon/4.pdb");
+	Result r = SetUp("ionion/4.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "IONIC"; }), 1);
 	EXPECT_TRUE(r.containEdge([](const edge& e) {
@@ -135,7 +135,7 @@ TEST_F(BlackBoxTest, IonIon4) {
 		}));	
 }
 TEST_F(BlackBoxTest, IonIon5) {
-	Result r = SetUp("IonIon/5.pdb");
+	Result r = SetUp("ionion/5.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "IONIC"; }), 2);
 	EXPECT_TRUE(r.containEdge([](const edge& e) {
@@ -148,12 +148,12 @@ TEST_F(BlackBoxTest, IonIon5) {
 		}));
 }
 TEST_F(BlackBoxTest, IonIon6) {
-	Result r = SetUp("IonIon/6.pdb");
+	Result r = SetUp("ionion/6.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "IONIC"; }), 0);
 }
 TEST_F(BlackBoxTest, IonIon7) {
-	Result r = SetUp("IonIon/7.pdb");
+	Result r = SetUp("ionion/7.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "IONIC"; }), 0);
 }
@@ -163,17 +163,17 @@ TEST_F(BlackBoxTest, IonIon7) {
 #pragma region HBond
 
 TEST_F(BlackBoxTest, HBond1) {
-	Result r = SetUp("HBond/1.pdb");
+	Result r = SetUp("hbond/1.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "HBOND"; }), 0);
 }
 TEST_F(BlackBoxTest, HBond2) {
-	Result r = SetUp("HBond/2.pdb");
+	Result r = SetUp("hbond/2.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "HBOND"; }), 0);
 }
 TEST_F(BlackBoxTest, HBond3) {
-	Result r = SetUp("HBond/3.pdb");
+	Result r = SetUp("hbond/3.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "HBOND"; }), 1);
 	EXPECT_TRUE(r.containEdge([](const edge& e) {
@@ -182,7 +182,7 @@ TEST_F(BlackBoxTest, HBond3) {
 		}));
 }
 TEST_F(BlackBoxTest, HBond4) {
-	Result r = SetUp("HBond/4.pdb");
+	Result r = SetUp("hbond/4.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "HBOND"; }), 1);
 	EXPECT_TRUE(r.containEdge([](const edge& e) {
@@ -191,7 +191,7 @@ TEST_F(BlackBoxTest, HBond4) {
 		}));
 }
 TEST_F(BlackBoxTest, HBond5) {
-	Result r = SetUp("HBond/5.pdb");
+	Result r = SetUp("hbond/5.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "HBOND"; }), 2);
 	EXPECT_TRUE(r.containEdge([](const edge& e) {
@@ -204,7 +204,7 @@ TEST_F(BlackBoxTest, HBond5) {
 		}));
 }
 TEST_F(BlackBoxTest, HBond6) {
-	Result r = SetUp("HBond/6.pdb");
+	Result r = SetUp("hbond/6.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "HBOND"; }), 3);
 	EXPECT_TRUE(r.containEdge([](const edge& e) {
@@ -221,7 +221,7 @@ TEST_F(BlackBoxTest, HBond6) {
 		}));
 }
 TEST_F(BlackBoxTest, HBond7) {
-	Result r = SetUp("HBond/7.pdb");
+	Result r = SetUp("hbond/7.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "HBOND"; }), 1);
 	EXPECT_TRUE(r.containEdge([](const edge& e) {
@@ -230,7 +230,7 @@ TEST_F(BlackBoxTest, HBond7) {
 		}));
 }
 TEST_F(BlackBoxTest, HBond8) {
-	Result r = SetUp("HBond/8.pdb");
+	Result r = SetUp("hbond/8.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "HBOND"; }), 1);
 	EXPECT_TRUE(r.containEdge([](const edge& e) {
