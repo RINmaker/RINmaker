@@ -7,7 +7,7 @@
 #include "computation.h"
 #include "gtest/gtest.h"
 #include "main.h"
-#include "../../RING-Project/BlackBoxTest.h"
+#include "../../test/BlackBoxTest.h"
 //#include "pdb_data.h"
 #include "runtime_params.h"
 #include "log_manager.h"
