@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../src/kdtree/kdpoint.h"
+#include "../src/headers/utils/spatial/kdpoint.h"
 
 template<size_t K>
 class MyKDPoint : public kdpoint<K>

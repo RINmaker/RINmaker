@@ -2,8 +2,9 @@
 
 #include "BlackBoxTest.h"
 #include "gtest/gtest.h"
-#include "../src/main.h"
-#include "../src/pdb_data.h"
+
+#include "../src/headers/main.h"
+#include "../src/headers/computation.h"
 
 #define MY_DBL_EPSILON 0.00005
 
