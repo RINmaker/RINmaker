@@ -1,12 +1,12 @@
-#include "rin.h"
+#include "graphml_output.h"
 
 #include <filesystem>
 #include <string>
 
-#include "bonds.h"
-#include "entity.h"
+#include "noncovalent_bonds.h"
+#include "chemical_entities.h"
 #include "config.h"
-#include "parameters.h"
+#include "runtime_params.h"
 
 using namespace rin;
 

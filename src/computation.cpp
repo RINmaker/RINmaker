@@ -3,8 +3,7 @@
 template<typename Record>
 class secondary_structure_search final {
 private:
-    std::unordered_map<std::string,
-            std::map<interval<int>, Record, interval<int>::less>> _map;
+    std::unordered_map<std::string, std::map<interval<int>, Record, interval<int>::less>> _map;
 
 public:
     void insert(Record const& record) {

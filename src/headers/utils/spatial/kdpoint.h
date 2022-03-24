@@ -3,9 +3,9 @@
 #include <array>
 #include <string>
 
-#include "../geom.h"
+#include "geometry_functions.h"
 
-// element of kdtree
+// element of spatial
 template<size_t K>
 class kdpoint
 {

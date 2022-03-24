@@ -6,13 +6,13 @@
 #include <fstream>
 #include <exception>
 
-#include "bonds.h"
-#include "records.h"
+#include "noncovalent_bonds.h"
+#include "pdb_records.h"
 #include "utils/kdtree/kdtree.h"
 #include "config.h"
 #include "utils/prelude.h"
 #include "utils/interval.h"
-#include "bondfunctors.h"
+#include "bond_queries.h"
 
 using namespace std;
 

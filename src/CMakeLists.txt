@@ -2,14 +2,14 @@ set(SOURCES
         computation.cpp
         config.cpp
         energy.cpp
-        entity.cpp
+        chemical_entities.cpp
         log_manager.cpp
         main.cpp
-        network.cpp
-        parameters.cpp
-        records.cpp
-        rin.cpp
-        structure.cpp)
+        bond_network.cpp
+        runtime_params.cpp
+        pdb_records.cpp
+        graphml_output.cpp
+        secondary_structures.cpp)
 
 add_executable(RINmaker ${SOURCES})
 target_link_libraries(RINmaker PRIVATE spdlog pugixml gtest CLI11)

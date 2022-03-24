@@ -3,13 +3,13 @@
 #include <vector>
 #include <memory>
 
-#include "parameters.h"
-#include "network.h"
+#include "runtime_params.h"
+#include "bond_network.h"
 
 #include "utils/kdtree/kdtree.h"
-#include "rin.h"
+#include "graphml_output.h"
 
-#include "entity.h"
+#include "chemical_entities.h"
 #include "log_manager.h"
 
 class pdb_data {

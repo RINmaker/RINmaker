@@ -1,4 +1,4 @@
-#include "entity.h"
+#include "chemical_entities.h"
 
 entities::aminoacid::aminoacid(std::vector<records::atom> const& records) : kdpoint<3>({0, 0, 0})
 {

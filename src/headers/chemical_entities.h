@@ -7,18 +7,18 @@
 
 #include "config.h"
 
-#include "parameters.h"
+#include "runtime_params.h"
 
-#include "rin.h"
+#include "graphml_output.h"
 
 #include "energy.h"
 
-#include "utils/geom.h"
+#include "utils/spatial/geometry_functions.h"
 #include "utils/prelude.h"
-#include "utils/kdtree/kdpoint.h"
+#include "utils/spatial/kdpoint.h"
 
-#include "records.h"
-#include "structure.h"
+#include "pdb_records.h"
+#include "secondary_structures.h"
 
 #include "log_manager.h"
 

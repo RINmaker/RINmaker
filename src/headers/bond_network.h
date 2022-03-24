@@ -7,8 +7,8 @@
 #include <unordered_set>
 #include <type_traits>
 
-#include "bonds.h"
-#include "parameters.h"
+#include "noncovalent_bonds.h"
+#include "runtime_params.h"
 
 // classe che gestisce l'intera residue interaction network
 //

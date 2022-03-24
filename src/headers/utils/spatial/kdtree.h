@@ -21,10 +21,10 @@ public:
     // shallow copy O(1)
     kdtree(kdtree &&) noexcept;
 
-    // balanced kdtree O(n log^2 n)
+    // balanced spatial O(n log^2 n)
     explicit kdtree(std::vector<T const *> &network);
 
-    // empty kdtree
+    // empty spatial
     kdtree() : root(nullptr) {};
 
     // destruct everything O(n)

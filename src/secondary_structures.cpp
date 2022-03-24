@@ -1,7 +1,7 @@
-#include "structure.h"
+#include "secondary_structures.h"
 
-#include "records.h"
-#include "entity.h"
+#include "pdb_records.h"
+#include "chemical_entities.h"
 
 using namespace structure;
 

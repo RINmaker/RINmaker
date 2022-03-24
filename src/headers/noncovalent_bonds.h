@@ -1,10 +1,10 @@
 #pragma once
 
 #include <string>
-#include "rin.h"
+#include "graphml_output.h"
 #include "utils/prelude.h"
-#include "entity.h"
-#include "parameters.h"
+#include "chemical_entities.h"
+#include "runtime_params.h"
 #include "energy.h"
 
 class network;

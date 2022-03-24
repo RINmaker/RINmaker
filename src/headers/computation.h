@@ -10,11 +10,11 @@
 #include <fstream>
 #include <exception>
 
-#include "entity.h"
-#include "bondfunctors.h"
-#include "network.h"
+#include "chemical_entities.h"
+#include "bond_queries.h"
+#include "bond_network.h"
 
-#include "utils/kdtree/kdtree.h"
+#include "utils/spatial/kdtree.h"
 
 namespace computation {
     class base {

@@ -5,12 +5,12 @@
 #include <set>
 #include <tuple>
 
-#include "bonds.h"
-#include "entity.h"
+#include "noncovalent_bonds.h"
+#include "chemical_entities.h"
 
-#include "network.h"
+#include "bond_network.h"
 #include "log_manager.h"
-#include "utils/kdtree/kdpoint.h"
+#include "utils/spatial/kdpoint.h"
 
 namespace bondfunctors
 {
