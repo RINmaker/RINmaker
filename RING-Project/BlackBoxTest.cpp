@@ -244,27 +244,27 @@ TEST_F(BlackBoxTest, HBond8) {
 #pragma region PiPi
 
 TEST_F(BlackBoxTest, PiPi1) {
-	Result r = SetUp("PiPi/1.pdb");
+	Result r = SetUp("pipi/1.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "PIPISTACK"; }), 0);
 }
 TEST_F(BlackBoxTest, PiPi2) {
-	Result r = SetUp("PiPi/2.pdb");
+	Result r = SetUp("pipi/2.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "PIPISTACK"; }), 0);
 }
 TEST_F(BlackBoxTest, PiPi3) {
-	Result r = SetUp("PiPi/3.pdb");
+	Result r = SetUp("pipi/3.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "PIPISTACK"; }), 0);
 }
 TEST_F(BlackBoxTest, PiPi4) {
-	Result r = SetUp("PiPi/4.pdb");
+	Result r = SetUp("pipi/4.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "PIPISTACK"; }), 0);
 }
 TEST_F(BlackBoxTest, PiPi5) {
-	Result r = SetUp("PiPi/5.pdb");
+	Result r = SetUp("pipi/5.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "PIPISTACK"; }), 1);
 	EXPECT_TRUE(r.containEdge([](const edge& e) {
@@ -275,7 +275,7 @@ TEST_F(BlackBoxTest, PiPi5) {
 }
 
 TEST_F(BlackBoxTest, PiPi6) {
-	Result r = SetUp("PiPi/6.pdb");
+	Result r = SetUp("pipi/6.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "PIPISTACK"; }), 1); 
 	EXPECT_TRUE(r.containEdge([](const edge& e) {
@@ -355,12 +355,12 @@ TEST_F(BlackBoxTest, vdw8) {
 #pragma region Pication
 
 TEST_F(BlackBoxTest, picat1) {
-	Result r = SetUp("Picat/1.pdb");
+	Result r = SetUp("picat/1.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "PICATION"; }), 0);
 }
 TEST_F(BlackBoxTest, picat2) {
-	Result r = SetUp("Picat/2.pdb");
+	Result r = SetUp("picat/2.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "PICATION"; }), 4);
 	EXPECT_TRUE(r.containEdge([](const edge& e) {
@@ -385,17 +385,17 @@ TEST_F(BlackBoxTest, picat2) {
 		}));
 }
 TEST_F(BlackBoxTest, picat3) {
-	Result r = SetUp("Picat/3.pdb");
+	Result r = SetUp("picat/3.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "PICATION"; }), 0);
 }
 TEST_F(BlackBoxTest, picat4) {
-	Result r = SetUp("Picat/4.pdb");
+	Result r = SetUp("picat/4.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "PICATION"; }), 0);
 }
 TEST_F(BlackBoxTest, picat5) {
-	Result r = SetUp("Picat/5.pdb");
+	Result r = SetUp("picat/5.pdb");
 
 	EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "PICATION"; }), 1);
 	EXPECT_TRUE(r.containEdge([](const edge& e) {
