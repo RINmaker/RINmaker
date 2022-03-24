@@ -1,29 +1,32 @@
 #include <iostream>
 #include <string>
 #include <memory>
-#include <CLI/CLI.hpp>
 #include <cstdio>
 
+#include <CLI/CLI.hpp>
+
 #include "computation.h"
-#include "gtest/gtest.h"
 #include "main.h"
-#include "../../test/BlackBoxTest.h"
-//#include "pdb_data.h"
-#include "runtime_params.h"
+
+#include "pdb_data.h"
 #include "log_manager.h"
+
 #include "config.h"
+#include "runtime_params.h"
+
+#include <gtest/gtest.h>
+#include <tests/BlackBoxTest.h>
 
 using namespace std;
 
-string app_full_name()
-{
+string app_full_name() {
     using namespace cfg::ver;
     char buf[500];
     const char* dbg =
 #   if NDEBUG
             ""
 #   else
-    "[DEBUG]"
+            "[DEBUG]"
 #   endif
     ;
     const char* os =
@@ -32,16 +35,16 @@ string app_full_name()
 #   elif _WIN32 && _WIN64
             "Windows 64 bit"
 #   elif __APPLE__ || __MACH__ || _MAC
-            "OSX"
+    "OSX"
 #   elif __linux__
-            "Linux"
+    "Linux"
 #   elif __unix__
-    "Unix"
+"Unix"
 #   else
-    "Unknown OS"
+"Unknown OS"
 #   endif
     ;
-  
+
 //#   if _WIN32
 //    time_t now = time(0);
 //    tm local_datetime;
@@ -57,35 +60,31 @@ string app_full_name()
 //# endif
 
     string date = __DATE__;
-    const char two_digit_year[] = { date[date.size() - 2], date[date.size() - 1], '\0'};
+    const char two_digit_year[] = {date[date.size() - 2], date[date.size() - 1], '\0'};
 
-    snprintf(buf, sizeof(buf), "%s v%d.%d.%d build %s %s (%s) %s\n(C) 2020-%s Ca' Foscari University of Venice\n", app_name, major, minor, rev, __DATE__, __TIME__, os,
-             dbg, two_digit_year); // sprintf for easier format string under C++17 (C++20 would have std::format)
+    snprintf(
+            buf, sizeof(buf), "%s v%d.%d.%d build %s %s (%s) %s\n(C) 2020-%s Ca' Foscari University of Venice\n", app_name, major, minor, rev, __DATE__, __TIME__, os, dbg
+            , two_digit_year); // sprintf for easier format string under C++17 (C++20 would have std::format)
     return buf;
 }
 
-int main(int argc, const char* argv[])
-{
+int main(int argc, const char* argv[]) {
 #if _TEST
     setRunningPath(argv[0]);
     ::testing::InitGoogleTest(&argc, (char**)argv);
     return RUN_ALL_TESTS();
 #else
-    try
-    {
-        if (readArgs(argc, argv))
-        {
+    try {
+        if (readArgs(argc, argv)) {
             auto logger = log_manager::main();
 
             logger->debug("path to PDB input file: " + parameters::get_pdb_path().string());
             logger->debug("path to output xml file: " + parameters::get_output_path().string());
-
-            logger->info("[BEGIN COMPUTATION]");
             logger->info("params summary: " + parameters::pretty()); // TODO scrivere in cout E ANCHE in log
 
-            // tutto accade esattamente qui
             // TODO: remove use of smart ptr, useless.
-            // unique_ptr<pdb_data> data = std::make_unique<pdb_data>();
+            unique_ptr<pdb_data> data = std::make_unique<pdb_data>();
+            /*
             computation::base* run = nullptr;
             switch (parameters::get_net_policy())
             {
@@ -101,8 +100,7 @@ int main(int argc, const char* argv[])
             }
             // there it outputs
             delete run;
-
-            logger->info("[END COMPUTATION]");
+            */
 
 #			if _MSC_VER
             spdlog::drop_all();
@@ -110,24 +108,20 @@ int main(int argc, const char* argv[])
         }
     }
 
-    catch (spdlog::spdlog_ex& e)
-    {
+    catch (spdlog::spdlog_ex& e) {
         cerr << "log initialization failed: " << e.what() << endl;
         return 1;
     }
 
-    catch (runtime_error& e)
-    {
+    catch (runtime_error& e) {
         cerr << "exception caught: " << e.what() << ";; check logs" << endl;
         return 1;
     }
 #endif
 }
 
-bool readArgs(int argc, const char* argv[])
-{
-    if (argc <= 1)
-    {
+bool readArgs(int argc, const char* argv[]) {
+    if (argc <= 1) {
         cout << "Use -h or --help for help." << endl;
         return false;
     }
@@ -140,110 +134,93 @@ bool readArgs(int argc, const char* argv[])
 
     filesystem::path pdb_file;
     app.add_option("path-to-pdb", pdb_file, "PDB (.pdb) file input")
-            ->required()
-            ->check(CLI::ExistingFile);
+       ->required()
+       ->check(CLI::ExistingFile);
 
     filesystem::path log_dir = cfg::log::default_dirname;
     app.add_option("-l,--log", log_dir, "log directory")
-            ->default_str(cfg::log::default_dirname);
+       ->default_str(cfg::log::default_dirname);
 
     filesystem::path out_file;
     app.add_option("-o,--output", out_file, "graphml (.xml) file output");
 
     unsigned int seq_sep;
     app.add_option("--seq-sep", seq_sep, "sequence separation")
-            ->default_val(cfg::params::seq_sep);
+       ->default_val(cfg::params::seq_sep);
 
     string bond_control;
     app.add_option("--bond-control", bond_control, "strict or weak")
-            ->default_val("strict")
-            ->check(
-                    [](string const& str)
-                    {
-                        if (str != "strict" && str != "weak")
-                        {
-                            return string("must be \"strict\" or \"weak\" but you entered \"" + str + "\"");
-                        }
-                        else
-                        {
-                            return string();
-                        }
-                    });
+       ->default_val("strict")
+       ->check(
+               [](string const& str) {
+                   return
+                           str != "strict" && str != "weak"
+                           ? string(R"(must be "strict" or "weak" but you entered ")" + str + "\"")
+                           : "";
+               });
 
     std::string interaction_type;
     app.add_option("--interaction-type", interaction_type, "all, multiple, one")
-            ->default_val("all")
-            ->check(
-                    [](string const& str)
-                    {
-                        if (str != "all" && str != "multiple" && str != "one")
-                        {
-                            return string("must be \"all\", \"multiple\", \"one\" but you entered \"" + str + "\"");
-                        }
-                        else
-                        {
-                            return string();
-                        }
-                    });
+       ->default_val("all")
+       ->check(
+               [](string const& str) {
+                   if (str != "all" && str != "multiple" && str != "one") {
+                       return string("must be \"all\", \"multiple\", \"one\" but you entered \"" + str + "\"");
+                   } else {
+                       return string();
+                   }
+               });
 
     string net_policy;
     app.add_option("--net-policy", net_policy, "closest, ca or cb")
-            ->default_val("closest")
-            ->check(
-                    [](string const& str)
-                    {
-                        if (str != "closest" && str != "ca" && str != "cb")
-                        {
-                            return string("must be \"closest\", \"ca\" or \"cb\" but you entered \"" + str + "\"");
-                        }
-                        else
-                        {
-                            return string();
-                        }
-                    });
+       ->default_val("closest")
+       ->check(
+               [](string const& str) {
+                   if (str != "closest" && str != "ca" && str != "cb") {
+                       return string("must be \"closest\", \"ca\" or \"cb\" but you entered \"" + str + "\"");
+                   } else {
+                       return string();
+                   }
+               });
 
-    auto positive_check = [](std::string const& str)
-    {
+    auto positive_check = [](std::string const& str) {
         double val = stod(str);
-        if (val <= 0)
-        {
+        if (val <= 0) {
             return std::string("cannot be <= 0");
-        }
-        else
-        {
+        } else {
             return std::string();
         }
     };
 
     double h_distance;
     app.add_option("--h-bond", h_distance, "maximum distance for h bonds")
-            ->default_val(cfg::params::hbond_strict)
-            ->check(positive_check);
+       ->default_val(cfg::params::hbond_strict)
+       ->check(positive_check);
 
     double vdw_distance;
     app.add_option("--vdw-bond", vdw_distance, "maximum distance for vdw bonds")
-            ->default_val(cfg::params::vdw_strict)
-            ->check(positive_check);
+       ->default_val(cfg::params::vdw_strict)
+       ->check(positive_check);
 
     double ionic_distance;
     app.add_option("--ionic-bond", ionic_distance, "maximum distance for ionic bonds")
-            ->default_val(cfg::params::ionic_strict)
-            ->check(positive_check);
+       ->default_val(cfg::params::ionic_strict)
+       ->check(positive_check);
 
     double generic_distance;
     app.add_option("--generic-bond", generic_distance, "maximum distance for generic bonds")
-            ->default_val(cfg::params::generic_strict)
-            ->check(positive_check);
+       ->default_val(cfg::params::generic_strict)
+       ->check(positive_check);
 
     double pication_distance;
     app.add_option("--pication-bond", pication_distance, "maximum distance for pication bonds")
-            ->default_val(cfg::params::pication_strict)
-            ->check(positive_check);
+       ->default_val(cfg::params::pication_strict)
+       ->check(positive_check);
 
     double pipistack_distance;
     app.add_option("--pipistack-bond", pipistack_distance, "maximum distance for pipistack bonds")
-            ->default_val(cfg::params::pipi_strict)
-            ->check(positive_check);
+       ->default_val(cfg::params::pipi_strict)
+       ->check(positive_check);
 
     bool force_flag = false;
     app.add_flag("--force", force_flag, "force disable safety guards for distance arguments");
@@ -254,23 +231,23 @@ bool readArgs(int argc, const char* argv[])
     // advanced params
     double hbond_angle;
     app.add_option("--h-bond-angle", hbond_angle, "angle for h bonds")
-            ->default_val(cfg::params::hbond_angle)
-            ->check(positive_check);
+       ->default_val(cfg::params::hbond_angle)
+       ->check(positive_check);
 
     double pication_angle;
     app.add_option("--pication-angle", pication_angle, "angle for pication bonds")
-            ->default_val(cfg::params::pication_angle)
-            ->check(positive_check);
+       ->default_val(cfg::params::pication_angle)
+       ->check(positive_check);
 
     double pipistack_normal_normal_angle_range;
     app.add_option("--pipistack-normal-normal", pipistack_normal_normal_angle_range, "angle range from normal to normal for pipistack bonds")
-            ->default_val(cfg::params::pipistack_normal_normal_angle_range)
-            ->check(positive_check);
+       ->default_val(cfg::params::pipistack_normal_normal_angle_range)
+       ->check(positive_check);
 
     double pipistack_normal_centre_angle_range;
     app.add_option("--pipistack-normal-centre", pipistack_normal_centre_angle_range, "angle range from normal to centre for pipistack bonds")
-            ->default_val(cfg::params::pipistack_normal_centre_angle_range)
-            ->check(positive_check);
+       ->default_val(cfg::params::pipistack_normal_centre_angle_range)
+       ->check(positive_check);
 
     // CLI parser
     CLI11_PARSE(app, argc, argv);

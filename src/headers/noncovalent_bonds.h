@@ -398,9 +398,11 @@ private:
         double distance = source_atom.distance(target_atom); //Rij is the distance between center
 
         double sigma_distance_12 = pow(sigma / distance, 12);
-        double sigma_distance_6 = pow(sigma / distance, 6);
 
-        return 4 * epsilon * (sigma_distance_12 - sigma_distance_6);
+        // double sigma_distance_6 = pow(sigma / distance, 6);
+        double sigma_distance_10 = pow(sigma / distance, 10);
+
+        return 4 * epsilon * (sigma_distance_12 - sigma_distance_10);
     }
 
     vdw(entities::atom const& source_atom, entities::atom const& target_atom)

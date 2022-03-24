@@ -3,8 +3,8 @@
 #include <chrono>
 #include <random>
 #include "algorithm"
-#include "../src/headers/utils/spatial/kdtree.h"
-#include "mykdpoint.h"
+#include "utils/spatial/kdtree.h"
+#include "tests/mykdpoint.h"
 
 using namespace std;
 typedef kdtree<MyKDPoint<3>, 3> MyKDTree;

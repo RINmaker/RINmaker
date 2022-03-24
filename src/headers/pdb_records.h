@@ -18,7 +18,7 @@ namespace records {
                 size_t first = Derived::_limits[i].first;
                 size_t second = Derived::_limits[i].second;
 
-                // TODO: throw exception
+                // TODO: throw
                 if (first + second <= line_size)
                     _fields[i] = prelude::trim(line.substr(first, second));
             }

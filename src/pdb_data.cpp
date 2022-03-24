@@ -8,16 +8,15 @@
 
 #include "noncovalent_bonds.h"
 #include "pdb_records.h"
-#include "utils/kdtree/kdtree.h"
+#include "utils/spatial/kdtree.h"
 #include "config.h"
 #include "utils/prelude.h"
 #include "utils/interval.h"
 #include "bond_queries.h"
-
 using namespace std;
 
 template<typename BondFunc, typename Entity1, typename Entity2>
-void find_bonds(network& net, std::vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double distance)
+void __find_bonds(network& net, std::vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double distance)
 {
     static_assert(std::is_base_of<entities::component, Entity1>::value, "template typename Entity1 must inherit from type component");
     static_assert(std::is_base_of<entities::component, Entity2>::value, "template typename Entity2 must inherit from type component");
@@ -32,7 +31,7 @@ void find_bonds(network& net, std::vector<Entity1 const*> const& vec, kdtree<Ent
     }
 }
 
-pdb_data::pdb_data(bool exportOutput) : logger(log_manager::main())
+pdb_data::pdb_data(bool exportOutput)
 {
     try
     {
@@ -50,22 +49,20 @@ pdb_data::pdb_data(bool exportOutput) : logger(log_manager::main())
                 // quella tra i centri (come in tutti gli altri) ma quella tra le superfici delle sfere, che è comunque
                 // relata a quella tra i centri in modo semplice.
                 //
-                find_bonds<bondfunctors::vdw>(net, _vdws, _vdws_tree,
-                                              parameters::get_distance_vdw() + 2 * cfg::params::max_vdw_radius);
+                __find_bonds<bondfunctors::vdw>(net, _vdws, _vdws_tree, parameters::get_distance_vdw() + 2 * cfg::params::max_vdw_radius);
 
-                find_bonds<bondfunctors::ionic>(net, _negatives, _positives_tree, parameters::get_distance_ionic());
-                find_bonds<bondfunctors::hydrogen>(net, _hacceptors, _hdonors_tree, parameters::get_distance_h());
-                find_bonds<bondfunctors::pication>(net, _cations, _pication_rings_tree,
-                                                   parameters::get_distance_pication());
-                find_bonds<bondfunctors::pipistack>(net, _rings, _rings_tree, parameters::get_distance_pipistack());
+                __find_bonds<bondfunctors::ionic>(net, _negatives, _positives_tree, parameters::get_distance_ionic());
+                __find_bonds<bondfunctors::hydrogen>(net, _hacceptors, _hdonors_tree, parameters::get_distance_h());
+                __find_bonds<bondfunctors::pication>(net, _cations, _pication_rings_tree, parameters::get_distance_pication());
+                __find_bonds<bondfunctors::pipistack>(net, _rings, _rings_tree, parameters::get_distance_pipistack());
                 break;
 
             case parameters::policy::CA:
-                find_bonds<bondfunctors::generico>(net, _cas, _cas_tree, parameters::get_distance_generic());
+                __find_bonds<bondfunctors::generico>(net, _cas, _cas_tree, parameters::get_distance_generic());
                 break;
 
             case parameters::policy::CB:
-                find_bonds<bondfunctors::generico>(net, _cbs, _cbs_tree, parameters::get_distance_generic());
+                __find_bonds<bondfunctors::generico>(net, _cbs, _cbs_tree, parameters::get_distance_generic());
                 break;
         }
 
@@ -108,7 +105,7 @@ pdb_data::pdb_data(bool exportOutput) : logger(log_manager::main())
 
     catch (runtime_error& e)
     {
-        logger->error(e.what());
+        log_manager::main()->error(e.what());
         throw;
     }
 }

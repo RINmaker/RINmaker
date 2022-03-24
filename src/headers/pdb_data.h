@@ -6,7 +6,7 @@
 #include "runtime_params.h"
 #include "bond_network.h"
 
-#include "utils/kdtree/kdtree.h"
+#include "utils/spatial/kdtree.h"
 #include "graphml_output.h"
 
 #include "chemical_entities.h"
@@ -14,12 +14,8 @@
 
 class pdb_data {
 private:
-    std::shared_ptr<spdlog::logger> logger;
+    std::vector<entities::aminoacid *> _aminoacids;
 
-private:
-
-
-private:
     std::vector<entities::atom const *> _hacceptors, _vdws, _cas, _cbs, _cations;
     std::vector<entities::ring const *> _rings;
     std::vector<entities::ring const *> _pication_rings;
