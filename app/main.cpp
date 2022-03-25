@@ -1,38 +1,33 @@
 #include <iostream>
 #include <string>
-#include <memory>
-#include <cstdio>
 
-#include <CLI/CLI.hpp>
+#include <spdlog/spdlog.h>
 
 #include "rin_maker.h"
-#include "main.h"
 
-#include "pdb_data.h"
 #include "log_manager.h"
-
-#include "config.h"
 #include "runtime_params.h"
 
 using namespace std;
+using lm = log_manager;
 
 int main(int argc, const char* argv[]) {
     try {
         if (prelude::readArgs(argc, argv)) {
-            auto logger = log_manager::main();
 
-            logger->debug("path to PDB input file: " + parameters::get_pdb_path().string());
-            logger->debug("path to output xml file: " + parameters::get_output_path().string());
-            logger->info("params summary: " + parameters::pretty()); // TODO scrivere in cout E ANCHE in log
+            lm::main()->debug("path to PDB input file: " + parameters::get_pdb_path().string());
+            lm::main()->debug("path to output xml file: " + parameters::get_output_path().string());
 
-            // TODO: remove use of smart ptr, useless.
-            // unique_ptr<pdb_data> data = std::make_unique<pdb_data>();
+            // TODO write to cout and also log
+            // does this hold? --lore
+            lm::main()->info("params summary: " + parameters::pretty());
 
-            auto run = rin_maker::build(parameters::get_net_policy(), parameters::get_pdb_path());
-            if (run == nullptr)
-                throw std::runtime_error("unknown policy");
-            run->get_graph().consume_to_xml();
-            delete run;
+            auto rm = rin_maker::build(parameters::get_net_policy(), parameters::get_pdb_path());
+            if (rm == nullptr)
+                throw std::runtime_error("unknown bonds policy");
+
+            rm->get_graph().consume_to_xml();
+            delete rm;
 
 #			if _MSC_VER
             spdlog::drop_all();
@@ -46,7 +41,7 @@ int main(int argc, const char* argv[]) {
     }
 
     catch (runtime_error& e) {
-        cerr << "exception caught: " << e.what() << ";; check logs" << endl;
+        cerr << "exception caught: " << e.what() << endl;
         return 1;
     }
 }

@@ -89,5 +89,6 @@ std::string sprintf(const std::string& fmt, ...)
 
 
     bool readArgs(int argc, const char* argv[]);
+
     std::string app_full_name();
 }
