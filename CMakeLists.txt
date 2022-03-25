@@ -44,4 +44,4 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-add_subdirectory(src)
+add_subdirectory(sources)
