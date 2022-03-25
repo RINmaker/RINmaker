@@ -169,21 +169,21 @@ public:
     std::list<bonds::base const *> filter_hbond_realistic(std::list<bonds::base const *> const &input) const {
         std::set<bonds::hydrogen const *> hydrogen_bonds_output;
         std::vector<bonds::hydrogen const *> hydrogen_bonds_input;
-        std::unordered_map<entities::atom const *, int> donors_bond_count;
-        std::unordered_map<entities::atom const *, int> hydrogen_bond_count;
-        std::unordered_map<entities::atom const *, int> acceptors_bond_count;
+        std::unordered_map<chemical_entity::atom const *, int> donors_bond_count;
+        std::unordered_map<chemical_entity::atom const *, int> hydrogen_bond_count;
+        std::unordered_map<chemical_entity::atom const *, int> acceptors_bond_count;
 
         //Get the bonds count of an atom
-        auto get_bond_count = [](std::unordered_map<entities::atom const *, int> &container,
-                                 entities::atom const *atom) -> int {
+        auto get_bond_count = [](std::unordered_map<chemical_entity::atom const *, int> &container,
+                                 chemical_entity::atom const *atom) -> int {
             if (container.find(atom) == container.end())
                 return 0;
             else
                 return container[atom];
         };
         //Increase the bonds count of an atom
-        auto inc_bond_count = [](std::unordered_map<entities::atom const *, int> &container,
-                                 entities::atom const *atom) -> void {
+        auto inc_bond_count = [](std::unordered_map<chemical_entity::atom const *, int> &container,
+                                 chemical_entity::atom const *atom) -> void {
             if (container.find(atom) == container.end())
                 container[atom] = 0;
             container[atom]++;

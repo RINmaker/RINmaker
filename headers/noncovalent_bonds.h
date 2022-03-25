@@ -3,7 +3,7 @@
 #include <string>
 #include "graphml_output.h"
 #include "prelude.h"
-#include "chemical_entities.h"
+#include "chemical_entity.h"
 #include "runtime_params.h"
 #include "energy.h"
 
@@ -66,10 +66,10 @@ class computed : public base
 protected:
     friend class ::network;
 
-    entities::aminoacid const* _source;
-    entities::aminoacid const* _target;
+    chemical_entity::aminoacid const* _source;
+    chemical_entity::aminoacid const* _target;
 
-    computed(entities::aminoacid const& source, entities::aminoacid const& target, double distance, double energy)
+    computed(chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target, double distance, double energy)
             : base(distance, energy), _source(&source), _target(&target)
     {}
 
@@ -79,10 +79,10 @@ public:
     virtual std::string get_type() const = 0;
 
 public:
-    entities::aminoacid const& source() const
+    chemical_entity::aminoacid const& source() const
     { return *_source; }
 
-    entities::aminoacid const& target() const
+    chemical_entity::aminoacid const& target() const
     { return *_target; }
 
     [[nodiscard]]
@@ -97,7 +97,7 @@ class generico : public computed
 private:
     friend class ::network;
 
-    generico(entities::aminoacid const& source, entities::aminoacid const& target)
+    generico(chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target)
             : computed(source, target, source.distance(target), 0) // TODO res horribilis
     {}
 
@@ -136,14 +136,14 @@ class hydrogen : public computed
 private:
     friend class ::network;
 
-    entities::atom const* _acceptor;
-    entities::atom const* _donor;
-    entities::atom const* _hydrogen;
+    chemical_entity::atom const* _acceptor;
+    chemical_entity::atom const* _donor;
+    chemical_entity::atom const* _hydrogen;
     double const _angle;
 
     //Returns a pair of Sigmaij Epsilonij
-    std::pair<double, double> getSigmaEpsilon(entities::atom const& donor,
-                                          entities::atom const& acceptor)
+    std::pair<double, double> getSigmaEpsilon(chemical_entity::atom const& donor,
+                                          chemical_entity::atom const& acceptor)
     {
         std::function<bool(string const&, int, string const&, int)> compare =
           [&](string const& donor_element, int donor_charge, string const& acceptor_element, int acceptor_charge)
@@ -168,7 +168,7 @@ private:
         return std::make_pair(0, 0); //TODO log: non dovrebbe accadere
     }
 
-    double energy(entities::atom const& donor, entities::atom const& acceptor, entities::atom const* hydrogen)
+    double energy(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor, chemical_entity::atom const* hydrogen)
     {
         std::pair<double, double> sigmaEpsilon = getSigmaEpsilon(donor, acceptor);
         double sigma = sigmaEpsilon.first;
@@ -181,22 +181,22 @@ private:
         return 4 * epsilon * (sigma_distance_12 - sigma_distance_10);
     }
 
-    hydrogen(entities::atom const& acceptor, entities::atom const& donor, entities::atom const* hydrogen, double angle)
+    hydrogen(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle)
             : computed(acceptor.res(), donor.res(), acceptor.distance(donor), energy(donor, acceptor, hydrogen)),
             _acceptor(&acceptor), _donor(&donor), _hydrogen(hydrogen), _angle(angle)
     {}
 
 public:
-    entities::atom const& acceptor() const
+    chemical_entity::atom const& acceptor() const
     { return *_acceptor; }
-    entities::atom const& donor() const
+    chemical_entity::atom const& donor() const
     { return *_donor; }
 
-    entities::atom const* acceptor_ptr() const
+    chemical_entity::atom const* acceptor_ptr() const
     { return _acceptor; }
-    entities::atom const* donor_ptr() const
+    chemical_entity::atom const* donor_ptr() const
     { return _donor; }
-    entities::atom const* hydrogen_ptr() const
+    chemical_entity::atom const* hydrogen_ptr() const
     { return _hydrogen; }
 
     double get_angle() const
@@ -204,8 +204,8 @@ public:
 
     std::string get_interaction() const
     {
-        entities::atom const& donor = *_donor;
-        entities::atom const& acceptor = *_acceptor;
+        chemical_entity::atom const& donor = *_donor;
+        chemical_entity::atom const& acceptor = *_acceptor;
 
         string donorChain    = donor.is_main_chain() ? "MC" : "SC";
         string acceptorChain = acceptor.is_main_chain() ? "MC" : "SC";
@@ -227,10 +227,10 @@ class ionic : public computed
 private:
     friend class ::network;
 
-    entities::ionic_group const* _negative;
-    entities::ionic_group const* _positive;
+    chemical_entity::ionic_group const* _negative;
+    chemical_entity::ionic_group const* _positive;
 
-    ionic(entities::ionic_group const& negative, entities::ionic_group const& positive)
+    ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive)
             : computed(
             negative.res(),
             positive.res(),
@@ -241,10 +241,10 @@ private:
     {}
 
 public:
-    entities::ionic_group const& positive() const
+    chemical_entity::ionic_group const& positive() const
     { return *_positive; }
 
-    entities::ionic_group const& negative() const
+    chemical_entity::ionic_group const& negative() const
     { return *_negative; }
 
     std::string get_interaction() const
@@ -264,20 +264,20 @@ class pication : public computed
 private:
     friend class ::network;
 
-    entities::atom const* _cation;
-    entities::ring const* _ring;
+    chemical_entity::atom const* _cation;
+    chemical_entity::ring const* _ring;
     double _angle;
 
-    pication(entities::ring const& ring, entities::atom const& cation, double angle)
+    pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle)
             : computed(ring.res(), cation.res(), ring.distance(cation), 9.6) // TODO va in config
             , _cation(&cation), _ring(&ring), _angle(angle)
     {}
 
 public:
-    entities::ring const& ring() const
+    chemical_entity::ring const& ring() const
     { return *_ring; }
 
-    entities::atom const& cation() const
+    chemical_entity::atom const& cation() const
     { return *_cation; }
 
     double angle() const
@@ -299,20 +299,20 @@ class pipistack : public computed
 private:
     friend class ::network;
 
-    entities::ring const* _source_ring;
-    entities::ring const* _target_ring;
+    chemical_entity::ring const* _source_ring;
+    chemical_entity::ring const* _target_ring;
     double const _angle;
 
-    pipistack(entities::ring const& source_ring, entities::ring const& target_ring, double angle)
+    pipistack(chemical_entity::ring const& source_ring, chemical_entity::ring const& target_ring, double angle)
             : computed(source_ring.res(), target_ring.res(), source_ring.distance(target_ring), 9.6) // TODO va in config
             , _source_ring(&source_ring), _target_ring(&target_ring), _angle(angle)
     {}
 
 public:
-    entities::ring const& source_ring() const
+    chemical_entity::ring const& source_ring() const
     { return *_source_ring; }
 
-    entities::ring const& target_ring() const
+    chemical_entity::ring const& target_ring() const
     { return *_target_ring; }
 
     double angle() const
@@ -380,10 +380,10 @@ class vdw : public computed
 private:
     friend class ::network;
 
-    entities::atom const* _source_atom;
-    entities::atom const* _target_atom;
+    chemical_entity::atom const* _source_atom;
+    chemical_entity::atom const* _target_atom;
 
-    double energy(entities::atom const& source_atom, entities::atom const& target_atom)
+    double energy(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom)
     {
         double* source_opts = get_vdw_opsl_values(source_atom.res().name(), source_atom.name(), source_atom.symbol());
         double* target_opts = get_vdw_opsl_values(target_atom.res().name(), target_atom.name(), target_atom.symbol());
@@ -405,22 +405,22 @@ private:
         return 4 * epsilon * (sigma_distance_12 - sigma_distance_10);
     }
 
-    vdw(entities::atom const& source_atom, entities::atom const& target_atom)
+    vdw(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom)
             : computed(source_atom.res(), target_atom.res(), source_atom.distance(target_atom), energy(source_atom, target_atom))  // TODO va in config
             , _source_atom(&source_atom), _target_atom(&target_atom)
     {}
 
 public:
-    entities::atom const& source_atom() const
+    chemical_entity::atom const& source_atom() const
     { return *_source_atom; }
 
-    entities::atom const& target_atom() const
+    chemical_entity::atom const& target_atom() const
     { return *_target_atom; }
 
     std::string get_interaction() const
     {
-        entities::atom const& source = *_source_atom;
-        entities::atom const& target = *_target_atom;
+        chemical_entity::atom const& source = *_source_atom;
+        chemical_entity::atom const& target = *_target_atom;
 
         string sourceChain = source.name() == "C" || source.name() == "S" ? "MC" : "SC";
         string targetChain = target.name() == "C" || target.name() == "S" ? "MC" : "SC";

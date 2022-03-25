@@ -1,7 +1,7 @@
 #include "rin_maker.h"
 
 template<typename Record>
-class secondary_structure_search final {
+class secondary_structure_helper final {
 private:
     std::unordered_map<std::string, std::map<interval<int>, Record, interval<int>::less>> _map;
 
@@ -17,9 +17,11 @@ public:
         }
     }
 
-    [[nodiscard]] int size() const { return _map.size(); }
+    [[nodiscard]]
+    int size() const { return _map.size(); }
 
-    void maybe_set(entities::aminoacid& res) const {
+    // updates the secondary structure of res if res is present
+    void update_if_contains(chemical_entity::aminoacid& res) const {
         auto chain = _map.find(res.chain_id());
         if (chain != _map.end()) {
             auto kv = chain->second.find(
@@ -41,8 +43,8 @@ rin_maker::base::base(std::filesystem::path const& pdb_path) {
     if (!pdb_file.is_open())
         throw std::runtime_error("could not open " + pdb_path.string() + "\n");
 
-    auto sheet_search = secondary_structure_search<records::sheet_piece>();
-    auto helix_search = secondary_structure_search<records::helix>();
+    auto sheet_records = secondary_structure_helper<records::sheet_piece>();
+    auto helix_records = secondary_structure_helper<records::helix>();
 
     std::vector<records::atom> tmp_atoms;
 
@@ -56,26 +58,25 @@ rin_maker::base::base(std::filesystem::path const& pdb_path) {
         std::string record_type = prelude::trim(line.substr(0, 6));
 
         if (record_type == "ATOM") {
-            // atoms are grouped by amino acid: we can simply fill a collection until
-            // we change residue
+            // atoms are grouped by aminoacid: we can simply fill a collection until we change residue
             records::atom record(line);
             if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back())) {
-                _aminoacids.push_back(new entities::aminoacid(tmp_atoms));
+                _aminoacids.push_back(new chemical_entity::aminoacid(tmp_atoms));
                 tmp_atoms.clear();
             }
 
             tmp_atoms.push_back(record);
         } else if (record_type == "HELIX") {
-            helix_search.insert(records::helix(line));
+            helix_records.insert(records::helix(line));
         } else if (record_type == "SHEET") {
-            sheet_search.insert(records::sheet_piece(line));
+            sheet_records.insert(records::sheet_piece(line));
         } else if (record_type == "SSBOND") {
             _rin_network.new_bond<bonds::ss>(records::ss(line));
         }
     }
 
     if (!tmp_atoms.empty()) {
-        _aminoacids.push_back(new entities::aminoacid(tmp_atoms));
+        _aminoacids.push_back(new chemical_entity::aminoacid(tmp_atoms));
     }
 
     log_manager::main()->info("done.");
@@ -83,11 +84,11 @@ rin_maker::base::base(std::filesystem::path const& pdb_path) {
     log_manager::main()->info(
             "finding appropriate secondary structure for amino acids...");
 
-    if (sheet_search.size() != 0 || helix_search.size() != 0) {
+    if (sheet_records.size() != 0 || helix_records.size() != 0) {
         for (auto* res: _aminoacids) {
             res->make_secondary_structure();
-            sheet_search.maybe_set(*res);
-            helix_search.maybe_set(*res);
+            sheet_records.update_if_contains(*res);
+            helix_records.update_if_contains(*res);
         }
     }
 
@@ -98,9 +99,9 @@ template<typename BondFunc, typename Entity1, typename Entity2>
 static void find_bonds(
         network& net, std::vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double distance) {
     static_assert(
-            std::is_base_of<entities::component, Entity1>::value, "template typename Entity1 must inherit from type entity::component");
+            std::is_base_of<chemical_entity::component, Entity1>::value, "template typename Entity1 must inherit from type entity::component");
     static_assert(
-            std::is_base_of<entities::component, Entity2>::value, "template typename Entity2 must inherit from type entity::component");
+            std::is_base_of<chemical_entity::component, Entity2>::value, "template typename Entity2 must inherit from type entity::component");
     static_assert(
             std::is_base_of<bondfunctors::base, BondFunc>::value, "template typename BondFunc must inherit from type bondfunctor::base");
 
@@ -114,10 +115,12 @@ static void find_bonds(
 
 rin_maker::all_bonds::all_bonds(std::filesystem::path const& pdb_path)
         : base(pdb_path) {
-    log_manager::main()->info("retrieving components from amino acids...");
-    // these two are used only to build the kdtrees
-    std::vector<entities::atom const*> hdonors;
-    std::vector<entities::ionic_group const*> positives;
+
+    log_manager::main()->info("retrieving components from aminoacids...");
+
+    // used only to build the corresponding kdtrees
+    std::vector<chemical_entity::atom const*> hdonors;
+    std::vector<chemical_entity::ionic_group const*> positives;
 
     for (auto* res: _aminoacids) {
 
@@ -164,12 +167,12 @@ rin_maker::all_bonds::all_bonds(std::filesystem::path const& pdb_path)
 
     log_manager::main()->info("building acceleration structures...");
 
-    _hdonor_tree = kdtree<entities::atom, 3>(hdonors);
-    _vdw_tree = kdtree<entities::atom, 3>(_vdw_vector);
+    _hdonor_tree = kdtree<chemical_entity::atom, 3>(hdonors);
+    _vdw_tree = kdtree<chemical_entity::atom, 3>(_vdw_vector);
 
-    _ring_tree = kdtree<entities::ring, 3>(_ring_vector);
-    _pication_ring_tree = kdtree<entities::ring, 3>(_pication_ring_vector);
-    _positive_ion_tree = kdtree<entities::ionic_group, 3>(positives);
+    _ring_tree = kdtree<chemical_entity::ring, 3>(_ring_vector);
+    _pication_ring_tree = kdtree<chemical_entity::ring, 3>(_pication_ring_vector);
+    _positive_ion_tree = kdtree<chemical_entity::ionic_group, 3>(positives);
 
     log_manager::main()->info("done.");
 
@@ -194,9 +197,7 @@ rin_maker::all_bonds::all_bonds(std::filesystem::path const& pdb_path)
             _rin_network, _ring_vector, _ring_tree, parameters::get_distance_pipistack());
 }
 
-rin_maker::carbon::carbon(
-        std::filesystem::path const& pdb_path, std::function<entities::atom const*(entities::aminoacid const&)> const
-& getter)
+rin_maker::backbone::backbone(std::filesystem::path const& pdb_path, carbon_getter getter)
         : base(pdb_path) {
     for (auto const* res: _aminoacids) {
         auto const* c = getter(*res);
@@ -204,7 +205,7 @@ rin_maker::carbon::carbon(
             _carbon_vector.push_back(c);
         }
     }
-    _carbon_tree = kdtree<entities::atom, 3>(_carbon_vector);
+    _carbon_tree = kdtree<chemical_entity::atom, 3>(_carbon_vector);
 
     find_bonds<bondfunctors::generico>(
             _rin_network, _carbon_vector, _carbon_tree, parameters::get_distance_generic());

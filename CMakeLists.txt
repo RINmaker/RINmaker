@@ -40,6 +40,11 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(spdlog)
 
+option(USE_DEBUG "enter debug mode for RINmaker_library" OFF)
+if (USE_DEBUG)
+    add_definitions(-DDEBUG)
+endif()
+
 add_subdirectory(src)
 add_subdirectory(app)
 add_subdirectory(test)

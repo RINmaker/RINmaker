@@ -4,7 +4,7 @@
 #include <string>
 
 #include "noncovalent_bonds.h"
-#include "chemical_entities.h"
+#include "chemical_entity.h"
 #include "config.h"
 #include "runtime_params.h"
 
@@ -230,7 +230,7 @@ void graph::consume_to_xml()
     doc.save_file(parameters::get_output_path().c_str());
 }
 
-node::node(entities::aminoacid const& res)
+node::node(chemical_entity::aminoacid const& res)
         :
         _id(res.id()),
         _chain(res.chain_id()),

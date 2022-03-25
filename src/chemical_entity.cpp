@@ -1,6 +1,6 @@
-#include "chemical_entities.h"
+#include "chemical_entity.h"
 
-entities::aminoacid::aminoacid(std::vector<records::atom> const& records) : kdpoint<3>({0, 0, 0})
+chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records) : kdpoint<3>({0, 0, 0})
 {
     /* TODO throw exception. It cannot happen.
     if (records.empty())
@@ -48,7 +48,7 @@ entities::aminoacid::aminoacid(std::vector<records::atom> const& records) : kdpo
     double mass = 0;
     for (auto const& record: records)
     {
-        atom const* a = new entities::atom(record, *this);
+        atom const* a = new chemical_entity::atom(record, *this);
         _atoms.push_back(a);
 
         // sum up centroid weights
@@ -61,12 +61,12 @@ entities::aminoacid::aminoacid(std::vector<records::atom> const& records) : kdpo
 
         if (a->name() == "CA")
         {
-            // try to get alpha carbon (there should be only one)
+            // try to get alpha backbone (there should be only one)
             _alpha_carbon = a;
         }
         else if (a->name() == "CB")
         {
-            // try to get alpha carbon (there should be only one, or zero)
+            // try to get alpha backbone (there should be only one, or zero)
             _beta_carbon = a;
         }
 
@@ -116,7 +116,7 @@ entities::aminoacid::aminoacid(std::vector<records::atom> const& records) : kdpo
     }
 }
 
-entities::aminoacid::~aminoacid()
+chemical_entity::aminoacid::~aminoacid()
 {
     for (auto* a: _atoms)
         delete a;
@@ -130,7 +130,7 @@ entities::aminoacid::~aminoacid()
     delete _secondary_structure;
 }
 
-double entities::atom::mass() const
+double chemical_entity::atom::mass() const
 {
     std::string element = symbol();
     if (element == "H")
@@ -159,7 +159,7 @@ double entities::atom::mass() const
     return 1;
 }
 
-double entities::atom::vdw_radius() const
+double chemical_entity::atom::vdw_radius() const
 {
     std::string element = symbol();
     if (element == "S")
@@ -184,7 +184,7 @@ double entities::atom::vdw_radius() const
     return 0;
 }
 
-bool entities::atom::is_a_cation() const
+bool chemical_entity::atom::is_a_cation() const
 {
     std::string res_name = res().name();
 
@@ -193,7 +193,7 @@ bool entities::atom::is_a_cation() const
            (res_name == "HIS" && name() == "ND1");
 }
 
-bool entities::atom::is_in_a_positive_ionic_group() const
+bool chemical_entity::atom::is_in_a_positive_ionic_group() const
 {
     std::string res_name = res().name();
 
@@ -212,7 +212,7 @@ bool entities::atom::is_in_a_positive_ionic_group() const
     return false;
 }
 
-bool entities::atom::is_in_a_negative_ionic_group() const
+bool chemical_entity::atom::is_in_a_negative_ionic_group() const
 {
     std::string res_name = res().name();
     std::string n = name();
@@ -230,7 +230,7 @@ bool entities::atom::is_in_a_negative_ionic_group() const
     return false;
 }
 
-bool entities::atom::is_a_hydrogen_donor() const
+bool chemical_entity::atom::is_a_hydrogen_donor() const
 {
     std::string res_name = res().name();
     std::string n = name();
@@ -247,7 +247,7 @@ bool entities::atom::is_a_hydrogen_donor() const
             (res_name == "CYS" && n == "SG") ||
             n == "NH" || n == "N";
 }
-int entities::atom::how_many_hydrogen_can_donate() const
+int chemical_entity::atom::how_many_hydrogen_can_donate() const
 {
     if (is_a_hydrogen_donor())
     {
@@ -268,7 +268,7 @@ int entities::atom::how_many_hydrogen_can_donate() const
     }
 }
 
-bool entities::atom::is_a_hydrogen_acceptor() const
+bool chemical_entity::atom::is_a_hydrogen_acceptor() const
 {
     std::string res_name = res().name();
     std::string n = name();
@@ -285,7 +285,7 @@ bool entities::atom::is_a_hydrogen_acceptor() const
             (res_name == "MET" && n == "SD") ||
             n == "C" || n == "O";
 }
-int entities::atom::how_many_hydrogen_can_accept() const
+int chemical_entity::atom::how_many_hydrogen_can_accept() const
 {
     if (is_a_hydrogen_acceptor())
     {
@@ -307,7 +307,7 @@ int entities::atom::how_many_hydrogen_can_accept() const
     }
 }
 
-bool entities::atom::is_a_vdw_candidate() const
+bool chemical_entity::atom::is_a_vdw_candidate() const
 {
     std::string res_name = res().name();
     std::string n = name();
@@ -324,7 +324,7 @@ bool entities::atom::is_a_vdw_candidate() const
             en == "C" || en == "S";*/
 }
 
-std::vector<entities::atom const*> entities::atom::attached_hydrogens() const
+std::vector<chemical_entity::atom const*> chemical_entity::atom::attached_hydrogens() const
 {
     std::vector<atom const*> hydrogens;
     std::string const hydrogen_name_pattern = "H" + name().substr(1, name().size() - 1);
@@ -339,7 +339,7 @@ std::vector<entities::atom const*> entities::atom::attached_hydrogens() const
     return hydrogens;
 }
 
-entities::ring::ring(std::vector<atom const*> const& atoms, aminoacid const& res)
+chemical_entity::ring::ring(std::vector<atom const*> const& atoms, aminoacid const& res)
         : kdpoint<3>({0, 0, 0}), component(res), _atoms(atoms)
 {
     // TODO assert atoms.size >= 3
@@ -370,7 +370,7 @@ entities::ring::ring(std::vector<atom const*> const& atoms, aminoacid const& res
     _normal = geom::cross(v, w);
 }
 
-entities::atom const& entities::ring::atom_closest_to(atom const& atom) const
+chemical_entity::atom const& chemical_entity::ring::atom_closest_to(atom const& atom) const
 {
     auto* closest_atom = _atoms[0];
     double min_distance = closest_atom->distance(atom);
@@ -388,7 +388,7 @@ entities::atom const& entities::ring::atom_closest_to(atom const& atom) const
     return *closest_atom;
 }
 
-string getNameFromAtoms(std::vector<const entities::atom*> atoms)
+string getNameFromAtoms(std::vector<const chemical_entity::atom*> atoms)
 {
     std::vector<string> atoms_name;
     for (auto i : atoms)
@@ -407,12 +407,12 @@ string getNameFromAtoms(std::vector<const entities::atom*> atoms)
     return out;
 }
 
-string entities::ring::name() const
+string chemical_entity::ring::name() const
 {
     return getNameFromAtoms(_atoms);
 }
 
-entities::ionic_group::ionic_group(std::vector<atom const*> const& atoms, int const& charge, aminoacid const& res)
+chemical_entity::ionic_group::ionic_group(std::vector<atom const*> const& atoms, int const& charge, aminoacid const& res)
         : kdpoint<3>({0, 0, 0}), component(res), _atoms(atoms), _charge(charge)
 {
     // centroid is the centre of mass
@@ -433,7 +433,7 @@ entities::ionic_group::ionic_group(std::vector<atom const*> const& atoms, int co
     _position = centroid;
 }
 
-double entities::ionic_group::ionion_energy_q() const
+double chemical_entity::ionic_group::ionion_energy_q() const
 {
     //                                    q  // * number of protons
     if (_res->name() == "LYS") return 0.640; // * 81;
@@ -446,7 +446,7 @@ double entities::ionic_group::ionion_energy_q() const
     return 0;
 }
 
-string entities::ionic_group::name() const
+string chemical_entity::ionic_group::name() const
 {
     return getNameFromAtoms(_atoms);
 }

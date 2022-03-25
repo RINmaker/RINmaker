@@ -8,7 +8,7 @@
 
 // entity has to #include "rin"
 // #include "entity.h"
-namespace entities { class aminoacid; }
+namespace chemical_entity { class aminoacid; }
 
 namespace bonds
 {
@@ -83,7 +83,7 @@ private:
     int _degree = 0;
 
 public:
-    explicit node(entities::aminoacid const& res);
+    explicit node(chemical_entity::aminoacid const& res);
 
     std::string const& get_id() const { return _id; }
     int& degree() { return _degree; }

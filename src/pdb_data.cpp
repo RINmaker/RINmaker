@@ -8,9 +8,9 @@
 
 #include "noncovalent_bonds.h"
 #include "pdb_records.h"
-#include "utils/spatial/kdtree.h"
+#include "spatial/kdtree.h"
 #include "config.h"
-#include "utils/prelude.h"
+#include "prelude.h"
 #include "utils/interval.h"
 #include "bond_queries.h"
 using namespace std;
@@ -18,8 +18,8 @@ using namespace std;
 template<typename BondFunc, typename Entity1, typename Entity2>
 void __find_bonds(network& net, std::vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double distance)
 {
-    static_assert(std::is_base_of<entities::component, Entity1>::value, "template typename Entity1 must inherit from type component");
-    static_assert(std::is_base_of<entities::component, Entity2>::value, "template typename Entity2 must inherit from type component");
+    static_assert(std::is_base_of<chemical_entity::component, Entity1>::value, "template typename Entity1 must inherit from type component");
+    static_assert(std::is_base_of<chemical_entity::component, Entity2>::value, "template typename Entity2 must inherit from type component");
     static_assert(std::is_base_of<bondfunctors::base, BondFunc>::value, "template typename BondFunc must inherit from type bondfunctors::base");
 
     BondFunc if_test_insert(net);
@@ -147,7 +147,7 @@ void pdb_data::parse_file()
             records::atom record(line);
             if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back()))
             {
-                _aminoacids.push_back(new entities::aminoacid(tmp_atoms));
+                _aminoacids.push_back(new chemical_entity::aminoacid(tmp_atoms));
                 tmp_atoms.clear();
             }
             tmp_atoms.push_back(record);
@@ -200,12 +200,12 @@ void pdb_data::parse_file()
     // ultimo controllo sui record di amminoacido
     if (!tmp_atoms.empty())
     {
-        _aminoacids.push_back(new entities::aminoacid(tmp_atoms));
+        _aminoacids.push_back(new chemical_entity::aminoacid(tmp_atoms));
     }
 
     // aggiustare gli amminoacidi e recuperare i vari componenti
-    std::vector<entities::atom const*> hdonors;
-    std::vector<entities::ionic_group const*> positives;
+    std::vector<chemical_entity::atom const*> hdonors;
+    std::vector<chemical_entity::ionic_group const*> positives;
 
     for (auto* res: _aminoacids)
     {
@@ -237,7 +237,7 @@ void pdb_data::parse_file()
         }
 
         // recuperare i gruppi ionici
-        entities::ionic_group const* group = resr.positive_ionic_group();
+        chemical_entity::ionic_group const* group = resr.positive_ionic_group();
         if (group != nullptr)
         {
             positives.push_back(group);
@@ -250,7 +250,7 @@ void pdb_data::parse_file()
         }
 
         // recuperare i ring
-        entities::ring const* ring = resr.primary_ring();
+        chemical_entity::ring const* ring = resr.primary_ring();
         if (ring != nullptr)
         {
             _rings.push_back(ring);
@@ -270,7 +270,7 @@ void pdb_data::parse_file()
             }
         }
 
-        // recuperare alpha e beta carbon
+        // recuperare alpha e beta backbone
         auto const* c = resr.ca();
         if (c != nullptr)
         {
@@ -326,15 +326,15 @@ void pdb_data::parse_file()
     log_manager::main()->info("aromatic rings (valid for pication): {}", _rings.size());
 
     // costruire gli alberi dei donatori di idrogeno e dei possibili partecipanti in van der waals
-    _hdonors_tree = kdtree<entities::atom, 3>(hdonors);
-    _vdws_tree = kdtree<entities::atom, 3>(_vdws);
+    _hdonors_tree = kdtree<chemical_entity::atom, 3>(hdonors);
+    _vdws_tree = kdtree<chemical_entity::atom, 3>(_vdws);
 
     // costruire gli alberi dei ring (pipistack e pication) e dei gruppi ionici (ionic bond)
-    _rings_tree = kdtree<entities::ring, 3>(_rings);
-    _pication_rings_tree = kdtree<entities::ring, 3>(_pication_rings);
-    _positives_tree = kdtree<entities::ionic_group, 3>(positives);
+    _rings_tree = kdtree<chemical_entity::ring, 3>(_rings);
+    _pication_rings_tree = kdtree<chemical_entity::ring, 3>(_pication_rings);
+    _positives_tree = kdtree<chemical_entity::ionic_group, 3>(positives);
 
     // costruire gli alberi dei carboni alpha e beta
-    _cas_tree = kdtree<entities::atom, 3>(_cas);
-    _cbs_tree = kdtree<entities::atom, 3>(_cbs);
+    _cas_tree = kdtree<chemical_entity::atom, 3>(_cas);
+    _cbs_tree = kdtree<chemical_entity::atom, 3>(_cbs);
 }

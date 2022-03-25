@@ -6,7 +6,7 @@
 #include <tuple>
 
 #include "noncovalent_bonds.h"
-#include "chemical_entities.h"
+#include "chemical_entity.h"
 
 #include "bond_network.h"
 #include "log_manager.h"
@@ -42,7 +42,7 @@ public:
     ~vdw() override { log_manager::main()->info("found {} vdw bonds", _nbonds); }
 
 public:
-    void operator()(entities::atom const& a, entities::atom const& b) {
+    void operator()(chemical_entity::atom const& a, chemical_entity::atom const& b) {
         if (a.res().satisfies_minimum_separation(b.res()) &&
             a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= parameters::get_distance_vdw()) {
             std::string const unique_key = prelude::sort(a.res().id(), b.res().id());
@@ -71,7 +71,7 @@ public:
 
 public:
     // aminoacids must be separated and have opposite charges
-    void operator()(entities::ionic_group const& a, entities::ionic_group const& b) {
+    void operator()(chemical_entity::ionic_group const& a, chemical_entity::ionic_group const& b) {
         if (a.res().satisfies_minimum_separation(b.res()) && a.charge() == -b.charge()) {
             // TODO verbosity: bond accepted
             _net.new_bond<bonds::ionic>(a, b);
@@ -94,7 +94,7 @@ public:
 
 public:
     // a bit complex, please refer to the paper
-    void operator()(entities::atom const& acceptor, entities::atom const& donor) {
+    void operator()(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor) {
         if (acceptor.res().satisfies_minimum_separation(donor.res())) {
             if (!(acceptor.res() == donor.res())) {
                 auto hydrogens = donor.attached_hydrogens();
@@ -130,7 +130,7 @@ public:
 public:
     // FIXME possibile bug
     // TODO mark resolved?
-    void operator()(entities::atom const& cation, entities::ring const& ring) {
+    void operator()(chemical_entity::atom const& cation, chemical_entity::ring const& ring) {
         if (ring.res().satisfies_minimum_separation(cation.res())) {
             // TODO verbosity: bond accepted
             double theta = 90 - geom::d_angle<3>(ring.normal(), (std::array<double, 3>) (ring - cation));
@@ -160,7 +160,7 @@ public:
     ~pipistack() override { log_manager::main()->info("found {} pipistack bonds", _nbonds); }
 
 public:
-    void operator()(entities::ring const& a, entities::ring const& b) {
+    void operator()(chemical_entity::ring const& a, chemical_entity::ring const& b) {
         double nc1 = a.angle_between_normal_and_centres_joining(b);
         double nc2 = b.angle_between_normal_and_centres_joining(a);
         double nn = a.angle_between_normals(b);
@@ -202,7 +202,7 @@ public:
 public:
     // tecnicamente il test è sempre valido, ricordiamoci che questo è il test applicato ai vicini della range search!
     //
-    void operator()(entities::atom const& a, entities::atom const& b) {
+    void operator()(chemical_entity::atom const& a, chemical_entity::atom const& b) {
         if (a.res().satisfies_minimum_separation(b.res())) {
             string const unique_key = prelude::sort(a.res().id(), b.res().id());
             if (_bonded.find(unique_key) == _bonded.end()) {

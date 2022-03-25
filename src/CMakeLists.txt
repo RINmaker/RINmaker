@@ -1,8 +1,3 @@
-option(USE_DEBUG "enter debug mode for RINmaker_library" OFF)
-if (USE_DEBUG)
-    add_definitions(-DDEBUG)
-endif()
-
 add_library(
         RINmaker_library
 
@@ -10,7 +5,7 @@ add_library(
         prelude.cpp
         config.cpp
         energy.cpp
-        chemical_entities.cpp
+        chemical_entity.cpp
         log_manager.cpp
         bond_network.cpp
         runtime_params.cpp

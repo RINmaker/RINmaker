@@ -23,13 +23,12 @@
 #include "log_manager.h"
 
 class pdb_data;
-namespace rin_maker {class base; };
+namespace rin_maker {class base; }
 
-namespace entities {
+namespace chemical_entity {
+
     class atom;
-
     class ring;
-
     class ionic_group;
 
     class aminoacid : public kdpoint<3> {
@@ -94,13 +93,13 @@ namespace entities {
         std::vector<atom const *> const &atoms() const { return _atoms; }
 
         /**
-         * @return A pointer to the <b>alpha</b> carbon.
+         * @return A pointer to the <b>alpha</b> backbone.
          */
         [[nodiscard]]
         atom const *ca() const { return _alpha_carbon; }
 
         /**
-         * @return A pointer to the <b>beta</b> carbon.
+         * @return A pointer to the <b>beta</b> backbone.
          */
         [[nodiscard]]
         atom const *cb() const { return _beta_carbon; }

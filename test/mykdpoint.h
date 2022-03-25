@@ -5,8 +5,8 @@
 #include <algorithm>
 #include <gtest/gtest.h>
 
-#include "utils/spatial/kdtree.h"
-#include "utils/spatial/kdpoint.h"
+#include "spatial/kdtree.h"
+#include "spatial/kdpoint.h"
 
 template<size_t K>
 class MyKDPoint : public kdpoint<K>
