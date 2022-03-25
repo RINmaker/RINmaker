@@ -9,7 +9,6 @@ add_library(
         bond_network.cpp
         runtime_params.cpp
         pdb_records.cpp
-        pdb_data.cpp
         graphml_output.cpp
         secondary_structures.cpp)
 
