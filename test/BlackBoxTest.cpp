@@ -1,7 +1,5 @@
 #include "BlackBoxTest.h"
 
-#include "pdb_data.h"
-
 #define MY_DBL_EPSILON 0.00005
 
 using namespace std;

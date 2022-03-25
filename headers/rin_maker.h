@@ -24,12 +24,16 @@ class base {
 protected:
     std::vector<chemical_entity::aminoacid*> _aminoacids;
     network _rin_network;
-    rin::graph _rin_graph;
 
     explicit base(std::filesystem::path const& pdb_path);
 
 public:
-    virtual ~base();
+    virtual ~base() {
+        for (auto* res: _aminoacids)
+            delete res;
+    }
+
+    rin::graph get_graph() const;
 };
 
 class all_bonds final : public base {
@@ -48,6 +52,7 @@ public:
 };
 
 typedef std::function<chemical_entity::atom const*(chemical_entity::aminoacid const&)> const& carbon_getter;
+
 class backbone : public base {
 protected:
     kdtree<chemical_entity::atom, 3> _carbon_tree;
@@ -55,6 +60,8 @@ protected:
 
     explicit backbone(std::filesystem::path const& pdb_path, carbon_getter getter);
 };
+
+#define CARBON_GETTER_SELECTOR(getter_name) ([](chemical_entity::aminoacid const& res) -> chemical_entity::atom const*)
 
 class alpha_carbon final : public backbone {
 public:
@@ -68,8 +75,9 @@ public:
 class beta_carbon final : public backbone {
 public:
     explicit beta_carbon(std::filesystem::path const& pdb_path)
-            : backbone(pdb_path, [](chemical_entity::aminoacid const& res) -> chemical_entity::atom const* { return res.cb(); }) {
-        log_manager::main()->info("beta carbons: {}", _carbon_vector.size());
-    }
+            : backbone(
+            pdb_path, [](chemical_entity::aminoacid const& res) -> chemical_entity::atom const* {
+                return res.cb();
+            }) { log_manager::main()->info("beta carbons: {}", _carbon_vector.size()); }
 };
 }

@@ -207,13 +207,14 @@ rin_maker::backbone::backbone(std::filesystem::path const& pdb_path, carbon_gett
     }
     _carbon_tree = kdtree<chemical_entity::atom, 3>(_carbon_vector);
 
-    find_bonds<bondfunctors::generico>(
-            _rin_network, _carbon_vector, _carbon_tree, parameters::get_distance_generic());
+    find_bonds<bondfunctors::generico>(_rin_network, _carbon_vector, _carbon_tree, parameters::get_distance_generic());
 }
 
-rin_maker::base::~base() {
+rin::graph rin_maker::base::get_graph() const {
+    rin::graph graph;
+
     for (auto* res: _aminoacids)
-        _rin_graph.insert(res->to_node());
+        graph.insert(res->to_node());
 
     std::list<bonds::base const*> results;
     switch (parameters::get_interaction_type()) {
@@ -237,19 +238,9 @@ rin_maker::base::~base() {
         results = _rin_network.filter_hbond_realistic(results);
 
     for (auto* bond: results)
-        _rin_graph.push(bond->to_edge());
+        graph.push(bond->to_edge());
 
-    log_manager::main()->info(
-            "there are {} bonds after filtering", results.size());
-    log_manager::main()->info(">> end computed bond data <<");
+    log_manager::main()->info("there are {} bonds after filtering", results.size());
 
-    // TODO
-    // write to output
-    // if (exportOutput)
-    // {
-    _rin_graph.consume_to_xml();
-    // }
-
-    for (auto* res: _aminoacids)
-        delete res;
+    return graph;
 }

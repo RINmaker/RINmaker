@@ -16,7 +16,6 @@
 
 using namespace std;
 
-
 int main(int argc, const char* argv[]) {
     try {
         if (prelude::readArgs(argc, argv)) {
@@ -27,8 +26,8 @@ int main(int argc, const char* argv[]) {
             logger->info("params summary: " + parameters::pretty()); // TODO scrivere in cout E ANCHE in log
 
             // TODO: remove use of smart ptr, useless.
-            unique_ptr<pdb_data> data = std::make_unique<pdb_data>();
-            /*
+            // unique_ptr<pdb_data> data = std::make_unique<pdb_data>();
+
             rin_maker::base* run = nullptr;
             switch (parameters::get_net_policy())
             {
@@ -42,9 +41,9 @@ int main(int argc, const char* argv[]) {
                     run = new rin_maker::beta_carbon(parameters::get_pdb_path());
                     break;
             }
-            // there it outputs
+
+            run->get_graph().consume_to_xml();
             delete run;
-            */
 
 #			if _MSC_VER
             spdlog::drop_all();
