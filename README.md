@@ -15,7 +15,7 @@ cmake --build build --target RINmaker
 build tests:
 
 ```bash
-cmake --build build --target RINmaker_tests
+cmake --build build --target RINmaker_test
 ```
 
 executable should be in `build/sources/Debug/`.

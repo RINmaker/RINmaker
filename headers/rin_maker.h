@@ -20,12 +20,20 @@
 
 namespace rin_maker {
 
+namespace che = chemical_entity;
+namespace fs = std::filesystem;
+
+using lm = log_manager;
+
+using std::vector;
+using std::function;
+
 class base {
 protected:
-    std::vector<chemical_entity::aminoacid*> _aminoacids;
+    vector<che::aminoacid*> _aminoacids;
     network _rin_network;
 
-    explicit base(std::filesystem::path const& pdb_path);
+    explicit base(fs::path const& pdb_path);
 
 public:
     virtual ~base() {
@@ -38,46 +46,51 @@ public:
 
 class all_bonds final : public base {
 private:
-    kdtree<chemical_entity::atom, 3> _hdonor_tree, _vdw_tree;
-    std::vector<chemical_entity::atom const*> _hacceptor_vector, _vdw_vector, _cation_vector;
+    double _query_dist_hbond, _query_dist_vdw, _query_dist_ionic, _query_dist_pipi, _query_dist_pica;
 
-    kdtree<chemical_entity::ring, 3> _ring_tree, _pication_ring_tree;
-    std::vector<chemical_entity::ring const*> _ring_vector, _pication_ring_vector;
+    kdtree<che::atom, 3> _hdonor_tree, _vdw_tree;
+    vector<che::atom const*> _hacceptor_vector, _vdw_vector, _cation_vector;
 
-    kdtree<chemical_entity::ionic_group, 3> _positive_ion_tree;
-    std::vector<chemical_entity::ionic_group const*> _negative_ion_vector;
+    kdtree<che::ring, 3> _ring_tree, _pication_ring_tree;
+    vector<che::ring const*> _ring_vector, _pication_ring_vector;
+
+    kdtree<che::ionic_group, 3> _positive_ion_tree;
+    vector<che::ionic_group const*> _negative_ion_vector;
 
 public:
-    explicit all_bonds(std::filesystem::path const& pdb_path);
+    explicit all_bonds(fs::path const& pdb_path);
 };
 
-typedef std::function<chemical_entity::atom const*(chemical_entity::aminoacid const&)> const& carbon_getter;
+typedef function<che::atom const*(che::aminoacid const&)> const& carbon_getter;
 
 class backbone : public base {
+private:
+    double _query_dist_carbon;
+
 protected:
-    kdtree<chemical_entity::atom, 3> _carbon_tree;
-    std::vector<chemical_entity::atom const*> _carbon_vector;
+    kdtree<che::atom, 3> _carbon_tree;
+    vector<chemical_entity::atom const*> _carbon_vector;
 
-    explicit backbone(std::filesystem::path const& pdb_path, carbon_getter getter);
+    explicit backbone(fs::path const& pdb_path, carbon_getter getter);
 };
-
-#define CARBON_GETTER_SELECTOR(getter_name) ([](chemical_entity::aminoacid const& res) -> chemical_entity::atom const*)
 
 class alpha_carbon final : public backbone {
 public:
-    explicit alpha_carbon(std::filesystem::path const& pdb_path)
+    explicit alpha_carbon(fs::path const& pdb_path)
             : backbone(
-            pdb_path, [](chemical_entity::aminoacid const& res) -> chemical_entity::atom const* {
+            pdb_path, [](che::aminoacid const& res) -> che::atom const* {
                 return res.ca();
-            }) { log_manager::main()->info("alpha carbons: {}", _carbon_vector.size()); }
+            }) { lm::main()->info("alpha carbons: {}", _carbon_vector.size()); }
 };
 
 class beta_carbon final : public backbone {
 public:
-    explicit beta_carbon(std::filesystem::path const& pdb_path)
+    explicit beta_carbon(fs::path const& pdb_path)
             : backbone(
-            pdb_path, [](chemical_entity::aminoacid const& res) -> chemical_entity::atom const* {
+            pdb_path, [](che::aminoacid const& res) -> che::atom const* {
                 return res.cb();
-            }) { log_manager::main()->info("beta carbons: {}", _carbon_vector.size()); }
+            }) { lm::main()->info("beta carbons: {}", _carbon_vector.size()); }
 };
+
+base const* build(parameters::policy policy, fs::path const& path);
 }

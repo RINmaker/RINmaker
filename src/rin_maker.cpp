@@ -244,3 +244,22 @@ rin::graph rin_maker::base::get_graph() const {
 
     return graph;
 }
+
+rin_maker::base const* rin_maker::build(parameters::policy policy, fs::path const& path)
+{
+    base const* rm = nullptr;
+    switch (policy)
+    {
+        case parameters::policy::CLOSEST:
+            rm = new all_bonds(path);
+            break;
+        case parameters::policy::CA:
+            rm = new alpha_carbon(path);
+            break;
+        case parameters::policy::CB:
+            rm = new beta_carbon(path);
+            break;
+    }
+
+    return rm;
+}

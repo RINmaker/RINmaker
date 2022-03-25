@@ -1,7 +1,7 @@
 add_library(
         RINmaker_library
 
-        # rin_maker.cpp
+        rin_maker.cpp
         prelude.cpp
         config.cpp
         energy.cpp

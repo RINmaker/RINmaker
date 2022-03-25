@@ -41,17 +41,27 @@ bool compareEnergy(const edge& e, const double& expected) { return compare(stod(
 class Result
 {
 public:
-    pdb_data& data;
-    graph& rin_graph;
+    // pdb_data& data;
+    graph rin_graph;
     std::vector<edge> edges;
     std::unordered_map<std::string, node> nodes;
 
 public:
+    /*
     Result(pdb_data _data) : data(_data), rin_graph(_data.get_graph())
     {
         edges = rin_graph.get_edges();
         nodes = rin_graph.get_nodes();
     }
+    */
+
+    Result(rin_maker::base const* rm) : rin_graph(rm->get_graph())
+    {
+        edges = rin_graph.get_edges();
+        nodes = rin_graph.get_nodes();
+        delete rm;
+    }
+
 
 private:
     template<typename T>
@@ -88,7 +98,8 @@ protected:
         const char* args[2] = { exePath.c_str(), pdbPath.c_str() };
 
         prelude::readArgs(2, args);
-        return Result(pdb_data(false));
+        // return Result(pdb_data(false));
+        return Result(rin_maker::build(parameters::get_net_policy(), parameters::get_pdb_path()));
     }
 
     void TearDown() override { }

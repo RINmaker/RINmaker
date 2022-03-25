@@ -28,20 +28,9 @@ int main(int argc, const char* argv[]) {
             // TODO: remove use of smart ptr, useless.
             // unique_ptr<pdb_data> data = std::make_unique<pdb_data>();
 
-            rin_maker::base* run = nullptr;
-            switch (parameters::get_net_policy())
-            {
-                case parameters::policy::CLOSEST:
-                    run = new rin_maker::all_bonds(parameters::get_pdb_path());
-                    break;
-                case parameters::policy::CA:
-                    run = new rin_maker::alpha_carbon(parameters::get_pdb_path());
-                    break;
-                case parameters::policy::CB:
-                    run = new rin_maker::beta_carbon(parameters::get_pdb_path());
-                    break;
-            }
-
+            auto run = rin_maker::build(parameters::get_net_policy(), parameters::get_pdb_path());
+            if (run == nullptr)
+                throw std::runtime_error("unknown policy");
             run->get_graph().consume_to_xml();
             delete run;
 
