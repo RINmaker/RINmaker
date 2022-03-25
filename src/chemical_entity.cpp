@@ -70,7 +70,7 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records)
             _beta_carbon = a;
         }
 
-        // try to build rings
+        // try to make_instance rings
 
         if (n_of_rings >= 1 && prelude::match(a->name(), patterns_1))
         {
@@ -81,7 +81,7 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records)
             ring_2.push_back(a);
         }
 
-        // try to build ionic groups
+        // try to make_instance ionic groups
         if (a->is_in_a_positive_ionic_group())
         {
             positive.push_back(a);

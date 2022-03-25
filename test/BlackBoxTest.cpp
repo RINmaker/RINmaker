@@ -55,11 +55,10 @@ public:
     }
     */
 
-    Result(rin_maker::base const* rm) : rin_graph(rm->get_graph())
+    Result(std::unique_ptr<rin_maker::base const> rm) : rin_graph(rm->get_graph())
     {
         edges = rin_graph.get_edges();
         nodes = rin_graph.get_nodes();
-        delete rm;
     }
 
 
@@ -98,8 +97,7 @@ protected:
         const char* args[2] = { exePath.c_str(), pdbPath.c_str() };
 
         readArgs(2, args);
-        // return Result(pdb_data(false));
-        return Result(rin_maker::build(parameters::get_net_policy(), parameters::get_pdb_path()));
+        return Result(rin_maker::make_instance(parameters::get_net_policy(), parameters::get_pdb_path()));
     }
 
     void TearDown() override { }

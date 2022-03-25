@@ -50,7 +50,7 @@ public:
     // right child
     node *right;
 
-    // balanced build O(n log^2 n)
+    // balanced make_instance O(n log^2 n)
     node(std::vector<T const *> &network, size_t first, size_t last, size_t depth);
 
     // destruct everything O(n)

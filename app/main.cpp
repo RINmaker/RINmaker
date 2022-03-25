@@ -14,12 +14,11 @@ int main(int argc, const char* argv[]) {
             // does this hold? --lore
             lm::main()->info("params summary: " + parameters::pretty());
 
-            auto rm = rin_maker::build(parameters::get_net_policy(), parameters::get_pdb_path());
+            auto rm = rin_maker::make_instance(parameters::get_net_policy(), parameters::get_pdb_path());
             if (rm == nullptr)
-                throw std::runtime_error("unknown bonds policy");
+                throw std::runtime_error("failed to create rin_maker instance");
 
             rm->get_graph().consume_to_xml();
-            delete rm;
 
 #           if _MSC_VER
             spdlog::drop_all();

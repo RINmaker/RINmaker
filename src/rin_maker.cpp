@@ -1,5 +1,7 @@
 #include "rin_maker.h"
 
+
+
 template<typename Record>
 class secondary_structure_helper final {
 private:
@@ -118,7 +120,7 @@ rin_maker::all_bonds::all_bonds(std::filesystem::path const& pdb_path)
 
     log_manager::main()->info("retrieving components from aminoacids...");
 
-    // used only to build the corresponding kdtrees
+    // used only to make_instance the corresponding kdtrees
     std::vector<chemical_entity::atom const*> hdonors;
     std::vector<chemical_entity::ionic_group const*> positives;
 
@@ -245,19 +247,19 @@ rin::graph rin_maker::base::get_graph() const {
     return graph;
 }
 
-rin_maker::base const* rin_maker::build(parameters::policy policy, fs::path const& path)
+std::unique_ptr<rin_maker::base const> rin_maker::make_instance(parameters::policy policy, fs::path const& path)
 {
-    base const* rm = nullptr;
+    std::unique_ptr<base const> rm = nullptr;
     switch (policy)
     {
         case parameters::policy::CLOSEST:
-            rm = new all_bonds(path);
+            rm = std::make_unique<all_bonds>(path);
             break;
         case parameters::policy::CA:
-            rm = new alpha_carbon(path);
+            rm = std::make_unique<alpha_carbon>(path);
             break;
         case parameters::policy::CB:
-            rm = new beta_carbon(path);
+            rm = std::make_unique<beta_carbon>(path);
             break;
     }
 

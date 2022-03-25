@@ -46,7 +46,7 @@ string app_full_name() {
     const char two_digit_year[] = {date[date.size() - 2], date[date.size() - 1], '\0'};
 
     snprintf(
-            buf, sizeof(buf), "%s v%d.%d.%d build %s %s (%s) %s\n(C) 2020-%s Ca' Foscari University of Venice\n", app_name, major, minor, rev, __DATE__, __TIME__, os, dbg
+            buf, sizeof(buf), "%s v%d.%d.%d make_instance %s %s (%s) %s\n(C) 2020-%s Ca' Foscari University of Venice\n", app_name, major, minor, rev, __DATE__, __TIME__, os, dbg
             , two_digit_year); // sprintf for easier format string under C++17 (C++20 would have std::format)
     return buf;
 }

@@ -219,7 +219,7 @@ public:
                 add_bond(i);
         }
 
-        //Let's build the output list
+        //Let's make_instance the output list
         std::list<bonds::base const *> output;
         for (auto i: input) {
             //Insert i into the output if it is not an hydrogen or if it is in the filtered list

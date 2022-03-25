@@ -3,19 +3,19 @@
 configure:
 
 ```bash
-cmake -S . -B build
+cmake -S . -B make_instance
 ```
 
-build:
+make_instance:
 
 ```bash
-cmake --build build --target RINmaker
+cmake --build make_instance --target RINmaker
 ```
 
-build tests:
+make_instance tests:
 
 ```bash
-cmake --build build --target RINmaker_test
+cmake --build make_instance --target RINmaker_test
 ```
 
-executable should be in `build/sources/Debug/`.
+executable should be in `make_instance/sources/Debug/`.
