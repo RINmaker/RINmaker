@@ -1,10 +1,5 @@
-#include "gtest/gtest.h"
 
-#include <chrono>
-#include <random>
-#include "algorithm"
-#include "utils/spatial/kdtree.h"
-#include "tests/mykdpoint.h"
+#include "mykdpoint.h"
 
 using namespace std;
 typedef kdtree<MyKDPoint<3>, 3> MyKDTree;

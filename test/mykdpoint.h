@@ -1,5 +1,11 @@
 #pragma once
 
+#include <chrono>
+#include <random>
+#include <algorithm>
+#include <gtest/gtest.h>
+
+#include "utils/spatial/kdtree.h"
 #include "utils/spatial/kdpoint.h"
 
 template<size_t K>

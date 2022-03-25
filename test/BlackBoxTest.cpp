@@ -1,9 +1,5 @@
-#include <filesystem>
+#include "BlackBoxTest.h"
 
-#include "tests/BlackBoxTest.h"
-
-#include "gtest/gtest.h"
-#include "main.h"
 #include "pdb_data.h"
 
 #define MY_DBL_EPSILON 0.00005
@@ -93,7 +89,7 @@ protected:
         string pdbPath = (runningFolder / testCaseFolder / filename).string();
         const char* args[2] = { exePath.c_str(), pdbPath.c_str() };
 
-        readArgs(2, args);
+        prelude::readArgs(2, args);
         return Result(pdb_data(false));
     }
 

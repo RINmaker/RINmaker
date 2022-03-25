@@ -1,12 +1,12 @@
-cmake_minimum_required(VERSION 3.21)
-
-project(RINmaker)
+cmake_minimum_required(VERSION 3.21 FATAL_ERROR)
 
 # require out-of-source builds
 file(TO_CMAKE_PATH "${PROJECT_BINARY_DIR}/CMakeLists.txt" LOC_PATH)
 if(EXISTS "${LOC_PATH}")
-    message(FATAL_ERROR "You cannot build in a source directory (or any directory with a CMakeLists.txt file). Please make a build subdirectory. Feel free to remove CMakeCache.txt and CMakeFiles.")
+    message(FATAL_ERROR "you cannot build in a source directory (or any directory with a CMakeLists.txt file). please make a build subdirectory. feel free to remove CMakeCache.txt and CMakeFiles.")
 endif()
+
+project(RINmaker)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -50,7 +50,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-option(USE_DEBUG "Enter debug mode" OFF)
-option(USE_TESTS "Enter test mode" OFF)
-
-add_subdirectory(sources)
+add_subdirectory(src)
+add_subdirectory(app)
+add_subdirectory(test)

@@ -6,16 +6,16 @@ configure:
 cmake -S . -B build
 ```
 
-configure tests:
-
-```bash
-cmake -S . -B build -DUSE_TESTS=ON
-```
-
 build:
 
 ```bash
-cmake --build build
+cmake --build build --target RINmaker
+```
+
+build tests:
+
+```bash
+cmake --build build --target RINmaker_tests
 ```
 
 executable should be in `build/sources/Debug/`.

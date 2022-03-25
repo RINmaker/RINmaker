@@ -13,6 +13,15 @@
 
 #include <set>
 
+#include <iostream>
+#include <string>
+#include <memory>
+#include <cstdio>
+
+#include <CLI/CLI.hpp>
+
+#include "config.h"
+
 // #include <varargs.h>
 
 namespace prelude {
@@ -77,4 +86,8 @@ std::string sprintf(const std::string& fmt, ...)
     inline static bool match(std::string const &str, std::string const &pattern) {
         return str.find(pattern) != std::string::npos;
     }
+
+
+    bool readArgs(int argc, const char* argv[]);
+    std::string app_full_name();
 }
