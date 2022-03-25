@@ -1,0 +1,612 @@
+[2022-03-25 10:59:15.886] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:15.901] [main] [info] alpha carbons: 5
+[2022-03-25 10:59:15.902] [main] [info] beta carbons: 5
+[2022-03-25 10:59:15.903] [main] [info] hydrogen acceptors: 16
+[2022-03-25 10:59:15.903] [main] [info] hydrogen donors: 9
+[2022-03-25 10:59:15.903] [main] [info] vdw candidates: 24
+[2022-03-25 10:59:15.903] [main] [info] cations: 1
+[2022-03-25 10:59:15.904] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:15.904] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:15.905] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:15.905] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:15.906] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:15.906] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:15.906] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:15.906] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:15.906] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:15.907] [main] [info] there are 1 bonds after filtering
+[2022-03-25 10:59:15.907] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:15.911] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:15.923] [main] [info] alpha carbons: 4
+[2022-03-25 10:59:15.923] [main] [info] beta carbons: 4
+[2022-03-25 10:59:15.924] [main] [info] hydrogen acceptors: 14
+[2022-03-25 10:59:15.924] [main] [info] hydrogen donors: 7
+[2022-03-25 10:59:15.924] [main] [info] vdw candidates: 19
+[2022-03-25 10:59:15.925] [main] [info] cations: 2
+[2022-03-25 10:59:15.925] [main] [info] aromatic rings: 1
+[2022-03-25 10:59:15.925] [main] [info] aromatic rings (valid for pication): 1
+[2022-03-25 10:59:15.925] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:15.926] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:15.926] [main] [info] found 6 vdw bonds
+[2022-03-25 10:59:15.927] [main] [info] found 2 ionic bonds
+[2022-03-25 10:59:15.927] [main] [info] found 46 hydrogen bonds
+[2022-03-25 10:59:15.928] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:15.928] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:15.930] [main] [info] there are 54 bonds after filtering
+[2022-03-25 10:59:15.930] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:15.938] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:15.951] [main] [info] alpha carbons: 5
+[2022-03-25 10:59:15.952] [main] [info] beta carbons: 5
+[2022-03-25 10:59:15.953] [main] [info] hydrogen acceptors: 18
+[2022-03-25 10:59:15.953] [main] [info] hydrogen donors: 8
+[2022-03-25 10:59:15.953] [main] [info] vdw candidates: 23
+[2022-03-25 10:59:15.954] [main] [info] cations: 2
+[2022-03-25 10:59:15.954] [main] [info] aromatic rings: 1
+[2022-03-25 10:59:15.954] [main] [info] aromatic rings (valid for pication): 1
+[2022-03-25 10:59:15.954] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:15.954] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:15.955] [main] [info] found 5 vdw bonds
+[2022-03-25 10:59:15.956] [main] [info] found 3 ionic bonds
+[2022-03-25 10:59:15.956] [main] [info] found 8 hydrogen bonds
+[2022-03-25 10:59:15.956] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:15.957] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:15.958] [main] [info] there are 16 bonds after filtering
+[2022-03-25 10:59:15.958] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:15.963] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:15.968] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:15.969] [main] [info] beta carbons: 0
+[2022-03-25 10:59:15.969] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:15.970] [main] [info] hydrogen donors: 1
+[2022-03-25 10:59:15.970] [main] [info] vdw candidates: 2
+[2022-03-25 10:59:15.970] [main] [info] cations: 1
+[2022-03-25 10:59:15.970] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:15.970] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:15.971] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:15.971] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:15.971] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:15.971] [main] [info] found 1 ionic bonds
+[2022-03-25 10:59:15.971] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:15.972] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:15.972] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:15.972] [main] [info] there are 2 bonds after filtering
+[2022-03-25 10:59:15.972] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:15.976] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:15.979] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:15.979] [main] [info] beta carbons: 0
+[2022-03-25 10:59:15.980] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:15.980] [main] [info] hydrogen donors: 2
+[2022-03-25 10:59:15.980] [main] [info] vdw candidates: 3
+[2022-03-25 10:59:15.980] [main] [info] cations: 1
+[2022-03-25 10:59:15.981] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:15.981] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:15.982] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:15.982] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:15.983] [main] [info] found 2 vdw bonds
+[2022-03-25 10:59:15.983] [main] [info] found 2 ionic bonds
+[2022-03-25 10:59:15.983] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:15.983] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:15.984] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:15.984] [main] [info] there are 4 bonds after filtering
+[2022-03-25 10:59:15.984] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:15.988] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:15.989] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:15.989] [main] [info] beta carbons: 0
+[2022-03-25 10:59:15.990] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:15.990] [main] [info] hydrogen donors: 1
+[2022-03-25 10:59:15.990] [main] [info] vdw candidates: 2
+[2022-03-25 10:59:15.991] [main] [info] cations: 1
+[2022-03-25 10:59:15.991] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:15.991] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:15.992] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:15.992] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:15.992] [main] [info] found 0 vdw bonds
+[2022-03-25 10:59:15.992] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:15.992] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:15.993] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:15.993] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:15.993] [main] [info] there are 0 bonds after filtering
+[2022-03-25 10:59:15.993] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:15.997] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.002] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.002] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.003] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:16.003] [main] [info] hydrogen donors: 2
+[2022-03-25 10:59:16.004] [main] [info] vdw candidates: 3
+[2022-03-25 10:59:16.004] [main] [info] cations: 1
+[2022-03-25 10:59:16.004] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.004] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.004] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.004] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.005] [main] [info] found 0 vdw bonds
+[2022-03-25 10:59:16.005] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.005] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.005] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.005] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.006] [main] [info] there are 0 bonds after filtering
+[2022-03-25 10:59:16.006] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.009] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.013] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.014] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.014] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:16.015] [main] [info] hydrogen donors: 1
+[2022-03-25 10:59:16.016] [main] [info] vdw candidates: 2
+[2022-03-25 10:59:16.016] [main] [info] cations: 1
+[2022-03-25 10:59:16.016] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.017] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.017] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.017] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.017] [main] [info] found 0 vdw bonds
+[2022-03-25 10:59:16.017] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.018] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.018] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.018] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.018] [main] [info] there are 0 bonds after filtering
+[2022-03-25 10:59:16.018] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.022] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.028] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.029] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.029] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:16.030] [main] [info] hydrogen donors: 1
+[2022-03-25 10:59:16.030] [main] [info] vdw candidates: 2
+[2022-03-25 10:59:16.030] [main] [info] cations: 1
+[2022-03-25 10:59:16.030] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.030] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.030] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.031] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.031] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.031] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.031] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.032] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.032] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.032] [main] [info] there are 1 bonds after filtering
+[2022-03-25 10:59:16.032] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.036] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.044] [main] [info] alpha carbons: 2
+[2022-03-25 10:59:16.045] [main] [info] beta carbons: 2
+[2022-03-25 10:59:16.046] [main] [info] hydrogen acceptors: 6
+[2022-03-25 10:59:16.046] [main] [info] hydrogen donors: 5
+[2022-03-25 10:59:16.047] [main] [info] vdw candidates: 11
+[2022-03-25 10:59:16.047] [main] [info] cations: 0
+[2022-03-25 10:59:16.047] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.047] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.047] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.048] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.048] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.048] [main] [info] found 1 ionic bonds
+[2022-03-25 10:59:16.048] [main] [info] found 1 hydrogen bonds
+[2022-03-25 10:59:16.049] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.049] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.049] [main] [info] there are 3 bonds after filtering
+[2022-03-25 10:59:16.049] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.053] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.058] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.059] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.060] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:16.061] [main] [info] hydrogen donors: 1
+[2022-03-25 10:59:16.061] [main] [info] vdw candidates: 2
+[2022-03-25 10:59:16.061] [main] [info] cations: 1
+[2022-03-25 10:59:16.061] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.061] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.062] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.062] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.062] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.062] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.062] [main] [info] found 1 hydrogen bonds
+[2022-03-25 10:59:16.062] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.063] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.063] [main] [info] there are 2 bonds after filtering
+[2022-03-25 10:59:16.063] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.067] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.073] [main] [info] alpha carbons: 1
+[2022-03-25 10:59:16.074] [main] [info] beta carbons: 1
+[2022-03-25 10:59:16.075] [main] [info] hydrogen acceptors: 5
+[2022-03-25 10:59:16.075] [main] [info] hydrogen donors: 2
+[2022-03-25 10:59:16.075] [main] [info] vdw candidates: 6
+[2022-03-25 10:59:16.075] [main] [info] cations: 0
+[2022-03-25 10:59:16.076] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.076] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.076] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.076] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.077] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.077] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.077] [main] [info] found 2 hydrogen bonds
+[2022-03-25 10:59:16.077] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.077] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.078] [main] [info] there are 3 bonds after filtering
+[2022-03-25 10:59:16.078] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.081] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.089] [main] [info] alpha carbons: 1
+[2022-03-25 10:59:16.090] [main] [info] beta carbons: 1
+[2022-03-25 10:59:16.090] [main] [info] hydrogen acceptors: 5
+[2022-03-25 10:59:16.090] [main] [info] hydrogen donors: 5
+[2022-03-25 10:59:16.091] [main] [info] vdw candidates: 8
+[2022-03-25 10:59:16.091] [main] [info] cations: 1
+[2022-03-25 10:59:16.091] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.092] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.092] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.093] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.093] [main] [info] found 6 vdw bonds
+[2022-03-25 10:59:16.093] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.093] [main] [info] found 3 hydrogen bonds
+[2022-03-25 10:59:16.094] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.094] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.094] [main] [info] there are 9 bonds after filtering
+[2022-03-25 10:59:16.095] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.099] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.103] [main] [info] alpha carbons: 1
+[2022-03-25 10:59:16.103] [main] [info] beta carbons: 1
+[2022-03-25 10:59:16.104] [main] [info] hydrogen acceptors: 3
+[2022-03-25 10:59:16.104] [main] [info] hydrogen donors: 3
+[2022-03-25 10:59:16.104] [main] [info] vdw candidates: 6
+[2022-03-25 10:59:16.104] [main] [info] cations: 1
+[2022-03-25 10:59:16.105] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.105] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.105] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.105] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.105] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.106] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.106] [main] [info] found 1 hydrogen bonds
+[2022-03-25 10:59:16.106] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.106] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.107] [main] [info] there are 2 bonds after filtering
+[2022-03-25 10:59:16.107] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.111] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.116] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.117] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.117] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:16.118] [main] [info] hydrogen donors: 1
+[2022-03-25 10:59:16.118] [main] [info] vdw candidates: 2
+[2022-03-25 10:59:16.119] [main] [info] cations: 1
+[2022-03-25 10:59:16.119] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.119] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.119] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.119] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.120] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.120] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.120] [main] [info] found 1 hydrogen bonds
+[2022-03-25 10:59:16.120] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.121] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.121] [main] [info] there are 2 bonds after filtering
+[2022-03-25 10:59:16.121] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.125] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.132] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.133] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.134] [main] [info] hydrogen acceptors: 0
+[2022-03-25 10:59:16.135] [main] [info] hydrogen donors: 0
+[2022-03-25 10:59:16.135] [main] [info] vdw candidates: 12
+[2022-03-25 10:59:16.135] [main] [info] cations: 0
+[2022-03-25 10:59:16.136] [main] [info] aromatic rings: 2
+[2022-03-25 10:59:16.136] [main] [info] aromatic rings (valid for pication): 2
+[2022-03-25 10:59:16.136] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.137] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.137] [main] [info] found 0 vdw bonds
+[2022-03-25 10:59:16.137] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.138] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.138] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.138] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.138] [main] [info] there are 0 bonds after filtering
+[2022-03-25 10:59:16.138] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.142] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.149] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.150] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.151] [main] [info] hydrogen acceptors: 0
+[2022-03-25 10:59:16.152] [main] [info] hydrogen donors: 0
+[2022-03-25 10:59:16.152] [main] [info] vdw candidates: 12
+[2022-03-25 10:59:16.152] [main] [info] cations: 0
+[2022-03-25 10:59:16.153] [main] [info] aromatic rings: 2
+[2022-03-25 10:59:16.153] [main] [info] aromatic rings (valid for pication): 2
+[2022-03-25 10:59:16.153] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.153] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.154] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.154] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.154] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.154] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.154] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.155] [main] [info] there are 1 bonds after filtering
+[2022-03-25 10:59:16.155] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.159] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.166] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.167] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.167] [main] [info] hydrogen acceptors: 0
+[2022-03-25 10:59:16.168] [main] [info] hydrogen donors: 0
+[2022-03-25 10:59:16.168] [main] [info] vdw candidates: 12
+[2022-03-25 10:59:16.169] [main] [info] cations: 0
+[2022-03-25 10:59:16.169] [main] [info] aromatic rings: 2
+[2022-03-25 10:59:16.169] [main] [info] aromatic rings (valid for pication): 2
+[2022-03-25 10:59:16.169] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.170] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.170] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.171] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.171] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.171] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.171] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.172] [main] [info] there are 1 bonds after filtering
+[2022-03-25 10:59:16.172] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.176] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.183] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.183] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.184] [main] [info] hydrogen acceptors: 0
+[2022-03-25 10:59:16.185] [main] [info] hydrogen donors: 0
+[2022-03-25 10:59:16.185] [main] [info] vdw candidates: 12
+[2022-03-25 10:59:16.186] [main] [info] cations: 0
+[2022-03-25 10:59:16.186] [main] [info] aromatic rings: 2
+[2022-03-25 10:59:16.186] [main] [info] aromatic rings (valid for pication): 2
+[2022-03-25 10:59:16.186] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.187] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.187] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.187] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.187] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.187] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.188] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.188] [main] [info] there are 1 bonds after filtering
+[2022-03-25 10:59:16.188] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.192] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.196] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.197] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.197] [main] [info] hydrogen acceptors: 0
+[2022-03-25 10:59:16.198] [main] [info] hydrogen donors: 0
+[2022-03-25 10:59:16.199] [main] [info] vdw candidates: 12
+[2022-03-25 10:59:16.199] [main] [info] cations: 0
+[2022-03-25 10:59:16.199] [main] [info] aromatic rings: 2
+[2022-03-25 10:59:16.200] [main] [info] aromatic rings (valid for pication): 2
+[2022-03-25 10:59:16.200] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.200] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.201] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.201] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.201] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.201] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.202] [main] [info] found 1 pipistack bonds
+[2022-03-25 10:59:16.202] [main] [info] there are 2 bonds after filtering
+[2022-03-25 10:59:16.202] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.206] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.214] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.214] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.215] [main] [info] hydrogen acceptors: 0
+[2022-03-25 10:59:16.215] [main] [info] hydrogen donors: 0
+[2022-03-25 10:59:16.216] [main] [info] vdw candidates: 12
+[2022-03-25 10:59:16.216] [main] [info] cations: 0
+[2022-03-25 10:59:16.216] [main] [info] aromatic rings: 2
+[2022-03-25 10:59:16.217] [main] [info] aromatic rings (valid for pication): 2
+[2022-03-25 10:59:16.217] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.217] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.218] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.218] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.218] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.218] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.219] [main] [info] found 1 pipistack bonds
+[2022-03-25 10:59:16.219] [main] [info] there are 2 bonds after filtering
+[2022-03-25 10:59:16.219] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.223] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.228] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.229] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.230] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:16.230] [main] [info] hydrogen donors: 1
+[2022-03-25 10:59:16.231] [main] [info] vdw candidates: 2
+[2022-03-25 10:59:16.231] [main] [info] cations: 0
+[2022-03-25 10:59:16.231] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.232] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.232] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.233] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.233] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.233] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.233] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.234] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.234] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.234] [main] [info] there are 1 bonds after filtering
+[2022-03-25 10:59:16.234] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.238] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.243] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.244] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.244] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:16.245] [main] [info] hydrogen donors: 1
+[2022-03-25 10:59:16.245] [main] [info] vdw candidates: 2
+[2022-03-25 10:59:16.246] [main] [info] cations: 0
+[2022-03-25 10:59:16.246] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.246] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.246] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.247] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.247] [main] [info] found 0 vdw bonds
+[2022-03-25 10:59:16.247] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.247] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.248] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.248] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.248] [main] [info] there are 0 bonds after filtering
+[2022-03-25 10:59:16.248] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.252] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.253] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.254] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.254] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:16.255] [main] [info] hydrogen donors: 1
+[2022-03-25 10:59:16.255] [main] [info] vdw candidates: 0
+[2022-03-25 10:59:16.255] [main] [info] cations: 0
+[2022-03-25 10:59:16.255] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.255] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.255] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.256] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.256] [main] [info] found 0 vdw bonds
+[2022-03-25 10:59:16.256] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.256] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.256] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.257] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.257] [main] [info] there are 0 bonds after filtering
+[2022-03-25 10:59:16.257] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.261] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.266] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.267] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.267] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:16.267] [main] [info] hydrogen donors: 1
+[2022-03-25 10:59:16.268] [main] [info] vdw candidates: 0
+[2022-03-25 10:59:16.268] [main] [info] cations: 0
+[2022-03-25 10:59:16.268] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.268] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.268] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.269] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.269] [main] [info] found 0 vdw bonds
+[2022-03-25 10:59:16.269] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.269] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.269] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.270] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.270] [main] [info] there are 0 bonds after filtering
+[2022-03-25 10:59:16.270] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.273] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.280] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.280] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.281] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:16.281] [main] [info] hydrogen donors: 0
+[2022-03-25 10:59:16.282] [main] [info] vdw candidates: 1
+[2022-03-25 10:59:16.282] [main] [info] cations: 0
+[2022-03-25 10:59:16.282] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.282] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.283] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.283] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.283] [main] [info] found 0 vdw bonds
+[2022-03-25 10:59:16.283] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.283] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.284] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.284] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.284] [main] [info] there are 0 bonds after filtering
+[2022-03-25 10:59:16.284] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.288] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.290] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.290] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.290] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:16.291] [main] [info] hydrogen donors: 0
+[2022-03-25 10:59:16.291] [main] [info] vdw candidates: 1
+[2022-03-25 10:59:16.291] [main] [info] cations: 0
+[2022-03-25 10:59:16.292] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.292] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.292] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.293] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.293] [main] [info] found 0 vdw bonds
+[2022-03-25 10:59:16.293] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.294] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.294] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.295] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.295] [main] [info] there are 0 bonds after filtering
+[2022-03-25 10:59:16.295] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.299] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.300] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.301] [main] [info] beta carbons: 1
+[2022-03-25 10:59:16.302] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:16.302] [main] [info] hydrogen donors: 1
+[2022-03-25 10:59:16.302] [main] [info] vdw candidates: 3
+[2022-03-25 10:59:16.303] [main] [info] cations: 0
+[2022-03-25 10:59:16.303] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.303] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.304] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.304] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.304] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.305] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.305] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.305] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.305] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.305] [main] [info] there are 1 bonds after filtering
+[2022-03-25 10:59:16.306] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.310] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.314] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.315] [main] [info] beta carbons: 1
+[2022-03-25 10:59:16.315] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:16.316] [main] [info] hydrogen donors: 2
+[2022-03-25 10:59:16.316] [main] [info] vdw candidates: 4
+[2022-03-25 10:59:16.316] [main] [info] cations: 0
+[2022-03-25 10:59:16.317] [main] [info] aromatic rings: 0
+[2022-03-25 10:59:16.317] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 10:59:16.317] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.317] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.317] [main] [info] found 4 vdw bonds
+[2022-03-25 10:59:16.318] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.318] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.318] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.318] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.319] [main] [info] there are 4 bonds after filtering
+[2022-03-25 10:59:16.319] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.323] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.328] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.328] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.329] [main] [info] hydrogen acceptors: 1
+[2022-03-25 10:59:16.329] [main] [info] hydrogen donors: 1
+[2022-03-25 10:59:16.329] [main] [info] vdw candidates: 8
+[2022-03-25 10:59:16.330] [main] [info] cations: 1
+[2022-03-25 10:59:16.330] [main] [info] aromatic rings: 2
+[2022-03-25 10:59:16.330] [main] [info] aromatic rings (valid for pication): 2
+[2022-03-25 10:59:16.331] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.331] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.332] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.332] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.332] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.333] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.333] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.333] [main] [info] there are 1 bonds after filtering
+[2022-03-25 10:59:16.333] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.337] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.342] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.343] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.343] [main] [info] hydrogen acceptors: 2
+[2022-03-25 10:59:16.343] [main] [info] hydrogen donors: 7
+[2022-03-25 10:59:16.343] [main] [info] vdw candidates: 12
+[2022-03-25 10:59:16.344] [main] [info] cations: 5
+[2022-03-25 10:59:16.344] [main] [info] aromatic rings: 1
+[2022-03-25 10:59:16.344] [main] [info] aromatic rings (valid for pication): 1
+[2022-03-25 10:59:16.344] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.345] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.345] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.345] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.346] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.346] [main] [info] found 4 pication bonds
+[2022-03-25 10:59:16.346] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.346] [main] [info] there are 5 bonds after filtering
+[2022-03-25 10:59:16.347] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.352] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.356] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.356] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.356] [main] [info] hydrogen acceptors: 2
+[2022-03-25 10:59:16.357] [main] [info] hydrogen donors: 3
+[2022-03-25 10:59:16.357] [main] [info] vdw candidates: 8
+[2022-03-25 10:59:16.357] [main] [info] cations: 1
+[2022-03-25 10:59:16.358] [main] [info] aromatic rings: 1
+[2022-03-25 10:59:16.358] [main] [info] aromatic rings (valid for pication): 1
+[2022-03-25 10:59:16.359] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.359] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.360] [main] [info] found 0 vdw bonds
+[2022-03-25 10:59:16.360] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.360] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.360] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.361] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.361] [main] [info] there are 0 bonds after filtering
+[2022-03-25 10:59:16.361] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.366] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.371] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.371] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.372] [main] [info] hydrogen acceptors: 2
+[2022-03-25 10:59:16.372] [main] [info] hydrogen donors: 3
+[2022-03-25 10:59:16.372] [main] [info] vdw candidates: 8
+[2022-03-25 10:59:16.372] [main] [info] cations: 1
+[2022-03-25 10:59:16.373] [main] [info] aromatic rings: 1
+[2022-03-25 10:59:16.373] [main] [info] aromatic rings (valid for pication): 1
+[2022-03-25 10:59:16.373] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.374] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.374] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.375] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.375] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.375] [main] [info] found 0 pication bonds
+[2022-03-25 10:59:16.375] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.375] [main] [info] there are 1 bonds after filtering
+[2022-03-25 10:59:16.376] [main] [info] >> end computed bond data <<
+[2022-03-25 10:59:16.380] [main] [info] >> begin raw pdb data <<
+[2022-03-25 10:59:16.386] [main] [info] alpha carbons: 0
+[2022-03-25 10:59:16.386] [main] [info] beta carbons: 0
+[2022-03-25 10:59:16.387] [main] [info] hydrogen acceptors: 0
+[2022-03-25 10:59:16.387] [main] [info] hydrogen donors: 1
+[2022-03-25 10:59:16.387] [main] [info] vdw candidates: 7
+[2022-03-25 10:59:16.387] [main] [info] cations: 1
+[2022-03-25 10:59:16.388] [main] [info] aromatic rings: 1
+[2022-03-25 10:59:16.388] [main] [info] aromatic rings (valid for pication): 1
+[2022-03-25 10:59:16.388] [main] [info] >> end raw pdb data <<
+[2022-03-25 10:59:16.388] [main] [info] >> begin computed bond data <<
+[2022-03-25 10:59:16.389] [main] [info] found 1 vdw bonds
+[2022-03-25 10:59:16.389] [main] [info] found 0 ionic bonds
+[2022-03-25 10:59:16.389] [main] [info] found 0 hydrogen bonds
+[2022-03-25 10:59:16.389] [main] [info] found 1 pication bonds
+[2022-03-25 10:59:16.390] [main] [info] found 0 pipistack bonds
+[2022-03-25 10:59:16.390] [main] [info] there are 2 bonds after filtering
+[2022-03-25 10:59:16.390] [main] [info] >> end computed bond data <<

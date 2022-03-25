@@ -78,7 +78,7 @@ namespace records {
 
     class helix : public base<14, helix> {
     private:
-        friend class base;
+        friend class base<14, helix>;
 
         static std::array<std::pair<size_t, size_t>, 14> const _limits;
 
@@ -125,7 +125,7 @@ namespace records {
 
     class sheet_piece : public base<23, sheet_piece> {
     private:
-        friend class base;
+        friend class base<23, sheet_piece>;
 
         static std::array<std::pair<size_t, size_t>, 23> const _limits;
 
@@ -172,7 +172,7 @@ namespace records {
 
     class ss : public base<13, ss> {
     private:
-        friend class base;
+        friend class base<13, ss>;
 
         static std::array<std::pair<size_t, size_t>, 13> const _limits;
 

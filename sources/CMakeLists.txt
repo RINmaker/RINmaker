@@ -1,3 +1,4 @@
+set(RINMAKER_HEADERS "../headers")
 set(RINMAKER_SOURCES
         computation.cpp
         config.cpp
@@ -12,11 +13,15 @@ set(RINMAKER_SOURCES
         graphml_output.cpp
         secondary_structures.cpp)
 
-set(TEST_SOURCES "tests/BlackBoxTest.cpp" "tests/KDTreeTest.cpp")
+set(RINMAKER_DEPS spdlog pugixml CLI11)
 
-add_executable(RINmaker ${RINMAKER_SOURCES} ${TEST_SOURCES})
-target_link_libraries(RINmaker PRIVATE spdlog pugixml gtest CLI11)
-target_include_directories(RINmaker PRIVATE "../headers")
+set(RINMAKER_TEST_SOURCES "tests/BlackBoxTest.cpp" "tests/KDTreeTest.cpp")
+set(RINMAKER_TEST_DEPS gtest)
+
+add_executable(RINmaker ${RINMAKER_SOURCES} ${RINMAKER_TEST_SOURCES})
+target_link_libraries(RINmaker PRIVATE ${RINMAKER_DEPS} ${RINMAKER_TEST_DEPS})
+
+target_include_directories(RINmaker PRIVATE ${RINMAKER_HEADERS})
 
 add_custom_command(
         TARGET RINmaker POST_BUILD
