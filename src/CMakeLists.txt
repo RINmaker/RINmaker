@@ -2,7 +2,6 @@ add_library(
         RINmaker_library
 
         rin_maker.cpp
-        prelude.cpp
         config.cpp
         energy.cpp
         chemical_entity.cpp

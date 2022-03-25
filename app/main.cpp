@@ -1,19 +1,11 @@
-#include <iostream>
-#include <string>
-
-#include <spdlog/spdlog.h>
-
-#include "rin_maker.h"
-
-#include "log_manager.h"
-#include "runtime_params.h"
+#include "utils.h"
 
 using namespace std;
 using lm = log_manager;
 
 int main(int argc, const char* argv[]) {
     try {
-        if (prelude::readArgs(argc, argv)) {
+        if (readArgs(argc, argv)) {
 
             lm::main()->debug("path to PDB input file: " + parameters::get_pdb_path().string());
             lm::main()->debug("path to output xml file: " + parameters::get_output_path().string());
@@ -29,9 +21,9 @@ int main(int argc, const char* argv[]) {
             rm->get_graph().consume_to_xml();
             delete rm;
 
-#			if _MSC_VER
+#           if _MSC_VER
             spdlog::drop_all();
-#			endif
+#           endif
         }
     }
 

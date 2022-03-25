@@ -1,10 +1,8 @@
-#include "prelude.h"
-
-#include "runtime_params.h"
+#include "utils.h"
 
 using namespace std;
 
-string prelude::app_full_name() {
+string app_full_name() {
     using namespace cfg::ver;
     char buf[500];
     const char* dbg =
@@ -53,7 +51,7 @@ string prelude::app_full_name() {
     return buf;
 }
 
-bool prelude::readArgs(int argc, const char* argv[]) {
+bool readArgs(int argc, const char* argv[]) {
     if (argc <= 1) {
         cout << "Use -h or --help for help." << endl;
         return false;

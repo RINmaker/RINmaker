@@ -1834,3 +1834,683 @@
 [2022-03-25 15:21:02.477] [main] [info] found 0 pipistack bonds
 [2022-03-25 15:21:02.478] [main] [info] there are 2 bonds after filtering
 [2022-03-25 15:21:02.478] [main] [info] >> end computed bond data <<
+[2022-03-25 17:41:46.964] [main] [info] parsing pdb...
+[2022-03-25 17:41:46.974] [main] [info] done.
+[2022-03-25 17:41:46.974] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:46.975] [main] [info] done.
+[2022-03-25 17:41:46.975] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:46.976] [main] [info] done.
+[2022-03-25 17:41:46.976] [main] [info] building acceleration structures...
+[2022-03-25 17:41:46.977] [main] [info] done.
+[2022-03-25 17:41:46.977] [main] [info] hydrogen acceptors: 16
+[2022-03-25 17:41:46.977] [main] [info] hydrogen donors: 9
+[2022-03-25 17:41:46.977] [main] [info] vdw candidates: 24
+[2022-03-25 17:41:46.977] [main] [info] cations: 1
+[2022-03-25 17:41:46.978] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:46.978] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:46.978] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:46.979] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:46.979] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:46.979] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:46.980] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:46.981] [main] [info] there are 1 bonds after filtering
+[2022-03-25 17:41:47.044] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.051] [main] [info] done.
+[2022-03-25 17:41:47.052] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.052] [main] [info] done.
+[2022-03-25 17:41:47.053] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.054] [main] [info] done.
+[2022-03-25 17:41:47.054] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.054] [main] [info] done.
+[2022-03-25 17:41:47.054] [main] [info] hydrogen acceptors: 14
+[2022-03-25 17:41:47.054] [main] [info] hydrogen donors: 7
+[2022-03-25 17:41:47.055] [main] [info] vdw candidates: 19
+[2022-03-25 17:41:47.055] [main] [info] cations: 2
+[2022-03-25 17:41:47.055] [main] [info] aromatic rings: 1
+[2022-03-25 17:41:47.055] [main] [info] aromatic rings (valid for pication): 1
+[2022-03-25 17:41:47.056] [main] [info] found 6 vdw bonds
+[2022-03-25 17:41:47.056] [main] [info] found 2 ionic bonds
+[2022-03-25 17:41:47.057] [main] [info] found 46 hydrogen bonds
+[2022-03-25 17:41:47.057] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.057] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.059] [main] [info] there are 54 bonds after filtering
+[2022-03-25 17:41:47.116] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.123] [main] [info] done.
+[2022-03-25 17:41:47.124] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.125] [main] [info] done.
+[2022-03-25 17:41:47.125] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.126] [main] [info] done.
+[2022-03-25 17:41:47.126] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.126] [main] [info] done.
+[2022-03-25 17:41:47.127] [main] [info] hydrogen acceptors: 18
+[2022-03-25 17:41:47.127] [main] [info] hydrogen donors: 8
+[2022-03-25 17:41:47.127] [main] [info] vdw candidates: 23
+[2022-03-25 17:41:47.127] [main] [info] cations: 2
+[2022-03-25 17:41:47.127] [main] [info] aromatic rings: 1
+[2022-03-25 17:41:47.127] [main] [info] aromatic rings (valid for pication): 1
+[2022-03-25 17:41:47.128] [main] [info] found 5 vdw bonds
+[2022-03-25 17:41:47.129] [main] [info] found 3 ionic bonds
+[2022-03-25 17:41:47.129] [main] [info] found 8 hydrogen bonds
+[2022-03-25 17:41:47.129] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.129] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.130] [main] [info] there are 16 bonds after filtering
+[2022-03-25 17:41:47.138] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.139] [main] [info] done.
+[2022-03-25 17:41:47.139] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.140] [main] [info] done.
+[2022-03-25 17:41:47.140] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.140] [main] [info] done.
+[2022-03-25 17:41:47.141] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.141] [main] [info] done.
+[2022-03-25 17:41:47.141] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.141] [main] [info] hydrogen donors: 1
+[2022-03-25 17:41:47.141] [main] [info] vdw candidates: 2
+[2022-03-25 17:41:47.141] [main] [info] cations: 1
+[2022-03-25 17:41:47.142] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.142] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.142] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.142] [main] [info] found 1 ionic bonds
+[2022-03-25 17:41:47.143] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.143] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.143] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.143] [main] [info] there are 2 bonds after filtering
+[2022-03-25 17:41:47.153] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.154] [main] [info] done.
+[2022-03-25 17:41:47.154] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.155] [main] [info] done.
+[2022-03-25 17:41:47.156] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.156] [main] [info] done.
+[2022-03-25 17:41:47.156] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.156] [main] [info] done.
+[2022-03-25 17:41:47.156] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.157] [main] [info] hydrogen donors: 2
+[2022-03-25 17:41:47.157] [main] [info] vdw candidates: 3
+[2022-03-25 17:41:47.157] [main] [info] cations: 1
+[2022-03-25 17:41:47.157] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.157] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.158] [main] [info] found 2 vdw bonds
+[2022-03-25 17:41:47.158] [main] [info] found 2 ionic bonds
+[2022-03-25 17:41:47.158] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.158] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.158] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.159] [main] [info] there are 4 bonds after filtering
+[2022-03-25 17:41:47.168] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.169] [main] [info] done.
+[2022-03-25 17:41:47.170] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.171] [main] [info] done.
+[2022-03-25 17:41:47.171] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.171] [main] [info] done.
+[2022-03-25 17:41:47.172] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.172] [main] [info] done.
+[2022-03-25 17:41:47.172] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.172] [main] [info] hydrogen donors: 1
+[2022-03-25 17:41:47.172] [main] [info] vdw candidates: 2
+[2022-03-25 17:41:47.173] [main] [info] cations: 1
+[2022-03-25 17:41:47.173] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.173] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.173] [main] [info] found 0 vdw bonds
+[2022-03-25 17:41:47.173] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.174] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.174] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.174] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.175] [main] [info] there are 0 bonds after filtering
+[2022-03-25 17:41:47.180] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.181] [main] [info] done.
+[2022-03-25 17:41:47.181] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.182] [main] [info] done.
+[2022-03-25 17:41:47.182] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.182] [main] [info] done.
+[2022-03-25 17:41:47.182] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.182] [main] [info] done.
+[2022-03-25 17:41:47.183] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.183] [main] [info] hydrogen donors: 2
+[2022-03-25 17:41:47.183] [main] [info] vdw candidates: 3
+[2022-03-25 17:41:47.183] [main] [info] cations: 1
+[2022-03-25 17:41:47.183] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.184] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.185] [main] [info] found 0 vdw bonds
+[2022-03-25 17:41:47.185] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.185] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.186] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.187] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.187] [main] [info] there are 0 bonds after filtering
+[2022-03-25 17:41:47.192] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.193] [main] [info] done.
+[2022-03-25 17:41:47.193] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.194] [main] [info] done.
+[2022-03-25 17:41:47.194] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.194] [main] [info] done.
+[2022-03-25 17:41:47.194] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.195] [main] [info] done.
+[2022-03-25 17:41:47.195] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.195] [main] [info] hydrogen donors: 1
+[2022-03-25 17:41:47.195] [main] [info] vdw candidates: 2
+[2022-03-25 17:41:47.196] [main] [info] cations: 1
+[2022-03-25 17:41:47.196] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.196] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.196] [main] [info] found 0 vdw bonds
+[2022-03-25 17:41:47.197] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.197] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.197] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.197] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.198] [main] [info] there are 0 bonds after filtering
+[2022-03-25 17:41:47.207] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.208] [main] [info] done.
+[2022-03-25 17:41:47.209] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.209] [main] [info] done.
+[2022-03-25 17:41:47.210] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.210] [main] [info] done.
+[2022-03-25 17:41:47.210] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.210] [main] [info] done.
+[2022-03-25 17:41:47.210] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.211] [main] [info] hydrogen donors: 1
+[2022-03-25 17:41:47.211] [main] [info] vdw candidates: 2
+[2022-03-25 17:41:47.211] [main] [info] cations: 1
+[2022-03-25 17:41:47.211] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.211] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.212] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.212] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.212] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.212] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.212] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.213] [main] [info] there are 1 bonds after filtering
+[2022-03-25 17:41:47.223] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.227] [main] [info] done.
+[2022-03-25 17:41:47.227] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.228] [main] [info] done.
+[2022-03-25 17:41:47.229] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.229] [main] [info] done.
+[2022-03-25 17:41:47.229] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.229] [main] [info] done.
+[2022-03-25 17:41:47.230] [main] [info] hydrogen acceptors: 6
+[2022-03-25 17:41:47.230] [main] [info] hydrogen donors: 5
+[2022-03-25 17:41:47.230] [main] [info] vdw candidates: 11
+[2022-03-25 17:41:47.231] [main] [info] cations: 0
+[2022-03-25 17:41:47.231] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.231] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.232] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.232] [main] [info] found 1 ionic bonds
+[2022-03-25 17:41:47.233] [main] [info] found 1 hydrogen bonds
+[2022-03-25 17:41:47.233] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.234] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.234] [main] [info] there are 3 bonds after filtering
+[2022-03-25 17:41:47.240] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.241] [main] [info] done.
+[2022-03-25 17:41:47.242] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.242] [main] [info] done.
+[2022-03-25 17:41:47.242] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.243] [main] [info] done.
+[2022-03-25 17:41:47.243] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.243] [main] [info] done.
+[2022-03-25 17:41:47.243] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.243] [main] [info] hydrogen donors: 1
+[2022-03-25 17:41:47.244] [main] [info] vdw candidates: 2
+[2022-03-25 17:41:47.244] [main] [info] cations: 1
+[2022-03-25 17:41:47.244] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.244] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.244] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.245] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.245] [main] [info] found 1 hydrogen bonds
+[2022-03-25 17:41:47.245] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.245] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.245] [main] [info] there are 2 bonds after filtering
+[2022-03-25 17:41:47.251] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.254] [main] [info] done.
+[2022-03-25 17:41:47.255] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.255] [main] [info] done.
+[2022-03-25 17:41:47.256] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.257] [main] [info] done.
+[2022-03-25 17:41:47.257] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.257] [main] [info] done.
+[2022-03-25 17:41:47.257] [main] [info] hydrogen acceptors: 5
+[2022-03-25 17:41:47.257] [main] [info] hydrogen donors: 2
+[2022-03-25 17:41:47.257] [main] [info] vdw candidates: 6
+[2022-03-25 17:41:47.258] [main] [info] cations: 0
+[2022-03-25 17:41:47.258] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.258] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.258] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.258] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.259] [main] [info] found 2 hydrogen bonds
+[2022-03-25 17:41:47.259] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.259] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.259] [main] [info] there are 3 bonds after filtering
+[2022-03-25 17:41:47.268] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.272] [main] [info] done.
+[2022-03-25 17:41:47.273] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.273] [main] [info] done.
+[2022-03-25 17:41:47.274] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.274] [main] [info] done.
+[2022-03-25 17:41:47.274] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.274] [main] [info] done.
+[2022-03-25 17:41:47.275] [main] [info] hydrogen acceptors: 5
+[2022-03-25 17:41:47.275] [main] [info] hydrogen donors: 5
+[2022-03-25 17:41:47.275] [main] [info] vdw candidates: 8
+[2022-03-25 17:41:47.275] [main] [info] cations: 1
+[2022-03-25 17:41:47.275] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.275] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.276] [main] [info] found 6 vdw bonds
+[2022-03-25 17:41:47.276] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.276] [main] [info] found 3 hydrogen bonds
+[2022-03-25 17:41:47.277] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.277] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.277] [main] [info] there are 9 bonds after filtering
+[2022-03-25 17:41:47.283] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.286] [main] [info] done.
+[2022-03-25 17:41:47.286] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.287] [main] [info] done.
+[2022-03-25 17:41:47.288] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.289] [main] [info] done.
+[2022-03-25 17:41:47.289] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.289] [main] [info] done.
+[2022-03-25 17:41:47.290] [main] [info] hydrogen acceptors: 3
+[2022-03-25 17:41:47.290] [main] [info] hydrogen donors: 3
+[2022-03-25 17:41:47.290] [main] [info] vdw candidates: 6
+[2022-03-25 17:41:47.290] [main] [info] cations: 1
+[2022-03-25 17:41:47.291] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.291] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.291] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.291] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.292] [main] [info] found 1 hydrogen bonds
+[2022-03-25 17:41:47.292] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.292] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.293] [main] [info] there are 2 bonds after filtering
+[2022-03-25 17:41:47.297] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.298] [main] [info] done.
+[2022-03-25 17:41:47.298] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.298] [main] [info] done.
+[2022-03-25 17:41:47.299] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.299] [main] [info] done.
+[2022-03-25 17:41:47.299] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.300] [main] [info] done.
+[2022-03-25 17:41:47.300] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.300] [main] [info] hydrogen donors: 1
+[2022-03-25 17:41:47.300] [main] [info] vdw candidates: 2
+[2022-03-25 17:41:47.301] [main] [info] cations: 1
+[2022-03-25 17:41:47.302] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.302] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.302] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.302] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.302] [main] [info] found 1 hydrogen bonds
+[2022-03-25 17:41:47.303] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.303] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.303] [main] [info] there are 2 bonds after filtering
+[2022-03-25 17:41:47.308] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.311] [main] [info] done.
+[2022-03-25 17:41:47.312] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.312] [main] [info] done.
+[2022-03-25 17:41:47.313] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.313] [main] [info] done.
+[2022-03-25 17:41:47.313] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.314] [main] [info] done.
+[2022-03-25 17:41:47.314] [main] [info] hydrogen acceptors: 0
+[2022-03-25 17:41:47.314] [main] [info] hydrogen donors: 0
+[2022-03-25 17:41:47.314] [main] [info] vdw candidates: 12
+[2022-03-25 17:41:47.314] [main] [info] cations: 0
+[2022-03-25 17:41:47.314] [main] [info] aromatic rings: 2
+[2022-03-25 17:41:47.315] [main] [info] aromatic rings (valid for pication): 2
+[2022-03-25 17:41:47.315] [main] [info] found 0 vdw bonds
+[2022-03-25 17:41:47.315] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.315] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.315] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.316] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.316] [main] [info] there are 0 bonds after filtering
+[2022-03-25 17:41:47.321] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.324] [main] [info] done.
+[2022-03-25 17:41:47.325] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.325] [main] [info] done.
+[2022-03-25 17:41:47.326] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.327] [main] [info] done.
+[2022-03-25 17:41:47.327] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.328] [main] [info] done.
+[2022-03-25 17:41:47.328] [main] [info] hydrogen acceptors: 0
+[2022-03-25 17:41:47.328] [main] [info] hydrogen donors: 0
+[2022-03-25 17:41:47.328] [main] [info] vdw candidates: 12
+[2022-03-25 17:41:47.328] [main] [info] cations: 0
+[2022-03-25 17:41:47.328] [main] [info] aromatic rings: 2
+[2022-03-25 17:41:47.329] [main] [info] aromatic rings (valid for pication): 2
+[2022-03-25 17:41:47.329] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.329] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.329] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.330] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.330] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.330] [main] [info] there are 1 bonds after filtering
+[2022-03-25 17:41:47.335] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.338] [main] [info] done.
+[2022-03-25 17:41:47.339] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.340] [main] [info] done.
+[2022-03-25 17:41:47.340] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.341] [main] [info] done.
+[2022-03-25 17:41:47.341] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.341] [main] [info] done.
+[2022-03-25 17:41:47.341] [main] [info] hydrogen acceptors: 0
+[2022-03-25 17:41:47.342] [main] [info] hydrogen donors: 0
+[2022-03-25 17:41:47.342] [main] [info] vdw candidates: 12
+[2022-03-25 17:41:47.342] [main] [info] cations: 0
+[2022-03-25 17:41:47.343] [main] [info] aromatic rings: 2
+[2022-03-25 17:41:47.343] [main] [info] aromatic rings (valid for pication): 2
+[2022-03-25 17:41:47.344] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.344] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.344] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.344] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.344] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.345] [main] [info] there are 1 bonds after filtering
+[2022-03-25 17:41:47.349] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.351] [main] [info] done.
+[2022-03-25 17:41:47.352] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.352] [main] [info] done.
+[2022-03-25 17:41:47.353] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.353] [main] [info] done.
+[2022-03-25 17:41:47.354] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.355] [main] [info] done.
+[2022-03-25 17:41:47.355] [main] [info] hydrogen acceptors: 0
+[2022-03-25 17:41:47.355] [main] [info] hydrogen donors: 0
+[2022-03-25 17:41:47.356] [main] [info] vdw candidates: 12
+[2022-03-25 17:41:47.356] [main] [info] cations: 0
+[2022-03-25 17:41:47.356] [main] [info] aromatic rings: 2
+[2022-03-25 17:41:47.356] [main] [info] aromatic rings (valid for pication): 2
+[2022-03-25 17:41:47.357] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.357] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.357] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.357] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.357] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.358] [main] [info] there are 1 bonds after filtering
+[2022-03-25 17:41:47.363] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.366] [main] [info] done.
+[2022-03-25 17:41:47.367] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.368] [main] [info] done.
+[2022-03-25 17:41:47.368] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.369] [main] [info] done.
+[2022-03-25 17:41:47.369] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.370] [main] [info] done.
+[2022-03-25 17:41:47.370] [main] [info] hydrogen acceptors: 0
+[2022-03-25 17:41:47.370] [main] [info] hydrogen donors: 0
+[2022-03-25 17:41:47.370] [main] [info] vdw candidates: 12
+[2022-03-25 17:41:47.370] [main] [info] cations: 0
+[2022-03-25 17:41:47.370] [main] [info] aromatic rings: 2
+[2022-03-25 17:41:47.371] [main] [info] aromatic rings (valid for pication): 2
+[2022-03-25 17:41:47.371] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.372] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.372] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.372] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.372] [main] [info] found 1 pipistack bonds
+[2022-03-25 17:41:47.373] [main] [info] there are 2 bonds after filtering
+[2022-03-25 17:41:47.378] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.380] [main] [info] done.
+[2022-03-25 17:41:47.380] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.381] [main] [info] done.
+[2022-03-25 17:41:47.381] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.382] [main] [info] done.
+[2022-03-25 17:41:47.382] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.382] [main] [info] done.
+[2022-03-25 17:41:47.383] [main] [info] hydrogen acceptors: 0
+[2022-03-25 17:41:47.383] [main] [info] hydrogen donors: 0
+[2022-03-25 17:41:47.383] [main] [info] vdw candidates: 12
+[2022-03-25 17:41:47.383] [main] [info] cations: 0
+[2022-03-25 17:41:47.383] [main] [info] aromatic rings: 2
+[2022-03-25 17:41:47.384] [main] [info] aromatic rings (valid for pication): 2
+[2022-03-25 17:41:47.384] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.384] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.385] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.385] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.385] [main] [info] found 1 pipistack bonds
+[2022-03-25 17:41:47.385] [main] [info] there are 2 bonds after filtering
+[2022-03-25 17:41:47.391] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.392] [main] [info] done.
+[2022-03-25 17:41:47.393] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.393] [main] [info] done.
+[2022-03-25 17:41:47.394] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.394] [main] [info] done.
+[2022-03-25 17:41:47.395] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.395] [main] [info] done.
+[2022-03-25 17:41:47.395] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.396] [main] [info] hydrogen donors: 1
+[2022-03-25 17:41:47.396] [main] [info] vdw candidates: 2
+[2022-03-25 17:41:47.396] [main] [info] cations: 0
+[2022-03-25 17:41:47.396] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.396] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.396] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.397] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.397] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.397] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.397] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.398] [main] [info] there are 1 bonds after filtering
+[2022-03-25 17:41:47.403] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.404] [main] [info] done.
+[2022-03-25 17:41:47.404] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.404] [main] [info] done.
+[2022-03-25 17:41:47.405] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.405] [main] [info] done.
+[2022-03-25 17:41:47.406] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.407] [main] [info] done.
+[2022-03-25 17:41:47.407] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.407] [main] [info] hydrogen donors: 1
+[2022-03-25 17:41:47.408] [main] [info] vdw candidates: 2
+[2022-03-25 17:41:47.408] [main] [info] cations: 0
+[2022-03-25 17:41:47.409] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.409] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.409] [main] [info] found 0 vdw bonds
+[2022-03-25 17:41:47.410] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.410] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.410] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.411] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.411] [main] [info] there are 0 bonds after filtering
+[2022-03-25 17:41:47.419] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.420] [main] [info] done.
+[2022-03-25 17:41:47.420] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.420] [main] [info] done.
+[2022-03-25 17:41:47.421] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.422] [main] [info] done.
+[2022-03-25 17:41:47.422] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.422] [main] [info] done.
+[2022-03-25 17:41:47.422] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.423] [main] [info] hydrogen donors: 1
+[2022-03-25 17:41:47.423] [main] [info] vdw candidates: 0
+[2022-03-25 17:41:47.423] [main] [info] cations: 0
+[2022-03-25 17:41:47.423] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.423] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.424] [main] [info] found 0 vdw bonds
+[2022-03-25 17:41:47.424] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.424] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.424] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.425] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.425] [main] [info] there are 0 bonds after filtering
+[2022-03-25 17:41:47.432] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.433] [main] [info] done.
+[2022-03-25 17:41:47.433] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.434] [main] [info] done.
+[2022-03-25 17:41:47.434] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.434] [main] [info] done.
+[2022-03-25 17:41:47.435] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.435] [main] [info] done.
+[2022-03-25 17:41:47.435] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.435] [main] [info] hydrogen donors: 1
+[2022-03-25 17:41:47.435] [main] [info] vdw candidates: 0
+[2022-03-25 17:41:47.436] [main] [info] cations: 0
+[2022-03-25 17:41:47.436] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.436] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.437] [main] [info] found 0 vdw bonds
+[2022-03-25 17:41:47.437] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.437] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.438] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.438] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.438] [main] [info] there are 0 bonds after filtering
+[2022-03-25 17:41:47.443] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.444] [main] [info] done.
+[2022-03-25 17:41:47.445] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.445] [main] [info] done.
+[2022-03-25 17:41:47.445] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.445] [main] [info] done.
+[2022-03-25 17:41:47.446] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.446] [main] [info] done.
+[2022-03-25 17:41:47.446] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.446] [main] [info] hydrogen donors: 0
+[2022-03-25 17:41:47.447] [main] [info] vdw candidates: 1
+[2022-03-25 17:41:47.447] [main] [info] cations: 0
+[2022-03-25 17:41:47.448] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.448] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.448] [main] [info] found 0 vdw bonds
+[2022-03-25 17:41:47.448] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.448] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.449] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.449] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.449] [main] [info] there are 0 bonds after filtering
+[2022-03-25 17:41:47.454] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.456] [main] [info] done.
+[2022-03-25 17:41:47.456] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.456] [main] [info] done.
+[2022-03-25 17:41:47.457] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.458] [main] [info] done.
+[2022-03-25 17:41:47.458] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.458] [main] [info] done.
+[2022-03-25 17:41:47.458] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.458] [main] [info] hydrogen donors: 0
+[2022-03-25 17:41:47.458] [main] [info] vdw candidates: 1
+[2022-03-25 17:41:47.459] [main] [info] cations: 0
+[2022-03-25 17:41:47.459] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.459] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.459] [main] [info] found 0 vdw bonds
+[2022-03-25 17:41:47.459] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.460] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.460] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.460] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.460] [main] [info] there are 0 bonds after filtering
+[2022-03-25 17:41:47.469] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.470] [main] [info] done.
+[2022-03-25 17:41:47.470] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.470] [main] [info] done.
+[2022-03-25 17:41:47.471] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.471] [main] [info] done.
+[2022-03-25 17:41:47.471] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.471] [main] [info] done.
+[2022-03-25 17:41:47.471] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.472] [main] [info] hydrogen donors: 1
+[2022-03-25 17:41:47.472] [main] [info] vdw candidates: 3
+[2022-03-25 17:41:47.472] [main] [info] cations: 0
+[2022-03-25 17:41:47.472] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.472] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.473] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.473] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.473] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.474] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.474] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.474] [main] [info] there are 1 bonds after filtering
+[2022-03-25 17:41:47.481] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.482] [main] [info] done.
+[2022-03-25 17:41:47.483] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.483] [main] [info] done.
+[2022-03-25 17:41:47.483] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.484] [main] [info] done.
+[2022-03-25 17:41:47.484] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.485] [main] [info] done.
+[2022-03-25 17:41:47.485] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.485] [main] [info] hydrogen donors: 2
+[2022-03-25 17:41:47.485] [main] [info] vdw candidates: 4
+[2022-03-25 17:41:47.485] [main] [info] cations: 0
+[2022-03-25 17:41:47.486] [main] [info] aromatic rings: 0
+[2022-03-25 17:41:47.486] [main] [info] aromatic rings (valid for pication): 0
+[2022-03-25 17:41:47.486] [main] [info] found 4 vdw bonds
+[2022-03-25 17:41:47.486] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.486] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.487] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.487] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.487] [main] [info] there are 4 bonds after filtering
+[2022-03-25 17:41:47.492] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.494] [main] [info] done.
+[2022-03-25 17:41:47.494] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.494] [main] [info] done.
+[2022-03-25 17:41:47.495] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.496] [main] [info] done.
+[2022-03-25 17:41:47.496] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.496] [main] [info] done.
+[2022-03-25 17:41:47.497] [main] [info] hydrogen acceptors: 1
+[2022-03-25 17:41:47.497] [main] [info] hydrogen donors: 1
+[2022-03-25 17:41:47.497] [main] [info] vdw candidates: 8
+[2022-03-25 17:41:47.497] [main] [info] cations: 1
+[2022-03-25 17:41:47.498] [main] [info] aromatic rings: 2
+[2022-03-25 17:41:47.498] [main] [info] aromatic rings (valid for pication): 2
+[2022-03-25 17:41:47.498] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.498] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.499] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.499] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.499] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.499] [main] [info] there are 1 bonds after filtering
+[2022-03-25 17:41:47.503] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.506] [main] [info] done.
+[2022-03-25 17:41:47.506] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.507] [main] [info] done.
+[2022-03-25 17:41:47.507] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.508] [main] [info] done.
+[2022-03-25 17:41:47.508] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.509] [main] [info] done.
+[2022-03-25 17:41:47.509] [main] [info] hydrogen acceptors: 2
+[2022-03-25 17:41:47.509] [main] [info] hydrogen donors: 7
+[2022-03-25 17:41:47.510] [main] [info] vdw candidates: 12
+[2022-03-25 17:41:47.510] [main] [info] cations: 5
+[2022-03-25 17:41:47.510] [main] [info] aromatic rings: 1
+[2022-03-25 17:41:47.510] [main] [info] aromatic rings (valid for pication): 1
+[2022-03-25 17:41:47.511] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.511] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.511] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.511] [main] [info] found 4 pication bonds
+[2022-03-25 17:41:47.512] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.512] [main] [info] there are 5 bonds after filtering
+[2022-03-25 17:41:47.520] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.522] [main] [info] done.
+[2022-03-25 17:41:47.522] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.523] [main] [info] done.
+[2022-03-25 17:41:47.523] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.523] [main] [info] done.
+[2022-03-25 17:41:47.523] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.524] [main] [info] done.
+[2022-03-25 17:41:47.524] [main] [info] hydrogen acceptors: 2
+[2022-03-25 17:41:47.524] [main] [info] hydrogen donors: 3
+[2022-03-25 17:41:47.525] [main] [info] vdw candidates: 8
+[2022-03-25 17:41:47.525] [main] [info] cations: 1
+[2022-03-25 17:41:47.525] [main] [info] aromatic rings: 1
+[2022-03-25 17:41:47.526] [main] [info] aromatic rings (valid for pication): 1
+[2022-03-25 17:41:47.526] [main] [info] found 0 vdw bonds
+[2022-03-25 17:41:47.526] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.526] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.527] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.527] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.527] [main] [info] there are 0 bonds after filtering
+[2022-03-25 17:41:47.533] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.534] [main] [info] done.
+[2022-03-25 17:41:47.534] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.535] [main] [info] done.
+[2022-03-25 17:41:47.535] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.535] [main] [info] done.
+[2022-03-25 17:41:47.535] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.536] [main] [info] done.
+[2022-03-25 17:41:47.536] [main] [info] hydrogen acceptors: 2
+[2022-03-25 17:41:47.537] [main] [info] hydrogen donors: 3
+[2022-03-25 17:41:47.537] [main] [info] vdw candidates: 8
+[2022-03-25 17:41:47.537] [main] [info] cations: 1
+[2022-03-25 17:41:47.537] [main] [info] aromatic rings: 1
+[2022-03-25 17:41:47.537] [main] [info] aromatic rings (valid for pication): 1
+[2022-03-25 17:41:47.538] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.538] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.538] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.539] [main] [info] found 0 pication bonds
+[2022-03-25 17:41:47.539] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.539] [main] [info] there are 1 bonds after filtering
+[2022-03-25 17:41:47.545] [main] [info] parsing pdb...
+[2022-03-25 17:41:47.547] [main] [info] done.
+[2022-03-25 17:41:47.548] [main] [info] finding appropriate secondary structure for amino acids...
+[2022-03-25 17:41:47.548] [main] [info] done.
+[2022-03-25 17:41:47.548] [main] [info] retrieving components from aminoacids...
+[2022-03-25 17:41:47.548] [main] [info] done.
+[2022-03-25 17:41:47.549] [main] [info] building acceleration structures...
+[2022-03-25 17:41:47.549] [main] [info] done.
+[2022-03-25 17:41:47.549] [main] [info] hydrogen acceptors: 0
+[2022-03-25 17:41:47.550] [main] [info] hydrogen donors: 1
+[2022-03-25 17:41:47.550] [main] [info] vdw candidates: 7
+[2022-03-25 17:41:47.550] [main] [info] cations: 1
+[2022-03-25 17:41:47.550] [main] [info] aromatic rings: 1
+[2022-03-25 17:41:47.551] [main] [info] aromatic rings (valid for pication): 1
+[2022-03-25 17:41:47.551] [main] [info] found 1 vdw bonds
+[2022-03-25 17:41:47.551] [main] [info] found 0 ionic bonds
+[2022-03-25 17:41:47.551] [main] [info] found 0 hydrogen bonds
+[2022-03-25 17:41:47.551] [main] [info] found 1 pication bonds
+[2022-03-25 17:41:47.552] [main] [info] found 0 pipistack bonds
+[2022-03-25 17:41:47.552] [main] [info] there are 2 bonds after filtering

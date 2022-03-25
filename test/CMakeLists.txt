@@ -8,9 +8,9 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
-add_executable(RINmaker_test all_tests.cpp BlackBoxTest.cpp KDTreeTest.cpp)
+add_executable(RINmaker_test all_tests.cpp BlackBoxTest.cpp KDTreeTest.cpp ../app/utils.cpp)
 
-target_include_directories(RINmaker_test PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../headers")
+target_include_directories(RINmaker_test PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../headers" "${CMAKE_CURRENT_SOURCE_DIR}/../app")
 target_link_libraries(RINmaker_test PRIVATE RINmaker_library gtest spdlog pugixml CLI11)
 
 # copy test_case folder near target executable

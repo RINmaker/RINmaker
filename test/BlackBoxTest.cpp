@@ -97,7 +97,7 @@ protected:
         string pdbPath = (runningFolder / testCaseFolder / filename).string();
         const char* args[2] = { exePath.c_str(), pdbPath.c_str() };
 
-        prelude::readArgs(2, args);
+        readArgs(2, args);
         // return Result(pdb_data(false));
         return Result(rin_maker::build(parameters::get_net_policy(), parameters::get_pdb_path()));
     }
