@@ -40,16 +40,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(spdlog)
 
-# googletest is available under their own license (see repo)
-# the license permits usage and redistribution
-message("fetching googletest...")
-FetchContent_Declare(
-        googletest
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG release-1.11.0
-)
-FetchContent_MakeAvailable(googletest)
-
 add_subdirectory(src)
 add_subdirectory(app)
 add_subdirectory(test)

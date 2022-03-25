@@ -3,7 +3,7 @@
 #include <array>
 #include <string>
 
-#include "geometry_functions.h"
+#include "geometry.h"
 
 // element of spatial
 template<size_t K>

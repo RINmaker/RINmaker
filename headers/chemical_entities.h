@@ -13,9 +13,9 @@
 
 #include "energy.h"
 
-#include "utils/spatial/geometry_functions.h"
-#include "utils/prelude.h"
-#include "utils/spatial/kdpoint.h"
+#include "spatial/geometry.h"
+#include "prelude.h"
+#include "spatial/kdpoint.h"
 
 #include "pdb_records.h"
 #include "secondary_structures.h"
@@ -23,7 +23,7 @@
 #include "log_manager.h"
 
 class pdb_data;
-namespace computation {class base; };
+namespace rin_maker {class base; };
 
 namespace entities {
     class atom;
@@ -79,7 +79,7 @@ namespace entities {
 
     private:
         friend class ::pdb_data;
-        friend class computation::base;
+        friend class rin_maker::base;
 
         // lifetime is managed by pdb_data
         explicit aminoacid(std::vector<records::atom> const &records);

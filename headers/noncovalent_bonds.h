@@ -2,7 +2,7 @@
 
 #include <string>
 #include "graphml_output.h"
-#include "utils/prelude.h"
+#include "prelude.h"
 #include "chemical_entities.h"
 #include "runtime_params.h"
 #include "energy.h"

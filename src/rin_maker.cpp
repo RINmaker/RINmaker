@@ -1,4 +1,4 @@
-#include "computation.h"
+#include "rin_maker.h"
 
 template<typename Record>
 class secondary_structure_search final {
@@ -31,7 +31,7 @@ public:
     }
 };
 
-computation::base::base(std::filesystem::path const& pdb_path) {
+rin_maker::base::base(std::filesystem::path const& pdb_path) {
 
     // open pdb
     std::ifstream pdb_file;
@@ -112,7 +112,7 @@ static void find_bonds(
     }
 }
 
-computation::all_bonds::all_bonds(std::filesystem::path const& pdb_path)
+rin_maker::all_bonds::all_bonds(std::filesystem::path const& pdb_path)
         : base(pdb_path) {
     log_manager::main()->info("retrieving components from amino acids...");
     // these two are used only to build the kdtrees
@@ -194,7 +194,7 @@ computation::all_bonds::all_bonds(std::filesystem::path const& pdb_path)
             _rin_network, _ring_vector, _ring_tree, parameters::get_distance_pipistack());
 }
 
-computation::carbon::carbon(
+rin_maker::carbon::carbon(
         std::filesystem::path const& pdb_path, std::function<entities::atom const*(entities::aminoacid const&)> const
 & getter)
         : base(pdb_path) {
@@ -210,9 +210,9 @@ computation::carbon::carbon(
             _rin_network, _carbon_vector, _carbon_tree, parameters::get_distance_generic());
 }
 
-computation::base::~base() {
+rin_maker::base::~base() {
     for (auto* res: _aminoacids)
-        g.insert(res->to_node());
+        _rin_graph.insert(res->to_node());
 
     std::list<bonds::base const*> results;
     switch (parameters::get_interaction_type()) {
@@ -236,7 +236,7 @@ computation::base::~base() {
         results = _rin_network.filter_hbond_realistic(results);
 
     for (auto* bond: results)
-        g.push(bond->to_edge());
+        _rin_graph.push(bond->to_edge());
 
     log_manager::main()->info(
             "there are {} bonds after filtering", results.size());
@@ -246,7 +246,7 @@ computation::base::~base() {
     // write to output
     // if (exportOutput)
     // {
-    g.consume_to_xml();
+    _rin_graph.consume_to_xml();
     // }
 
     for (auto* res: _aminoacids)

@@ -3,7 +3,7 @@
 #include <string>
 #include <array>
 
-#include "utils/prelude.h"
+#include "prelude.h"
 #include "utils/interval.h"
 
 namespace records {

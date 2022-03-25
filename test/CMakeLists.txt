@@ -1,3 +1,13 @@
+# googletest is available under their own license (see repo)
+# the license permits usage and redistribution
+message("fetching googletest...")
+FetchContent_Declare(
+        googletest
+        GIT_REPOSITORY https://github.com/google/googletest.git
+        GIT_TAG release-1.11.0
+)
+FetchContent_MakeAvailable(googletest)
+
 add_executable(RINmaker_test all_tests.cpp BlackBoxTest.cpp KDTreeTest.cpp)
 
 target_include_directories(RINmaker_test PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../headers")

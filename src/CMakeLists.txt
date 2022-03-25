@@ -6,7 +6,7 @@ endif()
 add_library(
         RINmaker_library
 
-        # computation.cpp
+        # rin_maker.cpp
         prelude.cpp
         config.cpp
         energy.cpp

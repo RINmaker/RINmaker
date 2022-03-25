@@ -18,7 +18,7 @@
 #include <memory>
 #include <cstdio>
 
-#include <CLI/CLI.hpp>
+#include "CLI/CLI.hpp"
 
 #include "config.h"
 
