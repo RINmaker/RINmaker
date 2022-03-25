@@ -1,11 +1,9 @@
 #include "rin_maker.h"
 
-
-
 template<typename Record>
 class secondary_structure_helper final {
 private:
-    std::unordered_map<std::string, std::map<interval<int>, Record, interval<int>::less>> _map;
+    std::unordered_map<string, std::map<interval<int>, Record, interval<int>::less>> _map;
 
 public:
     void insert(Record const& record) {
@@ -35,7 +33,7 @@ public:
     }
 };
 
-rin_maker::base::base(std::filesystem::path const& pdb_path) {
+rin_maker::base::base(fs::path const& pdb_path) {
 
     // open pdb
     std::ifstream pdb_file;
@@ -48,22 +46,22 @@ rin_maker::base::base(std::filesystem::path const& pdb_path) {
     auto sheet_records = secondary_structure_helper<records::sheet_piece>();
     auto helix_records = secondary_structure_helper<records::helix>();
 
-    std::vector<records::atom> tmp_atoms;
+    vector<records::atom> tmp_atoms;
 
-    log_manager::main()->info("parsing pdb...");
+    lm::main()->info("parsing pdb...");
 
     // parsed line
-    std::string line;
+    string line;
     while (getline(pdb_file, line)) {
 
         // first field is the type of the record
-        std::string record_type = prelude::trim(line.substr(0, 6));
+        string record_type = prelude::trim(line.substr(0, 6));
 
         if (record_type == "ATOM") {
             // atoms are grouped by aminoacid: we can simply fill a collection until we change residue
             records::atom record(line);
             if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back())) {
-                _aminoacids.push_back(new chemical_entity::aminoacid(tmp_atoms));
+                _aminoacids.push_back(new aminoacid(tmp_atoms));
                 tmp_atoms.clear();
             }
 
@@ -78,13 +76,10 @@ rin_maker::base::base(std::filesystem::path const& pdb_path) {
     }
 
     if (!tmp_atoms.empty()) {
-        _aminoacids.push_back(new chemical_entity::aminoacid(tmp_atoms));
+        _aminoacids.push_back(new aminoacid(tmp_atoms));
     }
 
-    log_manager::main()->info("done.");
-
-    log_manager::main()->info(
-            "finding appropriate secondary structure for amino acids...");
+    lm::main()->info("finding the appropriate secondary structure for each aminoacid...");
 
     if (sheet_records.size() != 0 || helix_records.size() != 0) {
         for (auto* res: _aminoacids) {
@@ -94,16 +89,18 @@ rin_maker::base::base(std::filesystem::path const& pdb_path) {
         }
     }
 
-    log_manager::main()->info("done.");
+    lm::main()->info("done.");
 }
+
+using chemical_entity::component;
 
 template<typename BondFunc, typename Entity1, typename Entity2>
 static void find_bonds(
         network& net, std::vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double distance) {
     static_assert(
-            std::is_base_of<chemical_entity::component, Entity1>::value, "template typename Entity1 must inherit from type entity::component");
+            std::is_base_of<component, Entity1>::value, "template typename Entity1 must inherit from type entity::component");
     static_assert(
-            std::is_base_of<chemical_entity::component, Entity2>::value, "template typename Entity2 must inherit from type entity::component");
+            std::is_base_of<component, Entity2>::value, "template typename Entity2 must inherit from type entity::component");
     static_assert(
             std::is_base_of<bondfunctors::base, BondFunc>::value, "template typename BondFunc must inherit from type bondfunctor::base");
 
@@ -118,11 +115,11 @@ static void find_bonds(
 rin_maker::all_bonds::all_bonds(std::filesystem::path const& pdb_path)
         : base(pdb_path) {
 
-    log_manager::main()->info("retrieving components from aminoacids...");
+    lm::main()->info("retrieving components from aminoacids...");
 
     // used only to make_instance the corresponding kdtrees
-    std::vector<chemical_entity::atom const*> hdonors;
-    std::vector<chemical_entity::ionic_group const*> positives;
+    vector<atom const*> hdonors;
+    vector<ionic_group const*> positives;
 
     for (auto* res: _aminoacids) {
 
@@ -165,9 +162,7 @@ rin_maker::all_bonds::all_bonds(std::filesystem::path const& pdb_path)
         }
     }
 
-    log_manager::main()->info("done.");
-
-    log_manager::main()->info("building acceleration structures...");
+    lm::main()->info("building acceleration structures...");
 
     _hdonor_tree = kdtree<chemical_entity::atom, 3>(hdonors);
     _vdw_tree = kdtree<chemical_entity::atom, 3>(_vdw_vector);
@@ -176,15 +171,12 @@ rin_maker::all_bonds::all_bonds(std::filesystem::path const& pdb_path)
     _pication_ring_tree = kdtree<chemical_entity::ring, 3>(_pication_ring_vector);
     _positive_ion_tree = kdtree<chemical_entity::ionic_group, 3>(positives);
 
-    log_manager::main()->info("done.");
-
-    log_manager::main()->info("hydrogen acceptors: {}", _hacceptor_vector.size());
-    log_manager::main()->info("hydrogen donors: {}", hdonors.size());
-    log_manager::main()->info("vdw candidates: {}", _vdw_vector.size());
-    log_manager::main()->info("cations: {}", _cation_vector.size());
-    log_manager::main()->info("aromatic rings: {}", _ring_vector.size());
-    log_manager::main()->info(
-            "aromatic rings (valid for pication): {}", _ring_vector.size());
+    lm::main()->info("hydrogen acceptors: {}", _hacceptor_vector.size());
+    lm::main()->info("hydrogen donors: {}", hdonors.size());
+    lm::main()->info("vdw candidates: {}", _vdw_vector.size());
+    lm::main()->info("cations: {}", _cation_vector.size());
+    lm::main()->info("aromatic rings: {}", _ring_vector.size());
+    lm::main()->info("aromatic rings (valid for pication): {}", _ring_vector.size());
 
     find_bonds<bondfunctors::vdw>(
             _rin_network, _vdw_vector, _vdw_tree, parameters::get_distance_vdw() +
@@ -199,7 +191,7 @@ rin_maker::all_bonds::all_bonds(std::filesystem::path const& pdb_path)
             _rin_network, _ring_vector, _ring_tree, parameters::get_distance_pipistack());
 }
 
-rin_maker::backbone::backbone(std::filesystem::path const& pdb_path, carbon_getter getter)
+rin_maker::backbone::backbone(fs::path const& pdb_path, carbon_getter getter)
         : base(pdb_path) {
     for (auto const* res: _aminoacids) {
         auto const* c = getter(*res);
@@ -207,19 +199,19 @@ rin_maker::backbone::backbone(std::filesystem::path const& pdb_path, carbon_gett
             _carbon_vector.push_back(c);
         }
     }
-    _carbon_tree = kdtree<chemical_entity::atom, 3>(_carbon_vector);
+    _carbon_tree = kdtree<atom, 3>(_carbon_vector);
 
     find_bonds<bondfunctors::generico>(_rin_network, _carbon_vector, _carbon_tree, parameters::get_distance_generic());
 }
 
-rin::graph rin_maker::base::get_graph() const {
+rin::graph rin_maker::base::get_graph(parameters::interaction_type inter) const {
     rin::graph graph;
 
     for (auto* res: _aminoacids)
         graph.insert(res->to_node());
 
-    std::list<bonds::base const*> results;
-    switch (parameters::get_interaction_type()) {
+    list<bonds::base const*> results;
+    switch (inter) {
         case parameters::interaction_type::MULTIPLE:
             results = _rin_network.get_multiple();
             break;
@@ -242,16 +234,14 @@ rin::graph rin_maker::base::get_graph() const {
     for (auto* bond: results)
         graph.push(bond->to_edge());
 
-    log_manager::main()->info("there are {} bonds after filtering", results.size());
+    lm::main()->info("there are {} valid bonds after filtering", results.size());
 
     return graph;
 }
 
-std::unique_ptr<rin_maker::base const> rin_maker::make_instance(parameters::policy policy, fs::path const& path)
-{
+std::unique_ptr<rin_maker::base const> rin_maker::make_instance(parameters::policy policy, fs::path const& path) {
     std::unique_ptr<base const> rm = nullptr;
-    switch (policy)
-    {
+    switch (policy) {
         case parameters::policy::CLOSEST:
             rm = std::make_unique<all_bonds>(path);
             break;

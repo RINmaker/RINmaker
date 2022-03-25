@@ -55,7 +55,7 @@ public:
     }
     */
 
-    Result(std::unique_ptr<rin_maker::base const> rm) : rin_graph(rm->get_graph())
+    Result(std::unique_ptr<rin_maker::base const> rm) : rin_graph(rm->get_graph(parameters::get_interaction_type()))
     {
         edges = rin_graph.get_edges();
         nodes = rin_graph.get_nodes();

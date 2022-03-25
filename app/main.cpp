@@ -18,7 +18,7 @@ int main(int argc, const char* argv[]) {
             if (rm == nullptr)
                 throw std::runtime_error("failed to create rin_maker instance");
 
-            rm->get_graph().consume_to_xml();
+            rm->get_graph(parameters::get_interaction_type()).consume_to_xml();
 
 #           if _MSC_VER
             spdlog::drop_all();

@@ -26,6 +26,10 @@ namespace fs = std::filesystem;
 using lm = log_manager;
 
 using std::vector;
+using std::list;
+using std::string;
+using std::unordered_map;
+using std::map;
 using std::function;
 
 using chemical_entity::aminoacid;
@@ -48,7 +52,7 @@ public:
             delete res;
     }
 
-    rin::graph get_graph() const;
+    rin::graph get_graph(parameters::interaction_type inter) const;
 };
 
 class all_bonds final : public base {
