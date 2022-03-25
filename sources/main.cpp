@@ -69,7 +69,7 @@ string app_full_name() {
 }
 
 int main(int argc, const char* argv[]) {
-#ifndef _TEST
+#if _TEST
     setRunningPath(argv[0]);
     ::testing::InitGoogleTest(&argc, (char**)argv);
     return RUN_ALL_TESTS();

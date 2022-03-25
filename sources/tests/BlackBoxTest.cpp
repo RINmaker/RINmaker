@@ -80,7 +80,7 @@ public:
 class BlackBoxTest : public testing::Test {
 
 private:
-    inline static const fs::path testCaseFolder = "TestCase/";
+    inline static const fs::path testCaseFolder = "test_case/";
 
 protected:
     static void SetUpTestSuite() { }

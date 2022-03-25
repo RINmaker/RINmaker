@@ -1,20 +1,21 @@
 # RINmaker
 
-To configure:
+configure:
 
 ```bash
 cmake -S . -B build
 ```
 
-To build:
+configure tests:
+
+```bash
+cmake -S . -B build -DUSE_TESTS=ON
+```
+
+build:
 
 ```bash
 cmake --build build
 ```
 
-To test:
-
-```bash
-cmake --build build --target test
-```
-
+executable should be in `build/sources/Debug/`.

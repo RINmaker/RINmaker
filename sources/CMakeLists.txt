@@ -18,6 +18,14 @@ set(RINMAKER_DEPS spdlog pugixml CLI11)
 set(RINMAKER_TEST_SOURCES "tests/BlackBoxTest.cpp" "tests/KDTreeTest.cpp")
 set(RINMAKER_TEST_DEPS gtest)
 
+if (USE_DEBUG)
+    add_definitions(-DDEBUG)
+endif()
+
+if (USE_TESTS)
+    add_definitions(-D_TEST)
+endif()
+
 add_executable(RINmaker ${RINMAKER_SOURCES} ${RINMAKER_TEST_SOURCES})
 target_link_libraries(RINmaker PRIVATE ${RINMAKER_DEPS} ${RINMAKER_TEST_DEPS})
 
@@ -26,4 +34,4 @@ target_include_directories(RINmaker PRIVATE ${RINMAKER_HEADERS})
 add_custom_command(
         TARGET RINmaker POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${CMAKE_CURRENT_SOURCE_DIR}/../test_case/ $<TARGET_FILE_DIR:RINmaker>/testcase/)
+        ${CMAKE_CURRENT_SOURCE_DIR}/../test_case/ $<TARGET_FILE_DIR:RINmaker>/test_case/)

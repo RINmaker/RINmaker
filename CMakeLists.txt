@@ -50,4 +50,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(googletest)
 
+option(USE_DEBUG "Enter debug mode" OFF)
+option(USE_TESTS "Enter test mode" OFF)
+
 add_subdirectory(sources)
