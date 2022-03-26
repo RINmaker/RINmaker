@@ -2,9 +2,5 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/build/_deps/cli11-src" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/build/_deps/googletest-src" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/build/_deps/pugixml-src" vcs="Git" />
-    <mapping directory="$PROJECT_DIR$/build/_deps/spdlog-src" vcs="Git" />
   </component>
 </project>
