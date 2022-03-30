@@ -17,18 +17,18 @@ bool compare(const double& a, const double& b) { return abs(a - b) < MY_DBL_EPSI
 
 string interactionName(const edge& e)
 {
-    const string interaction = e.interaction();
-    return interaction.substr(0, interaction.find_first_of(":"));
+    string const& interaction = e.interaction();
+    return interaction.substr(0, interaction.find_first_of(':'));
 }
 string source(const edge& e)
 {
-    const string source = e.source_id();
-    return source.substr(source.find_last_of(":") + 1, string::npos);
+    string const& source = e.source_id();
+    return source.substr(source.find_last_of(':') + 1, string::npos);
 }
 string target(const edge& e)
 {
-    const string target = e.target_id();
-    return target.substr(target.find_last_of(":") + 1, string::npos);
+    string const& target = e.target_id();
+    return target.substr(target.find_last_of(':') + 1, string::npos);
 }
 string source_atom(const edge& e) { return e.source_atom(); }
 string target_atom(const edge& e) { return e.target_atom(); }
@@ -55,7 +55,7 @@ public:
     }
     */
 
-    Result(std::unique_ptr<rin_maker::base const> rm) : rin_graph(rm->get_graph(parameters::get_interaction_type()))
+    explicit Result(std::unique_ptr<rin_maker::base const> rm) : rin_graph(rm->get_graph(parameters::get_interaction_type()))
     {
         edges = rin_graph.get_edges();
         nodes = rin_graph.get_nodes();
