@@ -1,0 +1,22 @@
+TODO:
+
+- Se l'occupancy è < 1 loggare che non è supportata e return -1
+- SHEET Specificare che usiamo il calcolo di giacometti e non le info nel pdb (Nella documentazione)
+- Scrivere un readme documentativo con la descrizione di cosa fa il programma
+- Documentare la modalità test nel readme principale, e specificare i due target di cmake
+- Documento contenete la lista e il risultato atteso dei test (Jacopo)
+- Testare i parametri da riga di comando
+- Lanciare eccezione in casi unexpected (Ad esempio nei ring accediamo con [0] [1])
+- Cambiare estensione di output e mettere output di default se non viene specificato
+- Rivedere costanti di energia (Jacopo)
+- Unificare palette di xrmol (xrmol diventerà simile a quello di Francesco) (Francesco)
+- Trasferire la ownership della repo di Francesco sotto l'organizzazione
+- TODO mancano unita di misura sulla ui
+- Dare un nome ai graphml uscenti perchè ora si chiamano tutti G
+- Cambiare nome ai file dei test
+- Mettere pication
+- Pipi stiamo aspettanto la formula da Cedrix e Achille
+- Aprire qualche issue
+- Controllare che le formule dell'energia diano i risultati tutti nella stessa U.M. (kj o kcal)
+- UI avere la conversione tra kj e kcal
+- UI mostrare somma energie
