@@ -182,7 +182,7 @@ TEST_F(BlackBoxTest, HBond3) {
     EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "HBOND"; }), 1);
     EXPECT_TRUE(r.containEdge([](const edge& e) {
         return interactionName(e) == "HBOND" && source(e) == "ASP" && target(e) == "ARG" && source_atom(e) == "OD1" && target_atom(e) == "NH2" &&
-               compareDistance(e, 2.11193) && compareAngle(e, 1.23317);
+               compareDistance(e, 2.11193) && compareAngle(e, 177.61115);
     }));
 }
 TEST_F(BlackBoxTest, HBond4) {
@@ -191,7 +191,7 @@ TEST_F(BlackBoxTest, HBond4) {
     EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "HBOND"; }), 1);
     EXPECT_TRUE(r.containEdge([](const edge& e) {
         return interactionName(e) == "HBOND" && source(e) == "GLN" && target(e) == "LYS" && source_atom(e) == "OE1" && target_atom(e) == "NZ" &&
-               compareDistance(e, 2.53981) && compareAngle(e, 0.03296);
+               compareDistance(e, 2.53981) && compareAngle(e, 179.91626);
     }));
 }
 TEST_F(BlackBoxTest, HBond5) {
@@ -200,11 +200,11 @@ TEST_F(BlackBoxTest, HBond5) {
     EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "HBOND"; }), 2);
     EXPECT_TRUE(r.containEdge([](const edge& e) {
         return interactionName(e) == "HBOND" && source(e) == "ASN" && target(e) == "ASN" && source_atom(e) == "OD1" && target_atom(e) == "ND2" &&
-               compareDistance(e, 2.01970) && compareAngle(e, 0.01870);
+               compareDistance(e, 2.01970) && compareAngle(e, 179.96223);
     }));
     EXPECT_TRUE(r.containEdge([](const edge& e) {
         return interactionName(e) == "HBOND" && source(e) == "ASN" && target(e) == "ASN" && source_atom(e) == "OD1" && target_atom(e) == "ND2" &&
-               compareDistance(e, 2.02333) && compareAngle(e, 0.01898);
+               compareDistance(e, 2.02333) && compareAngle(e, 179.96160);
     }));
 }
 TEST_F(BlackBoxTest, HBond6) {
@@ -213,15 +213,15 @@ TEST_F(BlackBoxTest, HBond6) {
     EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "HBOND"; }), 3);
     EXPECT_TRUE(r.containEdge([](const edge& e) {
         return interactionName(e) == "HBOND" && source(e) == "TYR" && target(e) == "LYS" && source_atom(e) == "OH" && target_atom(e) == "NZ" &&
-               compareDistance(e, 2.02752) && compareAngle(e, 0.01263);
+               compareDistance(e, 2.02752) && compareAngle(e, 179.97440);
     }));
     EXPECT_TRUE(r.containEdge([](const edge& e) {
         return interactionName(e) == "HBOND" && source(e) == "TYR" && target(e) == "LYS" && source_atom(e) == "OH" && target_atom(e) == "NZ" &&
-               compareDistance(e, 2.00981) && compareAngle(e, 0.02540);
+               compareDistance(e, 2.00981) && compareAngle(e, 179.94896);
     }));
     EXPECT_TRUE(r.containEdge([](const edge& e) {
         return interactionName(e) == "HBOND" && source(e) == "TYR" && target(e) == "LYS" && source_atom(e) == "OH" && target_atom(e) == "NZ" &&
-               compareDistance(e, 2.02536) && compareAngle(e, 0.02091);
+               compareDistance(e, 2.02536) && compareAngle(e, 179.95765);
     }));
 }
 TEST_F(BlackBoxTest, HBond7) {
@@ -230,7 +230,7 @@ TEST_F(BlackBoxTest, HBond7) {
     EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "HBOND"; }), 1);
     EXPECT_TRUE(r.containEdge([](const edge& e) {
         return interactionName(e) == "HBOND" && source(e) == "TYR" && target(e) == "LYS" && source_atom(e) == "OH" && target_atom(e) == "NZ" &&
-               compareDistance(e, 2.02752) && compareAngle(e, 0.01263);
+               compareDistance(e, 2.02752) && compareAngle(e, 179.97440);
     }));
 }
 TEST_F(BlackBoxTest, HBond8) {
@@ -239,7 +239,7 @@ TEST_F(BlackBoxTest, HBond8) {
     EXPECT_EQ(r.countEdges([](const edge& e) { return interactionName(e) == "HBOND"; }), 1);
     EXPECT_TRUE(r.containEdge([](const edge& e) {
         return interactionName(e) == "HBOND" && source(e) == "GLN" && target(e) == "LYS" && source_atom(e) == "OE1" && target_atom(e) == "NZ" &&
-               compareDistance(e, 2.56130) && compareAngle(e, 56.03078);
+               compareDistance(e, 2.56130) && compareAngle(e, 67.88154);
     }));
 }
 
