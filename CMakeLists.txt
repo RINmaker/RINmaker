@@ -16,7 +16,7 @@ include(FetchContent)
 message("fetching pugixml...")
 FetchContent_Declare(
         pugixml
-        GIT_REPOSITORY https://github.com/zeux/pugixml.git
+        GIT_REPOSITORY https://github.com/RINmaker/pugixml.git
         GIT_TAG v1.12.1
 )
 FetchContent_MakeAvailable(pugixml)
@@ -26,7 +26,7 @@ FetchContent_MakeAvailable(pugixml)
 message("fetching CLI11...")
 FetchContent_Declare(
         CLI11
-        GIT_REPOSITORY https://github.com/CLIUtils/CLI11.git
+        GIT_REPOSITORY https://github.com/RINmaker/CLI11.git
         GIT_TAG v2.1.2
 )
 FetchContent_MakeAvailable(CLI11)
@@ -35,7 +35,7 @@ FetchContent_MakeAvailable(CLI11)
 message("fetching spdlog...")
 FetchContent_Declare(
         spdlog
-        GIT_REPOSITORY https://github.com/gabime/spdlog.git
+        GIT_REPOSITORY https://github.com/RINmaker/spdlog.git
         GIT_TAG v1.9.2
 )
 FetchContent_MakeAvailable(spdlog)
