@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "BlackBoxTest.h"
+#include "blackbox_test.h"
 
 int main(int argc, const char* argv[]) {
     setRunningPath(argv[0]);

@@ -1,4 +1,4 @@
-#include "BlackBoxTest.h"
+#include "blackbox_test.h"
 
 #define MY_DBL_EPSILON 0.00005
 
