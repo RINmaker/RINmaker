@@ -101,12 +101,16 @@ public:
                 for (auto* h: hydrogens) {
                     std::array<double, 3> const da = (std::array<double, 3>) (acceptor - donor);
                     std::array<double, 3> const dh = (std::array<double, 3>) (*h - donor);
-                    double angle = geom::angle<3>(da, dh);
+                    double angle_adh = geom::angle<3>(da, dh);
 
-                    if (angle <= cfg::params::hbond_angle) // 63
+                    std::array<double, 3> const ha = (std::array<double, 3>) (acceptor - *h);
+                    std::array<double, 3> const hd = (std::array<double, 3>) (donor - *h);
+                    double angle_ahd = geom::angle<3>(ha, hd);
+
+                    if (angle_adh <= cfg::params::hbond_angle) // 63
                     {
                         // TODO verbosity: bond accepted
-                        _net.new_bond<bonds::hydrogen>(acceptor, donor, h, angle);
+                        _net.new_bond<bonds::hydrogen>(acceptor, donor, h, angle_ahd);
                         ++_nbonds;
                     }
 
