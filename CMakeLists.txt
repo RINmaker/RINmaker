@@ -40,7 +40,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(spdlog)
 
-option(USE_DEBUG "enter debug mode for RINmaker_library" OFF)
+option(USE_DEBUG "enter debug mode" OFF)
 if (USE_DEBUG)
     add_definitions(-DDEBUG)
 endif()
