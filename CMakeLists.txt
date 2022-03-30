@@ -45,6 +45,5 @@ if (USE_DEBUG)
     add_definitions(-DDEBUG)
 endif()
 
-add_subdirectory(src)
 add_subdirectory(app)
 add_subdirectory(test)

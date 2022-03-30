@@ -1,4 +1,5 @@
-add_executable(RINmaker main.cpp utils.cpp)
+file(GLOB SRCS ${CMAKE_CURRENT_SOURCE_DIR}/sources/*.cpp)
+add_executable(RINmaker main.cpp ${SRCS})
 
-target_link_libraries(RINmaker PRIVATE RINmaker_library spdlog pugixml CLI11)
-target_include_directories(RINmaker PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../headers")
+target_link_libraries(RINmaker PRIVATE spdlog pugixml CLI11)
+target_include_directories(RINmaker PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/headers")

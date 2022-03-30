@@ -5,6 +5,7 @@ using lm = log_manager;
 
 int main(int argc, const char* argv[]) {
     try {
+        int i = 4;
         if (readArgs(argc, argv)) {
 
             lm::main()->debug("path to PDB input file: " + parameters::get_pdb_path().string());
