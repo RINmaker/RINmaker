@@ -1,21 +1,21 @@
 # RINmaker
 
-configure:
+### How to build
+
+Configure project:
 
 ```bash
 cmake -S . -B build
 ```
 
-make_instance:
+#### App
 
 ```bash
 cmake --build build --target RINmaker
 ```
 
-make_instance tests:
+#### Test
 
 ```bash
 cmake --build build --target RINmaker_test
 ```
-
-executable should be in `make_instance/sources/Debug/`.
