@@ -1,22 +1,12 @@
 #pragma once
 
-#include <string>
 #include <vector>
-#include <list>
-
-#include <map>
-#include <unordered_map>
-
-#include <functional>
 #include <filesystem>
-#include <fstream>
-#include <exception>
-#include <memory>
 
+#include "rin_graph.h"
 #include "chemical_entity.h"
-#include "bond_queries.h"
-#include "rin_network.h"
 
+#include "log_manager.h"
 #include "spatial/kdtree.h"
 
 namespace rin
@@ -26,18 +16,11 @@ namespace fs = std::filesystem;
 using lm = log_manager;
 
 using std::vector;
-using std::list;
-using std::string;
-using std::unordered_map;
-using std::map;
-using std::function;
 
 using chemical_entity::aminoacid;
 using chemical_entity::atom;
 using chemical_entity::ring;
 using chemical_entity::ionic_group;
-
-using std::unique_ptr;
 
 struct maker final
 {
@@ -60,7 +43,6 @@ private:
 
 public:
     explicit maker(fs::path const& pdb_path);
-
     ~maker()
     { for (auto* res: _aminoacids) delete res; }
 

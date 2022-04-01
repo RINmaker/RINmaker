@@ -1,5 +1,24 @@
 #include "rin_maker.h"
 
+#include <functional>
+#include <fstream>
+#include <exception>
+
+#include <string>
+#include <list>
+
+#include <map>
+#include <unordered_map>
+
+#include "rin_network.h"
+#include "bond_queries.h"
+
+using std::list;
+using std::string;
+using std::unordered_map;
+using std::map;
+using std::function;
+
 template<typename Record>
 class secondary_structure_helper final {
 private:
