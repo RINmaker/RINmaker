@@ -79,11 +79,6 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
     app.add_option("--seq-sep", sequence_separation, "sequence separation")
        ->default_val(cfg::params::seq_sep);
 
-    // FIXME bondcontrol is useless; TODO remove
-    string bond_control;
-    app.add_option("--bond-control", bond_control, "strict or weak")
-       ->default_val("strict");
-
     string interaction_type;
     app.add_option("--interaction-type", interaction_type, "all, multiple, one")
        ->default_val("all")
