@@ -50,7 +50,7 @@ string rin::parameters::pretty() const
     strs << "{";
 
     auto pc = interaction_type();
-    strs << "net_policy:" << to_string(pc) << ", ";
+    strs << "interaction_type:" << to_string(pc) << ", ";
     switch (pc)
     {
     case intt::NONCOVALENT_BONDS:
@@ -71,7 +71,7 @@ string rin::parameters::pretty() const
         break;
     }
 
-    strs << "seq_sep:" << sequence_separation() << ", " << "interaction_type:" << to_string(network_policy()) << "}";
+    strs << "seq_sep:" << sequence_separation() << ", " << "network_policy:" << to_string(network_policy()) << "}";
 
     return strs.str();
 }

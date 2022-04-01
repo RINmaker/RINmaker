@@ -79,8 +79,8 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
     app.add_option("--seq-sep", sequence_separation, "sequence separation")
        ->default_val(cfg::params::seq_sep);
 
-    string interaction_type;
-    app.add_option("--interaction-type", interaction_type, "all, multiple, one")
+    string network_policy;
+    app.add_option("--network-policy", network_policy, "all, multiple, one")
        ->default_val("all")
        ->check(
                [](string const& str)->string
@@ -90,8 +90,8 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
                           : "";
                });
 
-    string old_net_policy;
-    app.add_option("--net-policy", old_net_policy, "closest, ca or cb")
+    string interaction_type;
+    app.add_option("--interaction-type", interaction_type, "closest, ca or cb")
        ->default_val("closest")
        ->check(
                [](string const& str)->string
@@ -176,23 +176,23 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
             .set_sequence_separation(sequence_separation)
             .set_hbond_realistic(hbond_realistic_flag);
 
-    if (interaction_type == "all")
+    if (network_policy == "all")
         pcfg.set_network_policy(rin::parameters::network_policy_t::ALL);
-    else if (interaction_type == "multiple")
+    else if (network_policy == "multiple")
         pcfg.set_network_policy(rin::parameters::network_policy_t::BEST_PER_TYPE);
-    else if (interaction_type == "one")
+    else if (network_policy == "one")
         pcfg.set_network_policy(rin::parameters::network_policy_t::BEST_ONE);
     else
-        throw std::runtime_error("incorret interaction type argument: \"" + interaction_type + "\"");
+        throw std::runtime_error("incorret network policy argument: \"" + network_policy + "\"");
 
-    if (old_net_policy == "ca")
+    if (interaction_type == "ca")
         pcfg.set_interaction_type(rin::parameters::interaction_type_t::ALPHA_BACKBONE);
-    else if (old_net_policy == "cb")
+    else if (interaction_type == "cb")
         pcfg.set_interaction_type(rin::parameters::interaction_type_t::BETA_BACKBONE);
-    else if (old_net_policy == "closest")
+    else if (interaction_type == "closest")
         pcfg.set_interaction_type(rin::parameters::interaction_type_t::NONCOVALENT_BONDS);
     else
-        throw std::runtime_error("incorrect network policy argument: \"" + old_net_policy + "\"");
+        throw std::runtime_error("incorrect interaction type argument: \"" + interaction_type + "\"");
 
     std::filesystem::create_directory(log_dir);
     log_manager::initialize(log_dir);
