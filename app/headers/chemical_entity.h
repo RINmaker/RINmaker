@@ -7,8 +7,6 @@
 
 #include "config.h"
 
-#include "runtime_params.h"
-
 #include "rin_graph.h"
 
 #include "energy.h"

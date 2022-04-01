@@ -10,7 +10,6 @@
 #include "rin_maker.h"
 #include "rin_params.h"
 #include "log_manager.h"
-#include "runtime_params.h"
 
 struct arguments final
 {

@@ -6,7 +6,6 @@
 #include "noncovalent_bonds.h"
 #include "chemical_entity.h"
 #include "config.h"
-#include "runtime_params.h"
 
 using namespace rin;
 
