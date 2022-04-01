@@ -1,4 +1,4 @@
-#include "bond_network.h"
+#include "rin_network.h"
 
 std::list<bonds::base const*> network::pairbond::get_all() const
 {

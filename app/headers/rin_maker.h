@@ -15,7 +15,7 @@
 
 #include "chemical_entity.h"
 #include "bond_queries.h"
-#include "bond_network.h"
+#include "rin_network.h"
 
 #include "spatial/kdtree.h"
 
