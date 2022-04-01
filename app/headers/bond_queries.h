@@ -8,7 +8,7 @@
 #include "noncovalent_bonds.h"
 #include "chemical_entity.h"
 
-#include "bond_network.h"
+#include "rin_network.h"
 #include "log_manager.h"
 #include "spatial/kdpoint.h"
 
