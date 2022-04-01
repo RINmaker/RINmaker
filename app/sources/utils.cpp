@@ -142,9 +142,6 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
        ->default_val(cfg::params::pipi_strict)
        ->check(positive_check);
 
-    bool force_flag = false;
-    app.add_flag("--force", force_flag, "force disable safety guards for distance arguments");
-
     bool hbond_realistic_flag = false;
     app.add_flag("--h-bond-realistic", hbond_realistic_flag, "filter hydrogen bonds limiting bond per atom");
 
@@ -211,4 +208,3 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
     result = arguments{params, pdb_path, out_path, log_dir};
     return true;
 }
-
