@@ -6,6 +6,7 @@
 #include "chemical_entity.h"
 #include "runtime_params.h"
 #include "energy.h"
+#include "rin_params.h"
 
 class network;
 
@@ -105,17 +106,17 @@ public:
     std::string get_interaction() const
     {
         std::string get_interaction = "GENERIC:";
-        switch (parameters::get_net_policy())
+        switch (rin::parameters::global::instance().get().interaction_type())
         {
-            case parameters::policy::CA:
+        case rin::parameters::interaction_type_t::ALPHA_BACKBONE:
                 get_interaction += "CA";
                 break;
 
-            case parameters::policy::CB:
+            case rin::parameters::interaction_type_t::BETA_BACKBONE:
                 get_interaction += "CB";
                 break;
 
-            case parameters::policy::CLOSEST:
+            case rin::parameters::interaction_type_t::NONCOVALENT_BONDS:
                 get_interaction += "CLOSEST";
                 break;
         }
@@ -125,6 +126,7 @@ public:
 
     std::string get_type() const
     { return "generic"; } // TODO va in config
+
     rin::edge to_edge() const
     { return rin::edge(*this); }
 };

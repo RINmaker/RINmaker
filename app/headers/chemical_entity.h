@@ -78,8 +78,9 @@ namespace chemical_entity {
     private:
         friend struct rin::maker;
 
-        // lifetime is managed by pdb_data
-        explicit aminoacid(std::vector<records::atom> const &records);
+        std::string _pdb_name;
+
+        explicit aminoacid(std::vector<records::atom> const &records, std::string const& pdb_name);
 
         ~aminoacid();
 
@@ -89,6 +90,9 @@ namespace chemical_entity {
          */
         [[nodiscard]]
         std::vector<atom const *> const &atoms() const { return _atoms; }
+
+        [[nodiscard]]
+        std::string const& pdb_name() const {return _pdb_name;}
 
         /**
          * @return A pointer to the <b>alpha</b> backbone.
@@ -177,7 +181,7 @@ namespace chemical_entity {
          */
         [[nodiscard]]
         bool
-        satisfies_minimum_separation(aminoacid const &aa, int minimum_separation = parameters::get_seq_sep()) const {
+        satisfies_minimum_separation(aminoacid const &aa, int minimum_separation=cfg::params::seq_sep) const {
             if (*this == aa) {
                 return false;
             }

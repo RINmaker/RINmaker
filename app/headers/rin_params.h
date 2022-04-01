@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <string>
 #include "config.h"
 
 namespace rin
@@ -45,6 +46,7 @@ private:
 
 public:
     struct configurator;
+    struct global;
 
     [[nodiscard]]
     double query_dist_hbond() const
@@ -89,6 +91,9 @@ public:
     [[nodiscard]]
     network_policy_t network_policy() const
     { return _network_policy; }
+
+    [[nodiscard]]
+    std::string pretty() const;
 };
 
 struct parameters::configurator final
@@ -165,6 +170,30 @@ public:
     {
         params._hbond_realistics = val;
         return *this;
+    }
+};
+
+// fixme this is temporary
+struct parameters::global final
+{
+private:
+    parameters _params;
+
+public:
+    static global& instance()
+    {
+        static global inst = global();
+        return inst;
+    }
+
+    parameters const& get()
+    {
+        return _params;
+    }
+
+    void set(parameters params)
+    {
+        _params = params;
     }
 };
 }

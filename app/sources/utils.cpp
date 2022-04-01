@@ -169,16 +169,9 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
        ->default_val(cfg::params::pipistack_normal_centre_angle_range)
        ->check(positive_check);
 
-    // CLI parser
     CLI11_PARSE(app, argc, argv);
 
-    parameters::set_net_policy(old_net_policy);
-    parameters::set_interaction_type(interaction_type);
-
-    auto params = rin::parameters::configurator()
-            .set_interaction_type(rin::parameters::interaction_type_t::NONCOVALENT_BONDS)
-            .set_network_policy(rin::parameters::network_policy_t::ALL)
-
+    auto pcfg = rin::parameters::configurator()
             .set_query_dist_alpha(generic_distance)
             .set_query_dist_beta(generic_distance)
 
@@ -189,9 +182,31 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
             .set_query_dist_pipi(pipistack_distance)
 
             .set_sequence_separation(sequence_separation)
-            .set_hbond_realistic(hbond_realistic_flag)
+            .set_hbond_realistic(hbond_realistic_flag);
 
-            .build();
+    if (interaction_type == "all")
+        pcfg.set_network_policy(rin::parameters::network_policy_t::ALL);
+    else if (interaction_type == "multiple")
+        pcfg.set_network_policy(rin::parameters::network_policy_t::BEST_PER_TYPE);
+    else if (interaction_type == "one")
+        pcfg.set_network_policy(rin::parameters::network_policy_t::BEST_ONE);
+    else
+        throw std::runtime_error("incorret interaction type argument: \"" + interaction_type + "\"");
+
+    if (old_net_policy == "ca")
+        pcfg.set_interaction_type(rin::parameters::interaction_type_t::ALPHA_BACKBONE);
+    else if (old_net_policy == "cb")
+        pcfg.set_interaction_type(rin::parameters::interaction_type_t::BETA_BACKBONE);
+    else if (old_net_policy == "closest")
+        pcfg.set_interaction_type(rin::parameters::interaction_type_t::NONCOVALENT_BONDS);
+    else
+        throw std::runtime_error("incorrect network policy argument: \"" + old_net_policy + "\"");
+
+    std::filesystem::create_directory(log_dir);
+    log_manager::initialize(log_dir);
+
+    auto params = pcfg.build();
+    rin::parameters::global::instance().set(params);
 
     result = arguments{params, pdb_path, out_path, log_dir};
     return true;

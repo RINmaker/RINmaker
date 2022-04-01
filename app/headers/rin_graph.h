@@ -4,10 +4,11 @@
 #include <array>
 #include <queue>
 #include <unordered_map>
+#include <filesystem>
 #include <pugixml.hpp>
 
-// entity has to #include "rin"
-// #include "entity.h"
+#include "rin_params.h"
+
 namespace chemical_entity { class aminoacid; }
 
 namespace bonds
@@ -104,7 +105,7 @@ public:
     void insert(node const& n) { nodes.insert({ n.get_id(), n }); }
 
 public:
-    void consume_to_xml();
+    void consume_to_xml(rin::parameters const& params, std::filesystem::path const& out_path);
     std::vector<edge> get_edges();
     std::unordered_map<std::string, node> get_nodes();
 };

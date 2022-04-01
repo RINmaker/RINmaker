@@ -11,6 +11,7 @@
 #include "rin_network.h"
 #include "log_manager.h"
 #include "spatial/kdpoint.h"
+#include "rin_params.h"
 
 namespace bondfunctors {
 
@@ -44,7 +45,7 @@ public:
 public:
     void operator()(chemical_entity::atom const& a, chemical_entity::atom const& b) {
         if (a.res().satisfies_minimum_separation(b.res()) &&
-            a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= parameters::get_distance_vdw()) {
+            a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= rin::parameters::global::instance().get().query_dist_vdw()) {
             std::string const unique_key = prelude::sort(a.res().id(), b.res().id());
             if (_bonded.find(unique_key) == _bonded.end()) {
                 // TODO verbosity: bond accepted
@@ -135,7 +136,7 @@ public:
     // FIXME possibile bug
     // TODO mark resolved?
     void operator()(chemical_entity::atom const& cation, chemical_entity::ring const& ring) {
-        if (ring.res().satisfies_minimum_separation(cation.res())) {
+        if (ring.res().satisfies_minimum_separation(cation.res(), rin::parameters::global::instance().get().sequence_separation())) {
             // TODO verbosity: bond accepted
             double theta = 90 - geom::d_angle<3>(ring.normal(), (std::array<double, 3>) (ring - cation));
             if (theta >= cfg::params::pication_angle) // 45

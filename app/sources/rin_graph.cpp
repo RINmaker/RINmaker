@@ -181,13 +181,8 @@ edge graph::pop_edge()
     return e;
 }
 
-void graph::consume_to_xml()
+void graph::consume_to_xml(rin::parameters const& params, std::filesystem::path const& out_path)
 {
-    if (parameters::get_output_path().has_parent_path())
-    {
-        std::filesystem::create_directory(parameters::get_output_path().parent_path());
-    }
-
     pugi::xml_document doc;
 
     // <graphml>
@@ -198,7 +193,7 @@ void graph::consume_to_xml()
 
     // parameters summary
     auto comment = graphml.parent().insert_child_before(pugi::node_comment, graphml);
-    comment.set_value(parameters::pretty().c_str());
+    comment.set_value(params.pretty().c_str());
 
     // <graph>
     pugi::xml_node graph_node = graphml.append_child("graph");
@@ -227,7 +222,10 @@ void graph::consume_to_xml()
         }
     }
 
-    doc.save_file(parameters::get_output_path().c_str());
+    if (!out_path.has_parent_path())
+        std::filesystem::create_directory(out_path.parent_path());
+
+    doc.save_file(out_path.c_str());
 }
 
 node::node(chemical_entity::aminoacid const& res)
@@ -241,7 +239,7 @@ node::node(chemical_entity::aminoacid const& res)
         _z(std::to_string(res[2])),
         _bfactor(res.ca() == nullptr ? "NULL" : std::to_string(res.ca()->temp_factor())),
         _secondary(res.secondary_structure_id()),
-        _pdb_name(parameters::get_pdb_name()),
+        _pdb_name(res.pdb_name()), // TODO
         _degree(0)
 {}
 

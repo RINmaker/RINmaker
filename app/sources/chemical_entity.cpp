@@ -1,6 +1,7 @@
 #include "chemical_entity.h"
 
-chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records) : kdpoint<3>({0, 0, 0})
+chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records, std::string const& pdb_name) :
+kdpoint<3>({0, 0, 0}), _pdb_name(pdb_name)
 {
     /* TODO throw exception. It cannot happen.
     if (records.empty())

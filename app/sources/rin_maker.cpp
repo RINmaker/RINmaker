@@ -79,6 +79,8 @@ rin::maker::maker(fs::path const& pdb_path)
 
     lm::main()->info("parsing pdb...");
 
+    auto pdb_name = pdb_path.stem().string();
+
     // parsed line
     string line;
     while (getline(pdb_file, line))
@@ -93,7 +95,7 @@ rin::maker::maker(fs::path const& pdb_path)
             records::atom record(line);
             if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back()))
             {
-                _aminoacids.push_back(new aminoacid(tmp_atoms));
+                _aminoacids.push_back(new aminoacid(tmp_atoms, pdb_name));
                 tmp_atoms.clear();
             }
 
@@ -116,7 +118,7 @@ rin::maker::maker(fs::path const& pdb_path)
 
     if (!tmp_atoms.empty())
     {
-        _aminoacids.push_back(new aminoacid(tmp_atoms));
+        _aminoacids.push_back(new aminoacid(tmp_atoms, pdb_name));
     }
 
     lm::main()->info("finding the appropriate secondary structure for each aminoacid...");

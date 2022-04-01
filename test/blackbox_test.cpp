@@ -91,10 +91,6 @@ protected:
 
         // won't throw std::bad_optional because args are hand crafted above
         arguments parsed = maybe_args.value();
-
-        std::filesystem::create_directory(parsed.log_path);
-        log_manager::initialize(parsed.log_path);
-
         return Result(rin::maker(parsed.pdb_path), parsed.params);
     }
 

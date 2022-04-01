@@ -11,8 +11,6 @@ int main(int argc, const char* argv[])
         if (read_args(argc, argv, maybe_args) && maybe_args.has_value())
         {
             arguments parsed = maybe_args.value();
-            std::filesystem::create_directory(parsed.log_path);
-            log_manager::initialize(parsed.log_path);
 
             lm::main()->debug("path to PDB input file: " + parsed.pdb_path.string());
             lm::main()->debug("path to output xml file: " + parsed.out_path.string());
@@ -23,7 +21,7 @@ int main(int argc, const char* argv[])
 
             // parse file and build acceleration structures
             auto rm = rin::maker(parsed.pdb_path);
-            rm(parsed.params).consume_to_xml();
+            rm(parsed.params).consume_to_xml(parsed.params, parsed.out_path);
 
 #           if _MSC_VER
             spdlog::drop_all();
