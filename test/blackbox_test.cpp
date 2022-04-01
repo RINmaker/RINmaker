@@ -55,11 +55,20 @@ public:
     }
     */
 
+    /*
     explicit Result(std::unique_ptr<rin_maker::base const> rm) : rin_graph(rm->get_graph(parameters::get_interaction_type()))
     {
         edges = rin_graph.get_edges();
         nodes = rin_graph.get_nodes();
     }
+    */
+
+    explicit Result(rin_maker::rin_maker const& rm) : rin_graph(rm(parameters::get_interaction_type(), parameters::get_net_policy()))
+    {
+        edges = rin_graph.get_edges();
+        nodes = rin_graph.get_nodes();
+    }
+
 
 
 private:
@@ -97,7 +106,8 @@ protected:
         const char* args[2] = { exePath.c_str(), pdbPath.c_str() };
 
         readArgs(2, args);
-        return Result(rin_maker::make_instance(parameters::get_net_policy(), parameters::get_pdb_path()));
+        //return Result(rin_maker::make_instance(parameters::get_net_policy(), parameters::get_pdb_path()));
+        return Result(rin_maker::rin_maker(parameters::get_pdb_path()));
     }
 
     void TearDown() override { }

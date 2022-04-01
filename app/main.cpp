@@ -15,11 +15,8 @@ int main(int argc, const char* argv[]) {
             // does this hold? --lore
             lm::main()->info("params summary: " + parameters::pretty());
 
-            auto rm = rin_maker::make_instance(parameters::get_net_policy(), parameters::get_pdb_path());
-            if (rm == nullptr)
-                throw std::runtime_error("failed to create rin_maker instance");
-
-            rm->get_graph(parameters::get_interaction_type()).consume_to_xml();
+            auto rm = rin_maker::rin_maker(parameters::get_pdb_path());
+            rm(parameters::get_interaction_type(), parameters::get_net_policy()).consume_to_xml();
 
 #           if _MSC_VER
             spdlog::drop_all();
