@@ -17,10 +17,12 @@ int main(int argc, const char* argv[])
 
             // TODO write to cout and also log
             // does this hold? --lore
-            // lm::main()->info("params summary: " + parameters::pretty());
+            lm::main()->info("params summary: " + parsed.params.pretty());
 
             // parse file and build acceleration structures
             auto rm = rin::maker(parsed.pdb_path);
+
+            // create rin and write to graphml
             rm(parsed.params).consume_to_xml(parsed.params, parsed.out_path);
 
 #           if _MSC_VER
