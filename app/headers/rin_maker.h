@@ -19,9 +19,8 @@
 
 #include "spatial/kdtree.h"
 
-namespace rin_maker
+namespace rin
 {
-
 namespace fs = std::filesystem;
 
 using lm = log_manager;
@@ -40,7 +39,7 @@ using chemical_entity::ionic_group;
 
 using std::unique_ptr;
 
-struct rin_maker final
+struct maker final
 {
 private:
     vector<aminoacid*> _aminoacids;
@@ -60,9 +59,9 @@ private:
     vector<atom const*> _alpha_carbon_vector, _beta_carbon_vector;
 
 public:
-    explicit rin_maker(fs::path const& pdb_path);
+    explicit maker(fs::path const& pdb_path);
 
-    ~rin_maker()
+    ~maker()
     { for (auto* res: _aminoacids) delete res; }
 
     rin::graph operator()(parameters::interaction_type interaction_type, parameters::policy network_policy) const;

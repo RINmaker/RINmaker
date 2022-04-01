@@ -33,7 +33,7 @@ public:
     }
 };
 
-rin_maker::rin_maker::rin_maker(fs::path const& pdb_path)
+rin::maker::maker(fs::path const& pdb_path)
 {
     // open pdb
     std::ifstream pdb_file;
@@ -187,7 +187,7 @@ static void find_bonds(
     }
 }
 
-rin::graph rin_maker::rin_maker::operator()(parameters::interaction_type interaction_type, parameters::policy network_policy) const {
+rin::graph rin::maker::operator()(parameters::interaction_type interaction_type, parameters::policy network_policy) const {
     network _rin_network;
     rin::graph graph;
 

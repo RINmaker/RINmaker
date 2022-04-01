@@ -15,7 +15,7 @@ int main(int argc, const char* argv[]) {
             // does this hold? --lore
             lm::main()->info("params summary: " + parameters::pretty());
 
-            auto rm = rin_maker::rin_maker(parameters::get_pdb_path());
+            auto rm = rin::maker(parameters::get_pdb_path());
             rm(parameters::get_interaction_type(), parameters::get_net_policy()).consume_to_xml();
 
 #           if _MSC_VER

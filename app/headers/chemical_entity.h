@@ -22,8 +22,7 @@
 
 #include "log_manager.h"
 
-class pdb_data;
-namespace rin_maker {class base; struct rin_maker; }
+namespace rin { struct maker; }
 
 namespace chemical_entity {
 
@@ -77,9 +76,7 @@ namespace chemical_entity {
         structure::base *_secondary_structure = new structure::base();
 
     private:
-        friend class ::pdb_data;
-        friend class rin_maker::base;
-        friend struct rin_maker::rin_maker;
+        friend struct rin::maker;
 
         // lifetime is managed by pdb_data
         explicit aminoacid(std::vector<records::atom> const &records);
