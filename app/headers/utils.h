@@ -2,15 +2,23 @@
 
 #include <iostream>
 #include <string>
+#include <optional>
+#include <filesystem>
 
 #include "spdlog/spdlog.h"
 
 #include "rin_maker.h"
-
+#include "rin_params.h"
 #include "log_manager.h"
 #include "runtime_params.h"
 
-bool readArgs(int argc, const char* argv[]);
+struct arguments final
+{
+    rin::parameters params;
+    std::filesystem::path pdb_path, out_path, log_path;
+};
+
+bool read_args(int argc, const char* argv[], std::optional<arguments>& result);
 
 std::string app_full_name();
 

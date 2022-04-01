@@ -22,6 +22,8 @@ using chemical_entity::atom;
 using chemical_entity::ring;
 using chemical_entity::ionic_group;
 
+struct parameters;
+
 struct maker final
 {
 private:
@@ -46,6 +48,6 @@ public:
     ~maker()
     { for (auto* res: _aminoacids) delete res; }
 
-    rin::graph operator()(parameters::interaction_type interaction_type, parameters::policy network_policy) const;
+    rin::graph operator()(parameters const& params) const;
 };
 }

@@ -2,7 +2,8 @@
 
 using namespace std;
 
-string app_full_name() {
+string app_full_name()
+{
     using namespace cfg::ver;
     char buf[500];
     const char* dbg =
@@ -44,27 +45,26 @@ string app_full_name() {
 
     string date = __DATE__;
     const char two_digit_year[] = {date[date.size() - 2], date[date.size() - 1], '\0'};
-
     snprintf(
-            buf, sizeof(buf), "%s v%d.%d.%d make_instance %s %s (%s) %s\n(C) 2020-%s Ca' Foscari University of Venice\n", app_name, major, minor, rev, __DATE__, __TIME__, os, dbg
+            buf, sizeof(buf), "%s v%d.%d.%d build %s %s (%s) %s\n(C) 2020-%s Ca' Foscari University of Venice\n", app_name, major, minor, rev, __DATE__, __TIME__, os, dbg
             , two_digit_year); // sprintf for easier format string under C++17 (C++20 would have std::format)
     return buf;
 }
 
-bool readArgs(int argc, const char* argv[]) {
-    if (argc <= 1) {
+bool read_args(int argc, const char* argv[], optional<arguments>& result)
+{
+    result = nullopt;
+    if (argc <= 1)
+    {
         cout << "Use -h or --help for help." << endl;
         return false;
     }
 
-    // CLI stuff
-    //
-
     CLI::App app(app_full_name());
     app.get_formatter()->column_width(48);
 
-    filesystem::path pdb_file;
-    app.add_option("path-to-pdb", pdb_file, "PDB (.pdb) file input")
+    filesystem::path pdb_path;
+    app.add_option("path-to-pdb", pdb_path, "path to PDB (.pdb) input")
        ->required()
        ->check(CLI::ExistingFile);
 
@@ -72,55 +72,44 @@ bool readArgs(int argc, const char* argv[]) {
     app.add_option("-l,--log", log_dir, "log directory")
        ->default_str(cfg::log::default_dirname);
 
-    filesystem::path out_file;
-    app.add_option("-o,--output", out_file, "graphml (.xml) file output");
+    filesystem::path out_path;
+    app.add_option("-o,--output", out_path, "path to graphml (.xml) output");
 
-    unsigned int seq_sep;
-    app.add_option("--seq-sep", seq_sep, "sequence separation")
+    int sequence_separation;
+    app.add_option("--seq-sep", sequence_separation, "sequence separation")
        ->default_val(cfg::params::seq_sep);
 
+    // FIXME bondcontrol is useless; TODO remove
     string bond_control;
     app.add_option("--bond-control", bond_control, "strict or weak")
-       ->default_val("strict")
-       ->check(
-               [](string const& str) {
-                   return
-                           str != "strict" && str != "weak"
-                           ? string(R"(must be "strict" or "weak" but you entered ")" + str + "\"")
-                           : "";
-               });
+       ->default_val("strict");
 
-    std::string interaction_type;
+    string interaction_type;
     app.add_option("--interaction-type", interaction_type, "all, multiple, one")
        ->default_val("all")
        ->check(
-               [](string const& str) {
-                   if (str != "all" && str != "multiple" && str != "one") {
-                       return string("must be \"all\", \"multiple\", \"one\" but you entered \"" + str + "\"");
-                   } else {
-                       return string();
-                   }
+               [](string const& str)->string
+               {
+                   return str != "all" && str != "multiple" && str != "one"
+                          ? string(R"(must be "all", "multiple", "one" but you entered ")" + str + "\"")
+                          : "";
                });
 
-    string net_policy;
-    app.add_option("--net-policy", net_policy, "closest, ca or cb")
+    string old_net_policy;
+    app.add_option("--net-policy", old_net_policy, "closest, ca or cb")
        ->default_val("closest")
        ->check(
-               [](string const& str) {
-                   if (str != "closest" && str != "ca" && str != "cb") {
-                       return string("must be \"closest\", \"ca\" or \"cb\" but you entered \"" + str + "\"");
-                   } else {
-                       return string();
-                   }
+               [](string const& str)->string
+               {
+                   return str != "closest" && str != "ca" && str != "cb"
+                          ? string(R"(must be "closest", "ca" or "cb" but you entered ")" + str + "\"")
+                          : "";
                });
 
-    auto positive_check = [](std::string const& str) {
+    auto positive_check = [](string const& str)->string
+    {
         double val = stod(str);
-        if (val <= 0) {
-            return std::string("cannot be <= 0");
-        } else {
-            return std::string();
-        }
+        return val <= 0 ? "must be > 0" : "";
     };
 
     double h_distance;
@@ -183,31 +172,28 @@ bool readArgs(int argc, const char* argv[]) {
     // CLI parser
     CLI11_PARSE(app, argc, argv);
 
-    // init log
-    //
-    parameters::set_log_path(log_dir);
-
-    parameters::set_pdb_path(pdb_file);
-    parameters::set_out_path(out_file);
-
-    parameters::set_net_policy(net_policy);
-    parameters::set_bond_control(bond_control);
+    parameters::set_net_policy(old_net_policy);
     parameters::set_interaction_type(interaction_type);
 
-    parameters::set_forcing(force_flag);
-    parameters::set_hbond_realistic(hbond_realistic_flag);
+    auto params = rin::parameters::configurator()
+            .set_interaction_type(rin::parameters::interaction_type_t::NONCOVALENT_BONDS)
+            .set_network_policy(rin::parameters::network_policy_t::ALL)
 
-    parameters::set_hbond_distance(h_distance);
-    parameters::set_vdw_distance(vdw_distance);
-    parameters::set_ionic_distance(ionic_distance);
-    parameters::set_generic_distance(generic_distance);
-    parameters::set_pication_distance(pication_distance);
-    parameters::set_pipistack_distance(pipistack_distance);
+            .set_query_dist_alpha(generic_distance)
+            .set_query_dist_beta(generic_distance)
 
-    parameters::set_seq_sep(seq_sep);
+            .set_query_dist_hbond(h_distance)
+            .set_surface_dist_vdw(vdw_distance)
+            .set_query_dist_ionic(ionic_distance)
+            .set_query_dist_pica(pication_distance)
+            .set_query_dist_pipi(pipistack_distance)
 
-    std::filesystem::create_directory(log_dir);
-    log_manager::initialize(log_dir);
+            .set_sequence_separation(sequence_separation)
+            .set_hbond_realistic(hbond_realistic_flag)
 
+            .build();
+
+    result = arguments{params, pdb_path, out_path, log_dir};
     return true;
 }
+

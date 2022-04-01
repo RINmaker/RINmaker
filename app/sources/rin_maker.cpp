@@ -11,6 +11,7 @@
 #include <unordered_map>
 
 #include "rin_network.h"
+#include "rin_params.h"
 #include "bond_queries.h"
 
 using std::list;
@@ -20,32 +21,41 @@ using std::map;
 using std::function;
 
 template<typename Record>
-class secondary_structure_helper final {
+class secondary_structure_helper final
+{
 private:
     std::unordered_map<string, std::map<interval<int>, Record, interval<int>::less>> _map;
 
 public:
-    void insert(Record const& record) {
+    void insert(Record const& record)
+    {
         auto chain = _map.find(record.init_chain_id());
-        if (chain == _map.end()) {
+        if (chain == _map.end())
+        {
             std::map<interval<int>, Record, interval<int>::less> new_chain;
             new_chain.insert({record.range(), record});
             _map.insert({record.init_chain_id(), new_chain});
-        } else {
+        }
+        else
+        {
             chain->second.insert({record.range(), record});
         }
     }
 
     [[nodiscard]]
-    int size() const { return _map.size(); }
+    int size() const
+    { return _map.size(); }
 
     // updates the secondary structure of res if res is present
-    void update_if_contains(chemical_entity::aminoacid& res) const {
+    void update_if_contains(chemical_entity::aminoacid& res) const
+    {
         auto chain = _map.find(res.chain_id());
-        if (chain != _map.end()) {
+        if (chain != _map.end())
+        {
             auto kv = chain->second.find(
                     interval<int>(res.sequence_number(), res.sequence_number()));
-            if (kv != chain->second.end()) {
+            if (kv != chain->second.end())
+            {
                 res.make_secondary_structure(kv->second);
             }
         }
@@ -71,23 +81,30 @@ rin::maker::maker(fs::path const& pdb_path)
 
     // parsed line
     string line;
-    while (getline(pdb_file, line)) {
+    while (getline(pdb_file, line))
+    {
 
         // first field is the type of the record
         string record_type = prelude::trim(line.substr(0, 6));
 
-        if (record_type == "ATOM") {
+        if (record_type == "ATOM")
+        {
             // atoms are grouped by aminoacid: we can simply fill a collection until we change residue
             records::atom record(line);
-            if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back())) {
+            if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back()))
+            {
                 _aminoacids.push_back(new aminoacid(tmp_atoms));
                 tmp_atoms.clear();
             }
 
             tmp_atoms.push_back(record);
-        } else if (record_type == "HELIX") {
+        }
+        else if (record_type == "HELIX")
+        {
             helix_records.insert(records::helix(line));
-        } else if (record_type == "SHEET") {
+        }
+        else if (record_type == "SHEET")
+        {
             sheet_records.insert(records::sheet_piece(line));
         }
         /* TODO ssbonds
@@ -97,14 +114,17 @@ rin::maker::maker(fs::path const& pdb_path)
         */
     }
 
-    if (!tmp_atoms.empty()) {
+    if (!tmp_atoms.empty())
+    {
         _aminoacids.push_back(new aminoacid(tmp_atoms));
     }
 
     lm::main()->info("finding the appropriate secondary structure for each aminoacid...");
 
-    if (sheet_records.size() != 0 || helix_records.size() != 0) {
-        for (auto* res: _aminoacids) {
+    if (sheet_records.size() != 0 || helix_records.size() != 0)
+    {
+        for (auto* res: _aminoacids)
+        {
             res->make_secondary_structure();
             sheet_records.update_if_contains(*res);
             helix_records.update_if_contains(*res);
@@ -117,7 +137,8 @@ rin::maker::maker(fs::path const& pdb_path)
     vector<atom const*> hdonors;
     vector<ionic_group const*> positives;
 
-    for (auto* res: _aminoacids) {
+    for (auto* res: _aminoacids)
+    {
 
         auto carbon = res->ca();
         if (carbon != nullptr)
@@ -127,7 +148,8 @@ rin::maker::maker(fs::path const& pdb_path)
         if (carbon != nullptr)
             _beta_carbon_vector.push_back(carbon);
 
-        for (auto const* a: res->atoms()) {
+        for (auto const* a: res->atoms())
+        {
             if (a->is_a_hydrogen_donor())
                 hdonors.push_back(a);
 
@@ -150,7 +172,8 @@ rin::maker::maker(fs::path const& pdb_path)
             _negative_ion_vector.push_back(group);
 
         auto const* ring = res->primary_ring();
-        if (ring != nullptr) {
+        if (ring != nullptr)
+        {
             _ring_vector.push_back(ring);
 
             if (ring->is_a_pication_candidate())
@@ -158,7 +181,8 @@ rin::maker::maker(fs::path const& pdb_path)
         }
 
         ring = res->secondary_ring();
-        if (ring != nullptr) {
+        if (ring != nullptr)
+        {
             _ring_vector.push_back(ring);
 
             if (ring->is_a_pication_candidate())
@@ -190,7 +214,8 @@ using chemical_entity::component;
 
 template<typename BondFunc, typename Entity1, typename Entity2>
 static void find_bonds(
-        network& net, std::vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double distance) {
+        network& net, std::vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double distance)
+{
     static_assert(
             std::is_base_of<component, Entity1>::value, "template typename Entity1 must inherit from type entity::component");
     static_assert(
@@ -199,72 +224,81 @@ static void find_bonds(
             std::is_base_of<bondfunctors::base, BondFunc>::value, "template typename BondFunc must inherit from type bondfunctor::base");
 
     BondFunc if_test_insert(net);
-    for (auto* e1: vec) {
+    for (auto* e1: vec)
+    {
         auto neighbors = tree.range_search(*e1, distance);
         for (auto* e2: neighbors)
             if_test_insert(*e1, *e2);
     }
 }
 
-rin::graph rin::maker::operator()(parameters::interaction_type interaction_type, parameters::policy network_policy) const {
-    network _rin_network;
-    rin::graph graph;
+rin::graph rin::maker::operator()(parameters const& params) const
+{
+    network _network;
 
     list<bonds::base const*> results;
-    switch (network_policy) {
-        case parameters::policy::CLOSEST:
+    switch (params.interaction_type())
+    {
+    case parameters::interaction_type_t::NONCOVALENT_BONDS:
+        find_bonds<bondfunctors::hydrogen>(
+                _network, _hacceptor_vector, _hdonor_tree, params.query_dist_hbond());
+
+        find_bonds<bondfunctors::vdw>(
+                _network, _vdw_vector, _vdw_tree, params.query_dist_vdw());
+
+        find_bonds<bondfunctors::ionic>(
+                _network, _negative_ion_vector, _positive_ion_tree, params.query_dist_ionic());
+
+        find_bonds<bondfunctors::pication>(
+                _network, _cation_vector, _pication_ring_tree, params.query_dist_pica());
+
+        find_bonds<bondfunctors::pipistack>(
+                _network, _ring_vector, _ring_tree, params.query_dist_pipi());
+
+        switch (params.network_policy())
         {
-            find_bonds<bondfunctors::vdw>(
-                    _rin_network, _vdw_vector, _vdw_tree, parameters::get_distance_vdw() +
-                                                          2 * cfg::params::max_vdw_radius);
-            find_bonds<bondfunctors::ionic>(
-                    _rin_network, _negative_ion_vector, _positive_ion_tree, parameters::get_distance_ionic());
-            find_bonds<bondfunctors::hydrogen>(
-                    _rin_network, _hacceptor_vector, _hdonor_tree, parameters::get_distance_h());
-            find_bonds<bondfunctors::pication>(
-                    _rin_network, _cation_vector, _pication_ring_tree, parameters::get_distance_pication());
-            find_bonds<bondfunctors::pipistack>(
-                    _rin_network, _ring_vector, _ring_tree, parameters::get_distance_pipistack());
+        case parameters::network_policy_t::ALL:
+            results = _network.get_all();
+            break;
 
-            switch (interaction_type) {
-                case parameters::interaction_type::MULTIPLE:
-                    results = _rin_network.get_multiple();
-                    break;
+        case parameters::network_policy_t::BEST_PER_TYPE:
+            results = _network.get_multiple();
+            break;
 
-                case parameters::interaction_type::ALL:
-                    results = _rin_network.get_all();
-                    break;
-
-                case parameters::interaction_type::ONE:
-                    results = _rin_network.get_one();
-                    break;
-            }
-
-            // TODO pensare ad un modo per mettere il filtro prima di get_multiple /
-            // get_all ... (Può essere che tocchi creare una nuova net travasando solo i
-            // risultati filtrati)
-            if (parameters::get_hbond_realistic())
-                results = _rin_network.filter_hbond_realistic(results);
+        case parameters::network_policy_t::BEST_ONE:
+            results = _network.get_one();
+            break;
         }
+
+        // TODO
+        // pensare a un modo per mettere il filtro prima di get_multiple/get_all...
+        // (può essere che tocchi creare una nuova net travasando solo risultati filtrati?)
+        if (params.hbond_realistic())
+            results = _network.filter_hbond_realistic(results);
         break;
 
-        case parameters::policy::CA:
-            find_bonds<bondfunctors::generico>(
-                    _rin_network, _alpha_carbon_vector, _alpha_carbon_tree, parameters::get_distance_generic());
-            results = _rin_network.get_one();
-            break;
+    case parameters::interaction_type_t::ALPHA_BACKBONE:
+        find_bonds<bondfunctors::generico>(
+                _network, _alpha_carbon_vector, _alpha_carbon_tree, params.query_dist_alpha());
+        results = _network.get_one();
+        break;
 
-        case parameters::policy::CB:
-            find_bonds<bondfunctors::generico>(
-                    _rin_network, _beta_carbon_vector, _beta_carbon_tree, parameters::get_distance_generic());
-            results = _rin_network.get_one();
-            break;
+    case parameters::interaction_type_t::BETA_BACKBONE:
+        find_bonds<bondfunctors::generico>(
+                _network, _beta_carbon_vector, _beta_carbon_tree, params.query_dist_beta());
+        results = _network.get_one();
+        break;
     }
 
-    for (auto* bond: results)
-        graph.push(bond->to_edge());
-
     lm::main()->info("there are {} valid bonds after filtering", results.size());
+
+    // create the graph
+    rin::graph graph;
+    for (auto* res: _aminoacids)
+        graph.insert(res->to_node());
+
+    for (auto const* bond: results)
+        graph.push(bond->to_edge());
 
     return graph;
 }

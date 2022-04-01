@@ -60,11 +60,11 @@ public:
 
     [[nodiscard]]
     double query_dist_pipi() const
-    { return _query_dist_hbond; }
+    { return _query_dist_pipi; }
 
     [[nodiscard]]
     double query_dist_pica() const
-    { return _query_dist_hbond; }
+    { return _query_dist_pica; }
 
     [[nodiscard]]
     double query_dist_alpha() const
@@ -106,7 +106,6 @@ public:
         return *this;
     }
 
-    // TODO
     configurator& set_surface_dist_vdw(double val)
     {
         params._surface_dist_vdw = std::clamp(
@@ -153,6 +152,18 @@ public:
     configurator& set_network_policy(network_policy_t network_policy)
     {
         params._network_policy = network_policy;
+        return *this;
+    }
+
+    configurator& set_sequence_separation(int val)
+    {
+        params._sequence_separation = std::max(cfg::params::seq_sep, val);
+        return *this;
+    }
+
+    configurator& set_hbond_realistic(bool val)
+    {
+        params._hbond_realistics = val;
         return *this;
     }
 };

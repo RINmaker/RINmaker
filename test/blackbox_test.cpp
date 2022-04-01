@@ -41,35 +41,16 @@ bool compareEnergy(const edge& e, const double& expected) { return compare(stod(
 class Result
 {
 public:
-    // pdb_data& data;
     graph rin_graph;
     std::vector<edge> edges;
     std::unordered_map<std::string, node> nodes;
 
 public:
-    /*
-    Result(pdb_data _data) : data(_data), rin_graph(_data.get_graph())
+    explicit Result(rin::maker const& rm, rin::parameters const& params) : rin_graph(rm(params))
     {
         edges = rin_graph.get_edges();
         nodes = rin_graph.get_nodes();
     }
-    */
-
-    /*
-    explicit Result(std::unique_ptr<maker::base const> rm) : rin_graph(rm->get_graph(parameters::get_interaction_type()))
-    {
-        edges = rin_graph.get_edges();
-        nodes = rin_graph.get_nodes();
-    }
-    */
-
-    explicit Result(rin::maker const& rm) : rin_graph(rm(parameters::get_interaction_type(), parameters::get_net_policy()))
-    {
-        edges = rin_graph.get_edges();
-        nodes = rin_graph.get_nodes();
-    }
-
-
 
 private:
     template<typename T>
@@ -105,9 +86,16 @@ protected:
         string pdbPath = (runningFolder / testCaseFolder / filename).string();
         const char* args[2] = { exePath.c_str(), pdbPath.c_str() };
 
-        readArgs(2, args);
-        //return Result(maker::make_instance(parameters::get_net_policy(), parameters::get_pdb_path()));
-        return Result(rin::maker(parameters::get_pdb_path()));
+        std::optional<arguments> maybe_args;
+        read_args(2, args, maybe_args);
+
+        // won't throw std::bad_optional because args are hand crafted above
+        arguments parsed = maybe_args.value();
+
+        std::filesystem::create_directory(parsed.log_path);
+        log_manager::initialize(parsed.log_path);
+
+        return Result(rin::maker(parsed.pdb_path), parsed.params);
     }
 
     void TearDown() override { }
