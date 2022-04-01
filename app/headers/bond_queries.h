@@ -45,7 +45,7 @@ public:
 public:
     void operator()(chemical_entity::atom const& a, chemical_entity::atom const& b) {
         if (a.res().satisfies_minimum_separation(b.res()) &&
-            a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= rin::parameters::global::instance().get().query_dist_vdw()) {
+            a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= rin::parameters::global::instance().get().surface_dist_vdw()) {
             std::string const unique_key = prelude::sort(a.res().id(), b.res().id());
             if (_bonded.find(unique_key) == _bonded.end()) {
                 // TODO verbosity: bond accepted

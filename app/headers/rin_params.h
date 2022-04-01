@@ -54,7 +54,11 @@ public:
 
     [[nodiscard]]
     double query_dist_vdw() const
-    { return _surface_dist_vdw + 2 * cfg::params::max_vdw_radius; }
+    { return std::clamp(_surface_dist_vdw + 2 * cfg::params::max_vdw_radius, 0.0, cfg::params::max_limit); }
+
+    [[nodiscard]]
+    double surface_dist_vdw() const
+    { return _surface_dist_vdw; }
 
     [[nodiscard]]
     double query_dist_ionic() const
@@ -113,8 +117,7 @@ public:
 
     configurator& set_surface_dist_vdw(double val)
     {
-        params._surface_dist_vdw = std::clamp(
-                val + 2 * cfg::params::max_vdw_radius, 0.0, cfg::params::max_limit);
+        params._surface_dist_vdw = val;
         return *this;
     }
 
