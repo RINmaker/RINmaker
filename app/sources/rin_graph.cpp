@@ -1,4 +1,4 @@
-#include "graphml_output.h"
+#include "rin_graph.h"
 
 #include <filesystem>
 #include <string>

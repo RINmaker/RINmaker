@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "graphml_output.h"
+#include "rin_graph.h"
 #include "prelude.h"
 #include "chemical_entity.h"
 #include "runtime_params.h"

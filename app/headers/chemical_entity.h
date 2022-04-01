@@ -9,7 +9,7 @@
 
 #include "runtime_params.h"
 
-#include "graphml_output.h"
+#include "rin_graph.h"
 
 #include "energy.h"
 
