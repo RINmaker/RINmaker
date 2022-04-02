@@ -116,21 +116,19 @@ edge::edge(bonds::generico const& bond)
         _orientation(cfg::graphml::none)
 {}
 
-// add <data/> to a pugixml node
-//
-void __add_edge_data(pugi::xml_node& node, string key_name, string key_value, string key_type, bool metadata)
+void add_data(
+        pugi::xml_node& node, string const& prefix, string const& type, string const& key_name, string const& key_value, string const& key_type, bool with_metadata)
 {
-    // add data to node
     pugi::xml_node data = node.append_child("data");
-    data.append_attribute("key") = ("e_" + key_name).c_str();
+    data.append_attribute("key") = (prefix + key_name).c_str();
     data.append_child(pugi::node_pcdata).set_value(key_value.c_str());
 
-    if (metadata)
+    if (with_metadata)
     {
         // add key info in (node -> graph -> graphml) before (node -> graph)
         pugi::xml_node key = node.parent().parent().insert_child_before("key", node.parent());
-        key.append_attribute("id") = ("e_" + key_name).c_str();
-        key.append_attribute("for") = "edge";
+        key.append_attribute("id") = (prefix + key_name).c_str();
+        key.append_attribute("for") = type.c_str();
         key.append_attribute("attr.name") = key_name.c_str();
         key.append_attribute("attr.type") = key_type.c_str();
     }
@@ -139,25 +137,25 @@ void __add_edge_data(pugi::xml_node& node, string key_name, string key_value, st
 void edge::append_to(pugi::xml_node& rin, bool metadata)
 {
     // the xml node representing a rin edge
-    pugi::xml_node e = rin.append_child("edge");
-    e.append_attribute("source") = _source.c_str();
-    e.append_attribute("target") = _target.c_str();
+    pugi::xml_node edge = rin.append_child("edge");
+    edge.append_attribute("source") = _source.c_str();
+    edge.append_attribute("target") = _target.c_str();
 
-    __add_edge_data(e, "NodeId1", _source, "string", metadata);
-    __add_edge_data(e, "NodeId2", _target, "string", metadata);
+    add_data(edge, "e_", "edge", "NodeId1", _source, "string", metadata);
+    add_data(edge, "e_", "edge", "NodeId2", _target, "string", metadata);
 
-    __add_edge_data(e, "Energy", _energy, "double", metadata);
-    __add_edge_data(e, "Distance", _distance, "double", metadata);
+    add_data(edge, "e_", "edge", "Energy", _energy, "double", metadata);
+    add_data(edge, "e_", "edge", "Distance", _distance, "double", metadata);
 
-    __add_edge_data(e, "Interaction", _interaction, "string", metadata);
-    __add_edge_data(e, "Atom1", _source_atom, "string", metadata);
-    __add_edge_data(e, "Atom2", _target_atom, "string", metadata);
+    add_data(edge, "e_", "edge", "Interaction", _interaction, "string", metadata);
+    add_data(edge, "e_", "edge", "Atom1", _source_atom, "string", metadata);
+    add_data(edge, "e_", "edge", "Atom2", _target_atom, "string", metadata);
 
-    __add_edge_data(e, "Angle", _angle, "double", metadata);
-    __add_edge_data(e, "Donor", _donor, "string", metadata);
-    __add_edge_data(e, "Cation", _cation, "string", metadata);
-    __add_edge_data(e, "Positive", _positive, "string", metadata);
-    __add_edge_data(e, "Orientation", _orientation, "string", metadata);
+    add_data(edge, "e_", "edge", "Angle", _angle, "double", metadata);
+    add_data(edge, "e_", "edge", "Donor", _donor, "string", metadata);
+    add_data(edge, "e_", "edge", "Cation", _cation, "string", metadata);
+    add_data(edge, "e_", "edge", "Positive", _positive, "string", metadata);
+    add_data(edge, "e_", "edge", "Orientation", _orientation, "string", metadata);
 }
 
 edge graph::pop_edge()
@@ -200,29 +198,23 @@ void graph::consume_to_xml(rin::parameters const& params, std::filesystem::path 
     graph_node.append_attribute("edgedefault") = "undirected";
 
     // graphml requires all key attributes to be listed before the actual node/edges
-    bool metadata = true;
+    bool with_metadata = true;
     while (!edges.empty())
     {
         edge e = pop_edge();
-        e.append_to(graph_node, metadata);
-        if (metadata) metadata = false;
+        e.append_to(graph_node, with_metadata);
+        if (with_metadata) with_metadata = false;
     }
 
-    metadata = true;
+    with_metadata = true;
     for (auto kv: nodes)
     {
         if (kv.second.degree() > 0)
         {
-            kv.second.append_to(graph_node, metadata);
-            if (metadata)
-            {
-                metadata = false;
-            }
+            kv.second.append_to(graph_node, with_metadata);
+            if (with_metadata) with_metadata = false;
         }
     }
-
-    // if (!out_path.has_parent_path())
-    // std::filesystem::create_directory(out_path.parent_path());
 
     doc.save_file(out_path.c_str());
 }
@@ -242,48 +234,30 @@ node::node(chemical_entity::aminoacid const& res)
         _degree(0)
 {}
 
-// add <data/> to a pugixml node
-//
-void __add_node_data(pugi::xml_node& node, std::string key_name, std::string key_value, std::string key_type, bool metadata)
-{
-    // add data to node
-    pugi::xml_node data = node.append_child("data");
-    data.append_attribute("key") = ("v_" + key_name).c_str();
-    data.append_child(pugi::node_pcdata).set_value(key_value.c_str());
 
-    if (metadata)
-    {
-        // add key info in (node -> graph -> graphml) before (node -> graph)
-        pugi::xml_node key = node.parent().parent().insert_child_before("key", node.parent());
-        key.append_attribute("id") = ("v_" + key_name).c_str();
-        key.append_attribute("for") = "edge";
-        key.append_attribute("attr.name") = key_name.c_str();
-        key.append_attribute("attr.type") = key_type.c_str();
-    }
-}
-
-void node::append_to(pugi::xml_node& graph, bool metadata) const
+void node::append_to(pugi::xml_node& graph, bool with_metadata) const
 {
     pugi::xml_node node;
 
     node = graph.prepend_child("node");
     node.append_attribute("id") = _id.c_str();
-    __add_node_data(node, "Degree", std::to_string(_degree), "double", metadata);
-    __add_node_data(node, "NodeId", _id, "string", metadata);
 
-    __add_node_data(node, "Residue", _id, "string", metadata);
-    __add_node_data(node, "Chain", _chain, "string", metadata);
-    __add_node_data(node, "Position", _seq, "double", metadata);
-    __add_node_data(node, "Name", _name, "string", metadata);
+    add_data(node, "v_", "node", "Degree", std::to_string(_degree), "double", with_metadata);
+    add_data(node, "v_", "node", "NodeId", _id, "string", with_metadata);
 
-    __add_node_data(node, "x", _x, "double", metadata);
-    __add_node_data(node, "y", _y, "double", metadata);
-    __add_node_data(node, "z", _z, "double", metadata);
+    add_data(node, "v_", "node", "Residue", _id, "string", with_metadata);
+    add_data(node, "v_", "node", "Chain", _chain, "string", with_metadata);
+    add_data(node, "v_", "node", "Position", _seq, "double", with_metadata);
+    add_data(node, "v_", "node", "Name", _name, "string", with_metadata);
 
-    __add_node_data(node, "Bfactor_CA", _bfactor, "double", metadata);
-    __add_node_data(node, "Secondary_Structure", _secondary, "string", metadata);
+    add_data(node, "v_", "node", "x", _x, "double", with_metadata);
+    add_data(node, "v_", "node", "y", _y, "double", with_metadata);
+    add_data(node, "v_", "node", "z", _z, "double", with_metadata);
 
-    __add_node_data(node, "PdbName", _pdb_name, "string", metadata);
+    add_data(node, "v_", "node", "Bfactor_CA", _bfactor, "double", with_metadata);
+    add_data(node, "v_", "node", "Secondary_Structure", _secondary, "string", with_metadata);
+
+    add_data(node, "v_", "node", "PdbName", _pdb_name, "string", with_metadata);
 }
 
 

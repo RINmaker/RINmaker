@@ -89,7 +89,7 @@ public:
     std::string const& get_id() const { return _id; }
     int& degree() { return _degree; }
 
-    void append_to(pugi::xml_node& graphml, bool metadata) const;
+    void append_to(pugi::xml_node& graphml, bool with_metadata) const;
 };
 
 class graph
