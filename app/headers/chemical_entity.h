@@ -85,7 +85,7 @@ private:
 
     std::string _pdb_name;
 
-    explicit aminoacid(std::vector<records::atom> const& records, std::string const& pdb_name);
+    explicit aminoacid(std::vector<records::atom> const& records, std::string pdb_name);
 
     ~aminoacid();
 
@@ -218,7 +218,7 @@ public:
     // return a rin::node from this
     [[nodiscard]]
     rin::node to_node() const
-    { return rin::node(*this); } // TODO pu� diventare un operatore di conversione
+    { return rin::node(*this); } // TODO può diventare un operatore di conversione
 
 public:
     // makes structure become <i>LOOP</i>

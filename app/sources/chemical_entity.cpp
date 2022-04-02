@@ -1,7 +1,9 @@
 #include "chemical_entity.h"
 
-chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records, std::string const& pdb_name) :
-kdpoint<3>({0, 0, 0}), _pdb_name(pdb_name)
+#include <utility>
+
+chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records, std::string  pdb_name) :
+        kdpoint<3>({0, 0, 0}), _pdb_name(std::move(pdb_name))
 {
     /* TODO throw exception. It cannot happen.
     if (records.empty())
@@ -248,6 +250,7 @@ bool chemical_entity::atom::is_a_hydrogen_donor() const
             (res_name == "CYS" && n == "SG") ||
             n == "NH" || n == "N";
 }
+
 int chemical_entity::atom::how_many_hydrogen_can_donate() const
 {
     if (is_a_hydrogen_donor())
@@ -286,6 +289,7 @@ bool chemical_entity::atom::is_a_hydrogen_acceptor() const
             (res_name == "MET" && n == "SD") ||
             n == "C" || n == "O";
 }
+
 int chemical_entity::atom::how_many_hydrogen_can_accept() const
 {
     if (is_a_hydrogen_acceptor())
@@ -316,8 +320,8 @@ bool chemical_entity::atom::is_a_vdw_candidate() const
 
     double* opslVdwValue = get_vdw_opsl_values(res_name, n, en);
     return !(opslVdwValue[0] == 0. &&
-        opslVdwValue[1] == 0. &&
-        opslVdwValue[2] == 0.);
+             opslVdwValue[1] == 0. &&
+             opslVdwValue[2] == 0.);
 
     /*return
             (res_name == "GLN" && (n == "NE1" || n == "OE1")) ||
@@ -392,14 +396,14 @@ chemical_entity::atom const& chemical_entity::ring::atom_closest_to(atom const& 
 string getNameFromAtoms(std::vector<const chemical_entity::atom*> atoms)
 {
     std::vector<string> atoms_name;
-    for (auto i : atoms)
+    for (auto i: atoms)
         atoms_name.push_back(i->name());
 
     sort(atoms_name.begin(), atoms_name.end());
-    
+
     string out;
     string delimiter = ":";
-    for (string& name : atoms_name)
+    for (string& name: atoms_name)
     {
         if (!out.empty())
             out += delimiter;
