@@ -8,8 +8,9 @@
 #include "config.h"
 
 using namespace rin;
+using chemical_entity::aminoacid;
 
-graph::graph(vector<chemical_entity::aminoacid const*> const& aminoacids, list<bonds::base const*> const& bonds)
+graph::graph(rin::parameters const& params, vector<aminoacid const*> const& aminoacids, list<bonds::base const*> const& bonds) : _params(params)
 {
     for (auto a: aminoacids)
     {
@@ -32,6 +33,46 @@ graph::graph(vector<chemical_entity::aminoacid const*> const& aminoacids, list<b
 
         _edges.push_back(edge);
     }
+}
+
+void graph::write_to_file(std::filesystem::path const& out_path)
+{
+    pugi::xml_document doc;
+
+    // <graphml>
+    pugi::xml_node graphml = doc.append_child("graphml");
+    graphml.append_attribute("xmlns") = "http://graphml.graphdrawing.org/xmlns";
+    graphml.append_attribute("xmlns:xsi") = "http://www.w3.org/2001/XMLSchema-instance";
+    graphml.append_attribute("xsi:schemaLocation") = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
+
+    // parameters summary
+    auto comment = graphml.parent().insert_child_before(pugi::node_comment, graphml);
+    comment.set_value(_params.pretty().c_str());
+
+    // <graph>
+    pugi::xml_node graph_node = graphml.append_child("graph");
+    graph_node.append_attribute("id") = "G";
+    graph_node.append_attribute("edgedefault") = "undirected";
+
+    // graphml requires all key attributes to be listed before the actual node/edges
+    bool with_metadata = true;
+    for (auto e: _edges)
+    {
+        e.append_to(graph_node, with_metadata);
+        if (with_metadata) with_metadata = false;
+    }
+
+    with_metadata = true;
+    for (auto kv: _nodes)
+    {
+        if (kv.second.degree() > 0)
+        {
+            kv.second.append_to(graph_node, with_metadata);
+            if (with_metadata) with_metadata = false;
+        }
+    }
+
+    doc.save_file(out_path.c_str());
 }
 
 edge::edge(bonds::ss const& bond) :
@@ -181,46 +222,6 @@ void edge::append_to(pugi::xml_node& rin, bool metadata)
     add_data(edge, "e_", "edge", "Cation", _cation, "string", metadata);
     add_data(edge, "e_", "edge", "Positive", _positive, "string", metadata);
     add_data(edge, "e_", "edge", "Orientation", _orientation, "string", metadata);
-}
-
-void graph::write_to_file(rin::parameters const& params, std::filesystem::path const& out_path)
-{
-    pugi::xml_document doc;
-
-    // <graphml>
-    pugi::xml_node graphml = doc.append_child("graphml");
-    graphml.append_attribute("xmlns") = "http://graphml.graphdrawing.org/xmlns";
-    graphml.append_attribute("xmlns:xsi") = "http://www.w3.org/2001/XMLSchema-instance";
-    graphml.append_attribute("xsi:schemaLocation") = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
-
-    // parameters summary
-    auto comment = graphml.parent().insert_child_before(pugi::node_comment, graphml);
-    comment.set_value(params.pretty().c_str());
-
-    // <graph>
-    pugi::xml_node graph_node = graphml.append_child("graph");
-    graph_node.append_attribute("id") = "G";
-    graph_node.append_attribute("edgedefault") = "undirected";
-
-    // graphml requires all key attributes to be listed before the actual node/edges
-    bool with_metadata = true;
-    for (auto e: _edges)
-    {
-        e.append_to(graph_node, with_metadata);
-        if (with_metadata) with_metadata = false;
-    }
-
-    with_metadata = true;
-    for (auto kv: _nodes)
-    {
-        if (kv.second.degree() > 0)
-        {
-            kv.second.append_to(graph_node, with_metadata);
-            if (with_metadata) with_metadata = false;
-        }
-    }
-
-    doc.save_file(out_path.c_str());
 }
 
 node::node(chemical_entity::aminoacid const& res) :

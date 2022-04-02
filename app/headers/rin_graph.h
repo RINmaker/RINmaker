@@ -154,17 +154,20 @@ using std::unordered_map;
 using std::queue;
 using std::vector;
 using std::list;
+using chemical_entity::aminoacid;
+namespace fs = std::filesystem;
 
 class graph
 {
 private:
+    rin::parameters _params;
     unordered_map<string, node> _nodes;
     vector<edge> _edges;
 
 public:
-    graph(vector<chemical_entity::aminoacid const*> const& aminoacids, list<bonds::base const*> const& edges);
+    graph(parameters const& params, vector<aminoacid const*> const& aminoacids, list<bonds::base const*> const& bonds);
 
-    void write_to_file(rin::parameters const& params, std::filesystem::path const& out_path);
+    void write_to_file(fs::path const& out_path);
 
     std::vector<edge> get_edges()
     { return _edges; }

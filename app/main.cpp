@@ -23,7 +23,7 @@ int main(int argc, const char* argv[])
             auto rm = rin::maker(parsed.pdb_path);
 
             // create rin and write to graphml
-            rm(parsed.params).write_to_file(parsed.params, parsed.out_path);
+            rm(parsed.params).write_to_file(parsed.out_path);
 
 #           if _MSC_VER
             spdlog::drop_all();
