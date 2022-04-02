@@ -14,20 +14,20 @@ graph::graph(vector<chemical_entity::aminoacid const*> const& aminoacids, list<b
     for (auto a: aminoacids)
     {
         auto n = a->to_node();
-        nodes.insert({n.get_id(), n});
+        _nodes.insert({n.get_id(), n});
     }
 
-    // adjust nodes degree at edge insertion
+    // adjust _nodes degree at edge insertion
     for (auto b: bonds)
     {
         auto edge = b->to_edge();
 
-        auto it = nodes.find(edge.source_id());
-        if (it != nodes.end())
+        auto it = _nodes.find(edge.source_id());
+        if (it != _nodes.end())
             ++(it->second.degree());
 
-        it = nodes.find(edge.target_id());
-        if (it != nodes.end())
+        it = _nodes.find(edge.target_id());
+        if (it != _nodes.end())
             ++(it->second.degree());
 
         _edges.push_back(edge);
@@ -183,7 +183,7 @@ void edge::append_to(pugi::xml_node& rin, bool metadata)
     add_data(edge, "e_", "edge", "Orientation", _orientation, "string", metadata);
 }
 
-void graph::consume_to_xml(rin::parameters const& params, std::filesystem::path const& out_path)
+void graph::write_to_file(rin::parameters const& params, std::filesystem::path const& out_path)
 {
     pugi::xml_document doc;
 
@@ -211,7 +211,7 @@ void graph::consume_to_xml(rin::parameters const& params, std::filesystem::path 
     }
 
     with_metadata = true;
-    for (auto kv: nodes)
+    for (auto kv: _nodes)
     {
         if (kv.second.degree() > 0)
         {

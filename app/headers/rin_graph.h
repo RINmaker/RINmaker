@@ -158,13 +158,13 @@ using std::list;
 class graph
 {
 private:
-    unordered_map<string, node> nodes;
+    unordered_map<string, node> _nodes;
     vector<edge> _edges;
 
 public:
     graph(vector<chemical_entity::aminoacid const*> const& aminoacids, list<bonds::base const*> const& edges);
 
-    void consume_to_xml(rin::parameters const& params, std::filesystem::path const& out_path);
+    void write_to_file(rin::parameters const& params, std::filesystem::path const& out_path);
 
     std::vector<edge> get_edges()
     { return _edges; }
@@ -172,7 +172,7 @@ public:
     std::unordered_map<std::string, node> get_nodes()
     {
         std::unordered_map<std::string, node> out;
-        for (const auto& i: nodes)
+        for (const auto& i: _nodes)
             out.insert_or_assign(i.first, i.second);
         return out;
     }
