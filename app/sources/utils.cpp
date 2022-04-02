@@ -109,32 +109,32 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
 
     double h_distance;
     app.add_option("--h-bond", h_distance, "maximum distance for h bonds")
-       ->default_val(cfg::params::hbond_strict)
+       ->default_val(cfg::params::query_dist_hbond)
        ->check(positive_check);
 
     double vdw_distance;
     app.add_option("--vdw-bond", vdw_distance, "maximum distance for vdw bonds")
-       ->default_val(cfg::params::vdw_strict)
+       ->default_val(cfg::params::surface_dist_vdw)
        ->check(positive_check);
 
     double ionic_distance;
     app.add_option("--ionic-bond", ionic_distance, "maximum distance for ionic bonds")
-       ->default_val(cfg::params::ionic_strict)
+       ->default_val(cfg::params::query_dist_ionic)
        ->check(positive_check);
 
     double generic_distance;
     app.add_option("--generic-bond", generic_distance, "maximum distance for generic bonds")
-       ->default_val(cfg::params::generic_strict)
+       ->default_val(cfg::params::query_dist_alpha)
        ->check(positive_check);
 
     double pication_distance;
     app.add_option("--pication-bond", pication_distance, "maximum distance for pication bonds")
-       ->default_val(cfg::params::pication_strict)
+       ->default_val(cfg::params::query_dist_pica)
        ->check(positive_check);
 
     double pipistack_distance;
     app.add_option("--pipistack-bond", pipistack_distance, "maximum distance for pipistack bonds")
-       ->default_val(cfg::params::pipi_strict)
+       ->default_val(cfg::params::query_dist_pipi)
        ->check(positive_check);
 
     bool hbond_realistic_flag = false;

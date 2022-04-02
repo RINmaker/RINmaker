@@ -31,13 +31,13 @@ private:
     bool _hbond_realistics;
 
     parameters() :
-            _query_dist_hbond{cfg::params::hbond_strict},
-            _surface_dist_vdw{cfg::params::vdw_strict}, // TODO
-            _query_dist_ionic{cfg::params::ionic_strict},
-            _query_dist_pipi{cfg::params::pipi_strict},
-            _query_dist_pica{cfg::params::pication_strict},
-            _query_dist_alpha{cfg::params::ca_distance},
-            _query_dist_beta{cfg::params::cb_distance},
+            _query_dist_hbond{cfg::params::query_dist_hbond},
+            _surface_dist_vdw{cfg::params::surface_dist_vdw}, // TODO
+            _query_dist_ionic{cfg::params::query_dist_ionic},
+            _query_dist_pipi{cfg::params::query_dist_pipi},
+            _query_dist_pica{cfg::params::query_dist_pica},
+            _query_dist_alpha{cfg::params::query_dist_alpha},
+            _query_dist_beta{cfg::params::query_dist_beta},
             _hbond_realistics{true},
             _sequence_separation{cfg::params::seq_sep},
             _interaction_type{interaction_type_t::NONCOVALENT_BONDS},

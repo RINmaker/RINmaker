@@ -33,24 +33,17 @@ const string file_logger_filename = string(main_logger_id) + ".txt";
 
 namespace params
 {
-const double hbond_strict = 3.5;
-const double vdw_strict = 0.5;
-const double ionic_strict = 4.0;
-const double pipi_strict = 6.5;
-const double pication_strict = 5.0;
+const double query_dist_hbond = 3.5;
+const double surface_dist_vdw = 0.5;
+const double query_dist_ionic = 4.0;
+const double query_dist_pipi = 6.5;
+const double query_dist_pica = 5.0;
 
-const double ca_distance = 6.0;
-const double cb_distance = 6.0;
-
-const double generic_strict = 6.0;
-
-char const* _bond_control = "strict";
-char const* net_policy = "closest";
-char const* interaction_type = "all";
+const double query_dist_alpha = 6.0;
+const double query_dist_beta = 6.0;
 
 const int seq_sep = 3;
 
-const double weak_powering = 1.0;
 const double max_limit = 20.0;
 
 const double max_vdw_radius = 1.90;

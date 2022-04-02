@@ -24,16 +24,14 @@ extern const std::string file_logger_filename;
 
 namespace params
 {
-extern const double hbond_strict;
-extern const double vdw_strict;
-extern const double ionic_strict;
-extern const double pipi_strict;
-extern const double pication_strict;
+extern const double query_dist_hbond;
+extern const double surface_dist_vdw;
+extern const double query_dist_ionic;
+extern const double query_dist_pipi;
+extern const double query_dist_pica;
 
-extern const double ca_distance;
-extern const double cb_distance;
-
-extern const double generic_strict;
+extern const double query_dist_alpha;
+extern const double query_dist_beta;
 
 extern const int seq_sep;
 
