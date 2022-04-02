@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <array>
 #include <queue>
 #include <unordered_map>
@@ -9,61 +10,111 @@
 
 #include "rin_params.h"
 
-namespace chemical_entity { class aminoacid; }
+namespace chemical_entity
+{
+class aminoacid;
+}
 
 namespace bonds
 {
 class hydrogen;
+
 class ss;
+
 class vdw;
+
 class pication;
+
 class pipistack;
+
 class ionic;
+
 class generico;
 }
 
 namespace rin
 {
+
+using std::string;
+
 class edge
 {
 private:
-    std::string _source, _target;
-    std::string _distance, _energy;
+    string _source, _target;
+    string _distance, _energy;
 
-    std::string _interaction;
-    std::string _source_atom, _target_atom;
+    string _interaction;
+    string _source_atom, _target_atom;
 
-    std::string _angle;
-    std::string _donor;
-    std::string _cation;
-    std::string _positive;
-    std::string _orientation;
-
-public:
-    edge(bonds::ss const& bond);
-    edge(bonds::vdw const& bond);
-    edge(bonds::ionic const& bond);
-    edge(bonds::hydrogen const& bond);
-    edge(bonds::pication const& bond);
-    edge(bonds::pipistack const& bond);
-    edge(bonds::generico const& bond);
+    string _angle;
+    string _donor;
+    string _cation;
+    string _positive;
+    string _orientation;
 
 public:
-    std::string const& source_id() const { return _source; }
-    std::string const& target_id() const { return _target; }
+    explicit edge(bonds::ss const& bond);
 
-    std::string const& distance() const { return _distance; }
-    std::string const& energy() const { return _energy; }
+    explicit edge(bonds::vdw const& bond);
 
-    std::string const& interaction() const { return _interaction; }
-    std::string const& source_atom() const { return _source_atom; }
-    std::string const& target_atom() const { return _target_atom; }
+    explicit edge(bonds::ionic const& bond);
 
-    std::string const& angle() const { return _angle; }
-    std::string const& donor() const { return _donor; }
-    std::string const& cation() const { return _cation; }
-    std::string const& positive() const { return _positive; }
-    std::string const& orientation() const { return _orientation; }
+    explicit edge(bonds::hydrogen const& bond);
+
+    explicit edge(bonds::pication const& bond);
+
+    explicit edge(bonds::pipistack const& bond);
+
+    explicit edge(bonds::generico const& bond);
+
+public:
+    [[nodiscard]]
+    string const& source_id() const
+    { return _source; }
+
+    [[nodiscard]]
+    string const& target_id() const
+    { return _target; }
+
+    [[nodiscard]]
+    string const& distance() const
+    { return _distance; }
+
+    [[nodiscard]]
+    string const& energy() const
+    { return _energy; }
+
+    [[nodiscard]]
+    string const& interaction() const
+    { return _interaction; }
+
+    [[nodiscard]]
+    string const& source_atom() const
+    { return _source_atom; }
+
+    [[nodiscard]]
+    string const& target_atom() const
+    { return _target_atom; }
+
+    [[nodiscard]]
+    string const& angle() const
+    { return _angle; }
+
+    [[nodiscard]]
+    string const& donor() const
+    { return _donor; }
+
+    [[nodiscard]]
+    string const& cation() const
+    { return _cation; }
+
+    [[nodiscard]]
+    string const& positive() const
+    { return _positive; }
+
+    [[nodiscard]]
+    string const& orientation() const
+    { return _orientation; }
 
     void append_to(pugi::xml_node& rin, bool metadata);
 };
@@ -71,14 +122,14 @@ public:
 class node
 {
 private:
-    std::string _id;
-    std::string _pdb_name;
-    std::string _chain;
-    std::string _seq;
-    std::string _name;
-    std::string _x, _y, _z;
-    std::string _bfactor;
-    std::string _secondary;
+    string _id;
+    string _pdb_name;
+    string _chain;
+    string _seq;
+    string _name;
+    string _x, _y, _z;
+    string _bfactor;
+    string _secondary;
 
 private:
     int _degree = 0;
@@ -86,27 +137,44 @@ private:
 public:
     explicit node(chemical_entity::aminoacid const& res);
 
-    std::string const& get_id() const { return _id; }
-    int& degree() { return _degree; }
+    [[nodiscard]]
+    string const& get_id() const
+    { return _id; }
+
+    int& degree()
+    { return _degree; }
 
     void append_to(pugi::xml_node& graphml, bool with_metadata) const;
 };
 
+using std::unordered_map;
+using std::queue;
+using std::vector;
+
 class graph
 {
 private:
-    std::unordered_map<std::string, node> nodes;
-    std::queue<edge> edges;
+    unordered_map<string, node> nodes;
+    queue<edge> edges;
+    //vector<edge> _edges;
 
     edge pop_edge();
 
 public:
-    void push(edge const& e) { edges.push(e); }
-    void insert(node const& n) { nodes.insert({ n.get_id(), n }); }
+    void push(edge const& e)
+    {
+        edges.push(e);
+        //_edges.push_back(e);
+    }
+
+    void insert(node const& n)
+    { nodes.insert({n.get_id(), n}); }
 
 public:
     void consume_to_xml(rin::parameters const& params, std::filesystem::path const& out_path);
+
     std::vector<edge> get_edges();
+
     std::unordered_map<std::string, node> get_nodes();
 };
 }
