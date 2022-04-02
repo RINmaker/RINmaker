@@ -35,13 +35,8 @@ extern const double cb_distance;
 
 extern const double generic_strict;
 
-extern char const* _bond_control;
-extern char const* net_policy;
-extern char const* interaction_type;
-
 extern const int seq_sep;
 
-extern const double weak_powering;
 extern const double max_limit;
 
 extern const double max_vdw_radius;
