@@ -2,7 +2,27 @@
 
 #include <utility>
 
-chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records, std::string  pdb_name) :
+using std::vector;
+using std::array;
+
+array<double, 3> centre_of_mass(vector<chemical_entity::atom const*> const& atoms)
+{
+    double mass{0.0};
+    array<double, 3> centroid{0.0, 0.0, 0.0};
+    for (auto a: atoms)
+    {
+        double const m = a->mass();
+        for (size_t i = 0; i < 3; ++i)
+            centroid[i] += (*a)[i] * m;
+        mass += m;
+    }
+    for (size_t i = 0; i < 3; ++i)
+        centroid[i] /= mass;
+
+    return centroid;
+}
+
+chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records, std::string pdb_name) :
         kdpoint<3>({0, 0, 0}), _pdb_name(std::move(pdb_name))
 {
     /* TODO throw exception. It cannot happen.
@@ -44,61 +64,37 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
         n_of_rings = 2;
     }
 
-    // TODO are they mutually exclusive? should be addressed
+    // note: are they mutually exclusive? should be addressed
     std::vector<atom const*> positive, negative;
 
-    std::array<double, 3> centroid({0, 0, 0});
-    double mass = 0;
     for (auto const& record: records)
     {
         atom const* a = new chemical_entity::atom(record, *this);
         _atoms.push_back(a);
 
-        // sum up centroid weights
-        double const m = a->mass();
-        for (size_t i = 0; i < 3; ++i)
-            centroid[i] += (*a)[i] * m;
-
-        // sum up the total mass
-        mass += m;
-
         if (a->name() == "CA")
-        {
             // try to get alpha backbone (there should be only one)
             _alpha_carbon = a;
-        }
+
+
         else if (a->name() == "CB")
-        {
             // try to get alpha backbone (there should be only one, or zero)
             _beta_carbon = a;
-        }
-
-        // try to make_instance rings
 
         if (n_of_rings >= 1 && prelude::match(a->name(), patterns_1))
-        {
             ring_1.push_back(a);
-        }
-        if (n_of_rings == 2 && prelude::match(a->name(), patterns_2))
-        {
-            ring_2.push_back(a);
-        }
 
-        // try to make_instance ionic groups
+        if (n_of_rings == 2 && prelude::match(a->name(), patterns_2))
+            ring_2.push_back(a);
+
         if (a->is_in_a_positive_ionic_group())
-        {
             positive.push_back(a);
-        }
+
         else if (a->is_in_a_negative_ionic_group())
-        {
             negative.push_back(a);
-        }
     }
 
-    for (size_t i = 0; i < 3; ++i)
-        centroid[i] /= mass;
-
-    _position = centroid;
+    _position = centre_of_mass(_atoms);
 
     if (!ring_1.empty())
     {
@@ -158,7 +154,7 @@ double chemical_entity::atom::mass() const
     }
 
     // this point should be never reached (it depends on the guarantees of the contents of PDB files)
-    // should it happen, we count this as "hydrogen"
+    // TODO exception
     return 1;
 }
 
@@ -182,8 +178,7 @@ double chemical_entity::atom::vdw_radius() const
         return 1.60;
     }
 
-    // chimicamente non ci aspettiamo di arrivare qui
-    // dovesse succedere lo contiamo come "non-vdw"
+    // TODO exception
     return 0;
 }
 
@@ -348,28 +343,16 @@ chemical_entity::ring::ring(std::vector<atom const*> const& atoms, aminoacid con
         : kdpoint<3>({0, 0, 0}), component(res), _atoms(atoms)
 {
     // TODO assert atoms.size >= 3
-    std::array<double, 3> centroid({0, 0, 0});
-    double mass = 0;
+
     double sum_radii = 0;
     for (auto* a: atoms)
-    {
-        double m = a->mass();
-        mass += m;
         sum_radii += distance(*a);
-
-        for (size_t i = 0; i < 3; ++i)
-            centroid[i] += (*a)[i] * m;
-    }
-
-    for (size_t i = 0; i < 3; ++i)
-        centroid[i] /= mass;
-
-    _position = centroid;
     _mean_radius = sum_radii / (double) atoms.size();
 
-    // kudos to Giulio Marcolin for this shortcut
-    // it only misses a SVD best-fit method no more than 1-2�, on average
+    _position = centre_of_mass(atoms);
 
+    // kudos to Giulio Marcolin for the following shortcut
+    // it only deviates from a SVD best-fit method no more than 1-2°, on average
     std::array<double, 3> const v = (std::array<double, 3>) ((*atoms[0]) - (*atoms[1]));
     std::array<double, 3> const w = (std::array<double, 3>) ((*atoms[2]) - (*atoms[1]));
     _normal = geom::cross(v, w);
@@ -419,24 +402,7 @@ string chemical_entity::ring::name() const
 
 chemical_entity::ionic_group::ionic_group(std::vector<atom const*> const& atoms, int const& charge, aminoacid const& res)
         : kdpoint<3>({0, 0, 0}), component(res), _atoms(atoms), _charge(charge)
-{
-    // centroid is the centre of mass
-    std::array<double, 3> centroid({0, 0, 0});
-    double mass = 0;
-    for (auto* a: atoms)
-    {
-        double m = a->mass();
-        mass += m;
-
-        for (size_t i = 0; i < 3; ++i)
-            centroid[i] += (*a)[i] * m;
-    }
-
-    for (size_t i = 0; i < 3; ++i)
-        centroid[i] /= mass;
-
-    _position = centroid;
-}
+{ _position = centre_of_mass(atoms); }
 
 double chemical_entity::ionic_group::ionion_energy_q() const
 {
