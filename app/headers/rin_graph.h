@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <list>
 #include <array>
 #include <queue>
 #include <unordered_map>
@@ -17,6 +18,8 @@ class aminoacid;
 
 namespace bonds
 {
+class base;
+
 class hydrogen;
 
 class ss;
@@ -150,31 +153,28 @@ public:
 using std::unordered_map;
 using std::queue;
 using std::vector;
+using std::list;
 
 class graph
 {
 private:
     unordered_map<string, node> nodes;
-    queue<edge> edges;
-    //vector<edge> _edges;
-
-    edge pop_edge();
+    vector<edge> _edges;
 
 public:
-    void push(edge const& e)
-    {
-        edges.push(e);
-        //_edges.push_back(e);
-    }
+    graph(vector<chemical_entity::aminoacid const*> const& aminoacids, list<bonds::base const*> const& edges);
 
-    void insert(node const& n)
-    { nodes.insert({n.get_id(), n}); }
-
-public:
     void consume_to_xml(rin::parameters const& params, std::filesystem::path const& out_path);
 
-    std::vector<edge> get_edges();
+    std::vector<edge> get_edges()
+    { return _edges; }
 
-    std::unordered_map<std::string, node> get_nodes();
+    std::unordered_map<std::string, node> get_nodes()
+    {
+        std::unordered_map<std::string, node> out;
+        for (const auto& i: nodes)
+            out.insert_or_assign(i.first, i.second);
+        return out;
+    }
 };
 }

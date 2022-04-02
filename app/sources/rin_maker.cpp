@@ -295,12 +295,12 @@ rin::graph rin::maker::operator()(parameters const& params) const
     lm::main()->info("there are {} valid bonds after filtering", results.size());
 
     // create the graph
-    rin::graph graph;
-    for (auto* res: _aminoacids)
-        graph.insert(res->to_node());
 
-    for (auto const* bond: results)
-        graph.push(bond->to_edge());
+    std::vector<chemical_entity::aminoacid const*> aa;;
+    for (auto* res: _aminoacids)
+        aa.push_back(res);
+
+    rin::graph graph(aa, results);
 
     return graph;
 }

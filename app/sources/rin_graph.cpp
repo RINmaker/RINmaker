@@ -9,6 +9,31 @@
 
 using namespace rin;
 
+graph::graph(vector<chemical_entity::aminoacid const*> const& aminoacids, list<bonds::base const*> const& bonds)
+{
+    for (auto a: aminoacids)
+    {
+        auto n = a->to_node();
+        nodes.insert({n.get_id(), n});
+    }
+
+    // adjust nodes degree at edge insertion
+    for (auto b: bonds)
+    {
+        auto edge = b->to_edge();
+
+        auto it = nodes.find(edge.source_id());
+        if (it != nodes.end())
+            ++(it->second.degree());
+
+        it = nodes.find(edge.target_id());
+        if (it != nodes.end())
+            ++(it->second.degree());
+
+        _edges.push_back(edge);
+    }
+}
+
 edge::edge(bonds::ss const& bond) :
         _source(bond.source_id()),
         _target(bond.target_id()),
@@ -158,26 +183,6 @@ void edge::append_to(pugi::xml_node& rin, bool metadata)
     add_data(edge, "e_", "edge", "Orientation", _orientation, "string", metadata);
 }
 
-edge graph::pop_edge()
-{
-    edge e = edges.front();
-
-    auto it = nodes.find(e.source_id());
-    if (it != nodes.end())
-    {
-        ++(it->second.degree());
-    }
-
-    it = nodes.find(e.target_id());
-    if (it != nodes.end())
-    {
-        ++(it->second.degree());
-    }
-
-    edges.pop();
-    return e;
-}
-
 void graph::consume_to_xml(rin::parameters const& params, std::filesystem::path const& out_path)
 {
     pugi::xml_document doc;
@@ -199,9 +204,8 @@ void graph::consume_to_xml(rin::parameters const& params, std::filesystem::path 
 
     // graphml requires all key attributes to be listed before the actual node/edges
     bool with_metadata = true;
-    while (!edges.empty())
+    for (auto e: _edges)
     {
-        edge e = pop_edge();
         e.append_to(graph_node, with_metadata);
         if (with_metadata) with_metadata = false;
     }
@@ -219,8 +223,7 @@ void graph::consume_to_xml(rin::parameters const& params, std::filesystem::path 
     doc.save_file(out_path.c_str());
 }
 
-node::node(chemical_entity::aminoacid const& res)
-        :
+node::node(chemical_entity::aminoacid const& res) :
         _id(res.id()),
         _chain(res.chain_id()),
         _seq(std::to_string(res.sequence_number())),
@@ -258,27 +261,4 @@ void node::append_to(pugi::xml_node& graph, bool with_metadata) const
     add_data(node, "v_", "node", "Secondary_Structure", _secondary, "string", with_metadata);
 
     add_data(node, "v_", "node", "PdbName", _pdb_name, "string", with_metadata);
-}
-
-
-std::vector<edge> graph::get_edges()
-{
-    std::queue<edge> q(edges);
-    std::vector<edge> out;
-    for (int i = 0; !q.empty(); i++)
-    {
-        out.push_back(q.front());
-        q.pop();
-    }
-    return out;
-}
-
-std::unordered_map<std::string, node> graph::get_nodes()
-{
-    std::unordered_map<std::string, node> out;
-    for (const auto& i: nodes)
-    {
-        out.insert_or_assign(i.first, i.second);
-    }
-    return out;
 }
