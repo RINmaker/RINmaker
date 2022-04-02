@@ -72,8 +72,8 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
     app.add_option("-l,--log", log_dir, "log directory")
        ->default_str(cfg::log::default_dirname);
 
-    filesystem::path out_path;
-    app.add_option("-o,--output", out_path, "path to graphml (.xml) output");
+    filesystem::path out_name;
+    app.add_option("-o,--output", out_name, "path to graphml (.xml) output");
 
     int sequence_separation;
     app.add_option("--seq-sep", sequence_separation, "sequence separation")
@@ -199,6 +199,9 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
 
     auto params = pcfg.build();
     rin::parameters::global::instance().set(params);
+
+    std::filesystem::create_directory(cfg::graphml::default_dirname);
+    auto out_path = std::filesystem::path(cfg::graphml::default_dirname) / out_name;
 
     result = arguments{params, pdb_path, out_path, log_dir};
     return true;

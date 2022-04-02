@@ -11,8 +11,6 @@ extern const double bohr_radius;
 
 namespace cfg
 {
-extern const char* output_file_suffix;
-
 namespace log
 {
 extern const char* main_logger_id;
@@ -49,9 +47,10 @@ extern const double pication_angle;
 
 namespace graphml
 {
-extern char const* null;            // "-999.9"
-extern char const* none;            // "None"
-extern char const* default_dirname; // "./outputs"
+extern char const* null;                // "-999.9"
+extern char const* none;                // "None"
+extern char const* default_dirname;     // "./outputs"
+extern char const* output_file_suffix;  // ".graphml"
 }
 
 namespace ver

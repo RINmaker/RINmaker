@@ -221,8 +221,8 @@ void graph::consume_to_xml(rin::parameters const& params, std::filesystem::path 
         }
     }
 
-    if (!out_path.has_parent_path())
-        std::filesystem::create_directory(out_path.parent_path());
+    // if (!out_path.has_parent_path())
+    // std::filesystem::create_directory(out_path.parent_path());
 
     doc.save_file(out_path.c_str());
 }
