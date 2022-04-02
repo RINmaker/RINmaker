@@ -1,4 +1,6 @@
 #include "utils.h"
+
+#include "rin_maker.h"
 #include "rin_params.h"
 
 using namespace std;

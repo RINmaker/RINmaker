@@ -6,6 +6,7 @@
 #include <filesystem>
 
 #include <spdlog/spdlog.h>
+#include <CLI/CLI.hpp>
 
 #include "rin_params.h"
 #include "log_manager.h"
