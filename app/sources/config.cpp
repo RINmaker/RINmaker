@@ -65,9 +65,9 @@ const double pication_angle = 45.;
 
 namespace graphml
 {
-char const* null = "-999.9";    // "-999.9"
-char const* none = "None";      // "None"
-
+char const* null = "-999.9";
+char const* none = "None";
+char const* default_dirname = "./outputs";
 }
 
 const char* output_file_suffix = ".xml";

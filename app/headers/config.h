@@ -58,6 +58,7 @@ namespace cfg
 	{
 		extern char const* null;    // "-999.9"
 		extern char const* none;    // "None"
+        extern char const* default_dirname;
 	}
 
 	namespace ver
