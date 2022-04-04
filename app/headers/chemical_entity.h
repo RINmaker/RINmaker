@@ -6,23 +6,27 @@
 #include <tuple>
 
 #include "config.h"
+#include "prelude.h"
 
 #include "rin_graph.h"
 
 #include "energy.h"
 
 #include "spatial/geometry.h"
-#include "prelude.h"
 #include "spatial/kdpoint.h"
 
 #include "pdb_records.h"
-#include "secondary_structures.h"
 
 #include "log_manager.h"
 
 namespace rin
 {
 struct maker;
+}
+
+namespace structure
+{
+class base;
 }
 
 namespace chemical_entity
@@ -78,7 +82,7 @@ private:
      * The secondary structure can be either <i>LOOP</i>, <i>HELIX</i> or <i>SHEET</i>
      * when information is available in the PDB, otherwise <i>NONE</i>.
      */
-    structure::base* _secondary_structure = new structure::base();
+    structure::base* _secondary_structure;
 
 private:
     friend struct rin::maker;
@@ -222,32 +226,17 @@ public:
 
 public:
     // makes structure become <i>LOOP</i>
-    void make_secondary_structure()
-    {
-        delete _secondary_structure;
-        _secondary_structure = new structure::loop();
-    }
+    void make_secondary_structure();
 
     // makes structure become <i>HELIX</i>
-    void make_secondary_structure(records::helix const& record)
-    {
-        delete _secondary_structure;
-        _secondary_structure = new structure::helix(record);
-    }
+    void make_secondary_structure(records::helix const& record);
 
     // makes structure become <i>SHEET</i>
-    void make_secondary_structure(records::sheet_piece const& record)
-    {
-        delete _secondary_structure;
-        _secondary_structure = new structure::sheet_piece(record);
-    }
+    void make_secondary_structure(records::sheet_piece const& record);
 
     // ID of the secondary structure
     [[nodiscard]]
-    std::string secondary_structure_id() const
-    {
-        return _secondary_structure->pretty_with(*this);
-    }
+    std::string secondary_structure_id() const;
 };
 
 /**

@@ -2,6 +2,8 @@
 
 #include <utility>
 
+#include "secondary_structures.h"
+
 using std::vector;
 using std::array;
 
@@ -23,7 +25,7 @@ array<double, 3> centre_of_mass(vector<chemical_entity::atom const*> const& atom
 }
 
 chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records, std::string pdb_name) :
-        kdpoint<3>({0, 0, 0}), _pdb_name(std::move(pdb_name))
+        kdpoint<3>({0, 0, 0}), _pdb_name(std::move(pdb_name)) , _secondary_structure(new structure::base())
 {
     /* TODO throw exception. It cannot happen.
     if (records.empty())
@@ -420,4 +422,31 @@ double chemical_entity::ionic_group::ionion_energy_q() const
 string chemical_entity::ionic_group::name() const
 {
     return getNameFromAtoms(_atoms);
+}
+
+// makes structure become <i>LOOP</i>
+void chemical_entity::aminoacid::make_secondary_structure()
+{
+    delete _secondary_structure;
+    _secondary_structure = new structure::loop();
+}
+
+// makes structure become <i>HELIX</i>
+void chemical_entity::aminoacid::make_secondary_structure(records::helix const& record)
+{
+    delete _secondary_structure;
+    _secondary_structure = new structure::helix(record);
+}
+
+// makes structure become <i>SHEET</i>
+void chemical_entity::aminoacid::make_secondary_structure(const records::sheet_piece& record)
+{
+    delete _secondary_structure;
+    _secondary_structure = new structure::sheet_piece(record);
+}
+
+// ID of the secondary structure
+std::string chemical_entity::aminoacid::secondary_structure_id() const
+{
+    return _secondary_structure->pretty_with(*this);
 }
