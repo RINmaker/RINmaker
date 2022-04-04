@@ -1,5 +1,6 @@
 TODO:
 
+- riportare atom1=catione atom2=anione negli edge ionion in graphml
 - Se l'occupancy è < 1 loggare che non è supportata e return -1
 - SHEET Specificare che usiamo il calcolo di giacometti e non le info nel pdb (Nella documentazione)
 - Scrivere un readme documentativo con la descrizione di cosa fa il programma
