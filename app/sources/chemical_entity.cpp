@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "secondary_structures.h"
+#include "energy.h"
 
 using std::vector;
 using std::array;

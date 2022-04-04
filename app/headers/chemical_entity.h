@@ -10,8 +10,6 @@
 
 #include "rin_graph.h"
 
-#include "energy.h"
-
 #include "spatial/geometry.h"
 #include "spatial/kdpoint.h"
 
