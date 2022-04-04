@@ -10,10 +10,10 @@ namespace records {
     template<size_t N, typename Derived>
     class base {
     protected:
-        uint _line_number;
+        uint32_t _line_number;
         std::array<std::string, N> _fields;
 
-        explicit base(std::string &line, uint line_number): _line_number(line_number) {
+        explicit base(std::string &line, uint32_t line_number): _line_number(line_number) {
             size_t line_size = line.size();
             for (size_t i = 0; i < N; ++i) {
                 size_t first = Derived::_limits[i].first;
@@ -27,7 +27,7 @@ namespace records {
 
     public:
         [[nodiscard]]
-        uint line_number() const { return _line_number; }
+        uint32_t line_number() const { return _line_number; }
     };
 
     class atom : public base<15, atom> {
@@ -37,7 +37,7 @@ namespace records {
         static std::array<std::pair<size_t, size_t>, 15> const _limits;
 
     public:
-        explicit atom(std::string &line, uint line_number) : base(line, line_number) {}
+        explicit atom(std::string &line, uint32_t line_number) : base(line, line_number) {}
 
         [[nodiscard]]
         bool same_res(atom const &other) const {
@@ -88,7 +88,7 @@ namespace records {
         static std::array<std::pair<size_t, size_t>, 14> const _limits;
 
     public:
-        explicit helix(std::string &line, uint line_number) : base(line, line_number) {}
+        explicit helix(std::string &line, uint32_t line_number) : base(line, line_number) {}
 
         [[nodiscard]]
         std::string const &init_chain_id() const { return _fields[4]; }
@@ -135,7 +135,7 @@ namespace records {
         static std::array<std::pair<size_t, size_t>, 23> const _limits;
 
     public:
-        explicit sheet_piece(std::string &line, uint line_number) : base(line, line_number) {}
+        explicit sheet_piece(std::string &line, uint32_t line_number) : base(line, line_number) {}
 
         [[nodiscard]]
         std::string const &init_chain_id() const { return _fields[5]; }
@@ -182,7 +182,7 @@ namespace records {
         static std::array<std::pair<size_t, size_t>, 13> const _limits;
 
     public:
-        explicit ss(std::string &line, uint line_number) : base(line, line_number) {}
+        explicit ss(std::string &line, uint32_t line_number) : base(line, line_number) {}
 
         [[nodiscard]]
         double length() const { return std::stod(_fields[12]); }

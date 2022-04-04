@@ -30,7 +30,7 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
         kdpoint<3>({0, 0, 0}), _pdb_name(std::move(pdb_name)), _secondary_structure(new structure::base())
 {
     auto assert_ring_correctness =
-        [](string const& name, uint line_number, std::vector<std::string> const& expected_atoms, std::vector<atom const*> const& found_atoms)
+        [](string const& name, uint32_t line_number, std::vector<std::string> const& expected_atoms, std::vector<atom const*> const& found_atoms)
     {
         if(expected_atoms.size() != found_atoms.size())
         {

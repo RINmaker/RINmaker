@@ -83,7 +83,7 @@ rin::maker::maker(fs::path const& pdb_path)
 
     // parsed line
     string line;
-    uint line_number = 0;
+    uint32_t line_number = 0;
     while (getline(pdb_file, line))
     {
 
