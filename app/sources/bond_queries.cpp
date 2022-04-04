@@ -10,11 +10,14 @@
 
 using namespace bondfunctors;
 
-void vdw::operator()(chemical_entity::atom const& a, chemical_entity::atom const& b) {
+void vdw::operator()(chemical_entity::atom const& a, chemical_entity::atom const& b)
+{
     if (a.res().satisfies_minimum_separation(b.res()) &&
-        a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= rin::parameters::global::instance().get().surface_dist_vdw()) {
-        std::string const unique_key = prelude::sort(a.res().id(), b.res().id());
-        if (_bonded.find(unique_key) == _bonded.end()) {
+        a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= rin::parameters::global::instance().get().surface_dist_vdw())
+    {
+        string const unique_key = prelude::sort(a.res().id(), b.res().id());
+        if (_bonded.find(unique_key) == _bonded.end())
+        {
             // TODO verbosity: bond accepted
             _net.new_bond<bonds::vdw>(a, b);
             ++_nbonds;
@@ -26,8 +29,10 @@ void vdw::operator()(chemical_entity::atom const& a, chemical_entity::atom const
     }
 }
 
-void ionic::operator()(chemical_entity::ionic_group const& a, chemical_entity::ionic_group const& b) {
-    if (a.res().satisfies_minimum_separation(b.res()) && a.charge() == -b.charge()) {
+void ionic::operator()(chemical_entity::ionic_group const& a, chemical_entity::ionic_group const& b)
+{
+    if (a.res().satisfies_minimum_separation(b.res()) && a.charge() == -b.charge())
+    {
         // TODO verbosity: bond accepted
         _net.new_bond<bonds::ionic>(a, b);
         ++_nbonds;
@@ -36,11 +41,15 @@ void ionic::operator()(chemical_entity::ionic_group const& a, chemical_entity::i
     // TODO verbosity: bond rejected
 }
 
-void hydrogen::operator()(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor) {
-    if (acceptor.res().satisfies_minimum_separation(donor.res())) {
-        if (!(acceptor.res() == donor.res())) {
+void hydrogen::operator()(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor)
+{
+    if (acceptor.res().satisfies_minimum_separation(donor.res()))
+    {
+        if (!(acceptor.res() == donor.res()))
+        {
             auto hydrogens = donor.attached_hydrogens();
-            for (auto* h: hydrogens) {
+            for (auto* h: hydrogens)
+            {
                 std::array<double, 3> const da = (std::array<double, 3>) (acceptor - donor);
                 std::array<double, 3> const dh = (std::array<double, 3>) (*h - donor);
                 double angle_adh = geom::angle<3>(da, dh);
@@ -65,8 +74,10 @@ void hydrogen::operator()(chemical_entity::atom const& acceptor, chemical_entity
 
 // FIXME possibile bug
 // TODO mark resolved?
-void pication::operator()(chemical_entity::atom const& cation, chemical_entity::ring const& ring) {
-    if (ring.res().satisfies_minimum_separation(cation.res(), rin::parameters::global::instance().get().sequence_separation())) {
+void pication::operator()(chemical_entity::atom const& cation, chemical_entity::ring const& ring)
+{
+    if (ring.res().satisfies_minimum_separation(cation.res(), rin::parameters::global::instance().get().sequence_separation()))
+    {
         // TODO verbosity: bond accepted
         double theta = 90 - geom::d_angle<3>(ring.normal(), (std::array<double, 3>) (ring - cation));
         if (theta >= cfg::params::pication_angle) // 45
@@ -79,7 +90,8 @@ void pication::operator()(chemical_entity::atom const& cation, chemical_entity::
     }
 }
 
-void pipistack::operator()(chemical_entity::ring const& a, chemical_entity::ring const& b) {
+void pipistack::operator()(chemical_entity::ring const& a, chemical_entity::ring const& b)
+{
     double nc1 = a.angle_between_normal_and_centres_joining(b);
     double nc2 = b.angle_between_normal_and_centres_joining(a);
     double nn = a.angle_between_normals(b);
@@ -89,9 +101,11 @@ void pipistack::operator()(chemical_entity::ring const& a, chemical_entity::ring
         (0 <= nn && nn <= cfg::params::pipistack_normal_normal_angle_range) &&
         ((0 <= nc1 && nc1 <= cfg::params::pipistack_normal_centre_angle_range) ||
          (0 <= nc2 && nc2 <= cfg::params::pipistack_normal_centre_angle_range)) &&
-        mn <= cfg::params::max_pipi_atom_atom_distance) {
+        mn <= cfg::params::max_pipi_atom_atom_distance)
+    {
         std::string const unique_key = prelude::sort(a.res().id(), b.res().id());
-        if (_bonded.find(unique_key) == _bonded.end()) {
+        if (_bonded.find(unique_key) == _bonded.end())
+        {
             // TODO verbosity: bond accepted
             _net.new_bond<bonds::pipistack>(a, b, nn);
             ++_nbonds;
@@ -103,15 +117,20 @@ void pipistack::operator()(chemical_entity::ring const& a, chemical_entity::ring
     }
 }
 
-void generico::operator()(chemical_entity::atom const& a, chemical_entity::atom const& b) {
-    if (a.res().satisfies_minimum_separation(b.res())) {
+void generico::operator()(chemical_entity::atom const& a, chemical_entity::atom const& b)
+{
+    if (a.res().satisfies_minimum_separation(b.res()))
+    {
         string const unique_key = prelude::sort(a.res().id(), b.res().id());
-        if (_bonded.find(unique_key) == _bonded.end()) {
+        if (_bonded.find(unique_key) == _bonded.end())
+        {
             // TODO verbosity: bond accepted
             _net.new_bond<bonds::generico>(a.res(), b.res());
             ++_nbonds;
 
             _bonded.insert(unique_key);
         }
+
+        // TODO verbosity: bond rejected?
     }
 }
