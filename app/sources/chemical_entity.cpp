@@ -4,6 +4,7 @@
 
 #include "secondary_structures.h"
 #include "energy.h"
+#include "utils.h"
 
 using std::vector;
 using std::array;
@@ -28,6 +29,18 @@ array<double, 3> centre_of_mass(vector<chemical_entity::atom const*> const& atom
 chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records, std::string pdb_name) :
         kdpoint<3>({0, 0, 0}), _pdb_name(std::move(pdb_name)), _secondary_structure(new structure::base())
 {
+    auto assert_ring_correctness =
+        [](string const& name, uint line_number, std::vector<std::string> const& expected_atoms, std::vector<atom const*> const& found_atoms)
+    {
+        if(expected_atoms.size() != found_atoms.size())
+        {
+            string expected_atoms_str = joinStrings(expected_atoms, ", ");
+            string found_atoms_str = getNameFromAtoms(found_atoms, ", ");
+            string exception_description = "line number: " + std::to_string(line_number) + ", aminoacid: " + name + " - expected aromatic ring: " + expected_atoms_str + ", found: " + found_atoms_str;
+            throw std::invalid_argument(exception_description);
+        }
+    };
+
     /* TODO throw exception. It cannot happen.
     if (records.empty())
     {
@@ -99,15 +112,17 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
 
     _position = centre_of_mass(_atoms);
 
-    if (!ring_1.empty())
+    if (n_of_rings >= 1)
     {
+        assert_ring_correctness(_name, first.line_number(), patterns_1, ring_1);
         _primary_ring = new ring(ring_1, *this);
     }
-
-    if (!ring_2.empty())
+    if (n_of_rings == 2)
     {
+        assert_ring_correctness(_name, first.line_number(), patterns_2, ring_2);
         _secondary_ring = new ring(ring_2, *this);
     }
+
     if (!positive.empty())
     {
         _positive_ionic_group = new ionic_group(positive, 1, *this);
@@ -345,7 +360,8 @@ std::vector<chemical_entity::atom const*> chemical_entity::atom::attached_hydrog
 chemical_entity::ring::ring(std::vector<atom const*> const& atoms, aminoacid const& res)
         : kdpoint<3>({0, 0, 0}), component(res), _atoms(atoms)
 {
-    // TODO assert atoms.size >= 3
+    if(atoms.size() < 3)
+        throw std::invalid_argument("rings should have at least 3 atoms");
 
     double sum_radii = 0;
     for (auto* a: atoms)
@@ -379,23 +395,15 @@ chemical_entity::atom const& chemical_entity::ring::atom_closest_to(atom const& 
     return *closest_atom;
 }
 
-string getNameFromAtoms(std::vector<const chemical_entity::atom*> atoms)
+string getNameFromAtoms(std::vector<const chemical_entity::atom*> const& atoms, string const& delimiter)
 {
     std::vector<string> atoms_name;
     for (auto i: atoms)
         atoms_name.push_back(i->name());
 
     sort(atoms_name.begin(), atoms_name.end());
-
-    string out;
-    string delimiter = ":";
-    for (string& name: atoms_name)
-    {
-        if (!out.empty())
-            out += delimiter;
-        out += name;
-    }
-    return out;
+    
+    return joinStrings(atoms_name, delimiter);
 }
 
 string chemical_entity::ring::name() const

@@ -8,42 +8,28 @@ string app_full_name()
     char buf[500];
     const char* dbg =
 #   if NDEBUG
-            ""
+    ""
 #   else
-            "[DEBUG]"
+    "[DEBUG]"
 #   endif
     ;
     const char* os =
 #   if _WIN32 && !_WIN64
-            "Windows 32 bit"
+    "Windows 32 bit"
 #   elif _WIN32 && _WIN64
-            "Windows 64 bit"
+    "Windows 64 bit"
 #   elif __APPLE__ || __MACH__ || _MAC
     "OSX"
 #   elif __linux__
     "Linux"
 #   elif __unix__
-"Unix"
+    "Unix"
 #   else
-"Unknown OS"
+    "Unknown OS"
 #   endif
     ;
 
-//#   if _WIN32
-//    time_t now = time(0);
-//    tm local_datetime;
-//    localtime_s(&local_datetime , &now);
-//    int two_digit_year = (1900 + local_datetime.tm_year) % 100;
-//#   elif __linux__
-//    time_t now = time(0);
-//    tm local_datetime;
-//    localtime_r(&now, &local_datetime);
-//    int two_digit_year = (1900 + local_datetime.tm_year) % 100;
-//#   else
-//    int two_digit_year = 22;
-//# endif
-
-    string date = __DATE__;
+    string date = __DATE__; //Date at compile time
     const char two_digit_year[] = {date[date.size() - 2], date[date.size() - 1], '\0'};
     snprintf(
             buf, sizeof(buf), "%s v%d.%d.%d build %s %s (%s) %s\n(C) 2020-%s Ca' Foscari University of Venice\n", app_name, major, minor, rev, __DATE__, __TIME__, os, dbg
@@ -205,4 +191,16 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
 
     result = arguments{params, pdb_path, out_path, log_dir};
     return true;
+}
+
+string joinStrings(std::vector<std::string> const& values, string const& delimiter)
+{
+    string out;
+    for (string const& value: values)
+    {
+        if (!out.empty())
+            out += delimiter;
+        out += value;
+    }
+    return out;
 }

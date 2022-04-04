@@ -350,3 +350,5 @@ public:
     string name() const;
 };
 }
+
+string getNameFromAtoms(std::vector<const chemical_entity::atom*> const& atoms, string const& delimiter = ":");

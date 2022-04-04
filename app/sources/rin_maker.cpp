@@ -83,6 +83,7 @@ rin::maker::maker(fs::path const& pdb_path)
 
     // parsed line
     string line;
+    uint line_number = 0;
     while (getline(pdb_file, line))
     {
 
@@ -92,8 +93,8 @@ rin::maker::maker(fs::path const& pdb_path)
         if (record_type == "ATOM")
         {
             // atoms are grouped by aminoacid: we can simply fill a collection until we change residue
-            records::atom record(line);
-            if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back()))
+            records::atom record(line, ++line_number);
+            if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back())) 
             {
                 _aminoacids.push_back(new aminoacid(tmp_atoms, pdb_name));
                 tmp_atoms.clear();
@@ -103,11 +104,11 @@ rin::maker::maker(fs::path const& pdb_path)
         }
         else if (record_type == "HELIX")
         {
-            helix_records.insert(records::helix(line));
+            helix_records.insert(records::helix(line, ++line_number));
         }
         else if (record_type == "SHEET")
         {
-            sheet_records.insert(records::sheet_piece(line));
+            sheet_records.insert(records::sheet_piece(line, ++line_number));
         }
         /* TODO ssbonds
         else if (record_type == "SSBOND") {
