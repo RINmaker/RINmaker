@@ -8,6 +8,7 @@
 #include <type_traits>
 
 #include "noncovalent_bonds.h"
+#include "chemical_entity.h"
 
 // classe che gestisce l'intera residue interaction network
 //

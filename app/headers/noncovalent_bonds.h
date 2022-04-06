@@ -1,20 +1,29 @@
 #pragma once
 
 #include <string>
-#include "rin_graph.h"
 #include "prelude.h"
-#include "chemical_entity.h"
+
+#include "rin_graph.h"
+#include "pdb_records.h"
+
 #include "energy.h"
 #include "rin_params.h"
 
 class network;
 
-// legami non covalenti tra due amminoacidi
-//
+namespace chemical_entity
+{
+class aminoacid;
+
+class atom;
+
+class ring;
+
+class ionic_group;
+}
+
 namespace bonds
 {
-// base class
-//
 class base
 {
 private:
@@ -24,29 +33,19 @@ private:
     double const _energy;
 
 protected:
-    base(double length, double energy) : _length(length), _energy(energy)
-    {}
+    base(double length, double energy);
 
 public:
     virtual ~base() = default;
 
 public:
-    double get_length() const
-    { return _length; }
+    double get_length() const;
 
-    double get_energy() const
-    { return _energy; }
+    double get_energy() const;
 
-    // TODO: sprintf di prelude � stranaprelude::sprintf("[type:%s][id:%s][interaction:%s]", get_type(), get_key(), get_interaction())
-    // std::string pretty() const { return prelude::sprintf("[type:%s][id:%s][interaction:%s]", get_type(), get_key(), get_interaction()); }
+    bool operator<(base const& rhs) const;
 
-    // confronta prima l'energia "per tipo di legame"; se uguale, va per distanza.
-    //
-    bool operator<(base const& rhs) const
-    { return _energy < rhs._energy || (_energy == rhs._energy && _length < rhs._length); }
-
-    bool operator>(base const& rhs) const
-    { return rhs < *this; }
+    bool operator>(base const& rhs) const;
 
 public:
     virtual std::string get_interaction() const = 0;
@@ -59,8 +58,6 @@ public:
     virtual rin::edge to_edge() const = 0;
 };
 
-// legami che vengono computati di fatto (esempio negativo: l'ss bond � solo parsato dal pdb)
-//
 class computed : public base
 {
 protected:
@@ -69,9 +66,7 @@ protected:
     chemical_entity::aminoacid const* _source;
     chemical_entity::aminoacid const* _target;
 
-    computed(chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target, double distance, double energy)
-            : base(distance, energy), _source(&source), _target(&target)
-    {}
+    computed(chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target, double distance, double energy);
 
 public:
     virtual ~computed() = default;
@@ -79,59 +74,29 @@ public:
     virtual std::string get_type() const = 0;
 
 public:
-    chemical_entity::aminoacid const& source() const
-    { return *_source; }
+    chemical_entity::aminoacid const& source() const;
 
-    chemical_entity::aminoacid const& target() const
-    { return *_target; }
+    chemical_entity::aminoacid const& target() const;
 
     [[nodiscard]]
-    std::string id() const override
-    { return prelude::sort(_source->id(), _target->id()); }
+    std::string id() const override;
 };
 
-// legame generico tra carbonio alpha o beta
-//
 class generico : public computed
 {
 private:
     friend class ::network;
 
-    generico(chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target)
-            : computed(source, target, source.distance(target), 0) // TODO res horribilis
-    {}
+    generico(chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target);
 
 public:
-    std::string get_interaction() const
-    {
-        std::string get_interaction = "GENERIC:";
-        switch (rin::parameters::global::instance().get().interaction_type())
-        {
-        case rin::parameters::interaction_type_t::ALPHA_BACKBONE:
-                get_interaction += "CA";
-                break;
+    std::string get_interaction() const;
 
-            case rin::parameters::interaction_type_t::BETA_BACKBONE:
-                get_interaction += "CB";
-                break;
+    std::string get_type() const;
 
-            case rin::parameters::interaction_type_t::NONCOVALENT_BONDS:
-                get_interaction += "CLOSEST";
-                break;
-        }
-
-        return get_interaction;
-    }
-
-    std::string get_type() const
-    { return "generic"; } // TODO va in config
-
-    rin::edge to_edge() const
-    { return rin::edge(*this); }
+    rin::edge to_edge() const;
 };
 
-// legame idrogeno
-//
 class hydrogen : public computed
 {
 private:
@@ -143,86 +108,33 @@ private:
     double const _angle;
 
     //Returns a pair of Sigmaij Epsilonij
-    std::pair<double, double> getSigmaEpsilon(chemical_entity::atom const& donor,
-                                          chemical_entity::atom const& acceptor)
-    {
-        std::function<bool(string const&, int, string const&, int)> compare =
-          [&](string const& donor_element, int donor_charge, string const& acceptor_element, int acceptor_charge)
-        {
-            return donor.symbol() == donor_element
-                   && donor.charge() == donor_charge
-                   && acceptor.symbol() == acceptor_element
-                   && acceptor.charge() == acceptor_charge;
-        };
+    std::pair<double, double> getSigmaEpsilon(
+            chemical_entity::atom const& donor, chemical_entity::atom const& acceptor);
 
-        if (compare("N", 0, "N", 0)) return  std::make_pair(1.99, -3.00);
-        if (compare("N", 0, "O", 0)) return  std::make_pair(1.89, -3.50);
-        if (compare("O", 0, "N", 0)) return  std::make_pair(1.89, -4.00);
-        if (compare("O", 0, "O", 0)) return  std::make_pair(1.79, -4.25);
-        if (compare("N", 1, "N", 0)) return  std::make_pair(1.99, -4.50);
-        if (compare("N", 1, "O", 0)) return  std::make_pair(1.89, -5.25);
+    double energy(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor, chemical_entity::atom const* hydrogen);
 
-        if (compare("N", 0, "O", -1)) return  std::make_pair(1.89, -5.25);
-        if (compare("N", 1, "O", -1)) return  std::make_pair(1.89, -7.00);
-        if (compare("O", 0, "O", -1)) return  std::make_pair(1.79, -6.375);
-
-        return std::make_pair(0, 0); //TODO log: non dovrebbe accadere
-    }
-
-    double energy(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor, chemical_entity::atom const* hydrogen)
-    {
-        std::pair<double, double> sigmaEpsilon = getSigmaEpsilon(donor, acceptor);
-        double sigma = sigmaEpsilon.first;
-        double epsilon = sigmaEpsilon.second;
-        double distance = hydrogen->distance(acceptor);
-
-        double sigma_distance_12 = pow(sigma / distance, 12);
-        double sigma_distance_10 = pow(sigma / distance, 10);
-
-        return 4 * epsilon * (sigma_distance_12 - sigma_distance_10);
-    }
-
-    hydrogen(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle)
-            : computed(acceptor.res(), donor.res(), acceptor.distance(donor), energy(donor, acceptor, hydrogen)),
-            _acceptor(&acceptor), _donor(&donor), _hydrogen(hydrogen), _angle(angle)
-    {}
+    hydrogen(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle);
 
 public:
-    chemical_entity::atom const& acceptor() const
-    { return *_acceptor; }
-    chemical_entity::atom const& donor() const
-    { return *_donor; }
+    chemical_entity::atom const& acceptor() const;
 
-    chemical_entity::atom const* acceptor_ptr() const
-    { return _acceptor; }
-    chemical_entity::atom const* donor_ptr() const
-    { return _donor; }
-    chemical_entity::atom const* hydrogen_ptr() const
-    { return _hydrogen; }
+    chemical_entity::atom const& donor() const;
 
-    double get_angle() const
-    { return _angle; }
+    chemical_entity::atom const* acceptor_ptr() const;
 
-    std::string get_interaction() const
-    {
-        chemical_entity::atom const& donor = *_donor;
-        chemical_entity::atom const& acceptor = *_acceptor;
+    chemical_entity::atom const* donor_ptr() const;
 
-        string donorChain    = donor.is_main_chain() ? "MC" : "SC";
-        string acceptorChain = acceptor.is_main_chain() ? "MC" : "SC";
+    chemical_entity::atom const* hydrogen_ptr() const;
 
-        return "HBOND:" + acceptorChain + "_" + donorChain;
-    }
+    double get_angle() const;
 
-    rin::edge to_edge() const
-    { return rin::edge(*this); }
+    std::string get_interaction() const;
 
-    std::string get_type() const
-    { return "hydrogen"; } // TODO va in config
+    rin::edge to_edge() const;
+
+    std::string get_type() const;
 };
 
-// legame tra gruppi ionici
-//
 class ionic : public computed
 {
 private:
@@ -231,35 +143,20 @@ private:
     chemical_entity::ionic_group const* _negative;
     chemical_entity::ionic_group const* _positive;
 
-    ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive)
-            : computed(
-            negative.res(),
-            positive.res(),
-            negative.distance(positive),
-            (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))
-    )
-            , _negative(&negative), _positive(&positive)
-    {}
+    ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive);
 
 public:
-    chemical_entity::ionic_group const& positive() const
-    { return *_positive; }
+    chemical_entity::ionic_group const& positive() const;
 
-    chemical_entity::ionic_group const& negative() const
-    { return *_negative; }
+    chemical_entity::ionic_group const& negative() const;
 
-    std::string get_interaction() const
-    { return "IONIC:SC_SC"; }
+    std::string get_interaction() const;
 
-    rin::edge to_edge() const
-    { return rin::edge(*this); }
+    rin::edge to_edge() const;
 
-    std::string get_type() const
-    { return "ionic"; }
+    std::string get_type() const;
 };
 
-// legame pi-catione
-//
 class pication : public computed
 {
 private:
@@ -269,32 +166,22 @@ private:
     chemical_entity::ring const* _ring;
     double _angle;
 
-    pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle)
-            : computed(ring.res(), cation.res(), ring.distance(cation), 9.6) // TODO va in config
-            , _cation(&cation), _ring(&ring), _angle(angle)
-    {}
+    pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle);
 
 public:
-    chemical_entity::ring const& ring() const
-    { return *_ring; }
+    chemical_entity::ring const& ring() const;
 
-    chemical_entity::atom const& cation() const
-    { return *_cation; }
+    chemical_entity::atom const& cation() const;
 
-    double angle() const
-    { return _angle; }
+    double angle() const;
 
-    std::string get_interaction() const
-    { return "PICATION:SC_SC"; }
-    rin::edge to_edge() const
-    { return rin::edge(*this); }
+    std::string get_interaction() const;
 
-    std::string get_type() const
-    { return "pication"; }
+    rin::edge to_edge() const;
+
+    std::string get_type() const;
 };
 
-// legame pipistack
-//
 class pipistack : public computed
 {
 private:
@@ -304,32 +191,22 @@ private:
     chemical_entity::ring const* _target_ring;
     double const _angle;
 
-    pipistack(chemical_entity::ring const& source_ring, chemical_entity::ring const& target_ring, double angle)
-            : computed(source_ring.res(), target_ring.res(), source_ring.distance(target_ring), 9.6) // TODO va in config
-            , _source_ring(&source_ring), _target_ring(&target_ring), _angle(angle)
-    {}
+    pipistack(chemical_entity::ring const& source_ring, chemical_entity::ring const& target_ring, double angle);
 
 public:
-    chemical_entity::ring const& source_ring() const
-    { return *_source_ring; }
+    chemical_entity::ring const& source_ring() const;
 
-    chemical_entity::ring const& target_ring() const
-    { return *_target_ring; }
+    chemical_entity::ring const& target_ring() const;
 
-    double angle() const
-    { return _angle; }
+    double angle() const;
 
-    std::string get_interaction() const
-    { return "PIPISTACK:SC_SC"; }
-    rin::edge to_edge() const
-    { return rin::edge(*this); }
+    std::string get_interaction() const;
 
-    std::string get_type() const
-    { return "pipistack"; }
+    rin::edge to_edge() const;
+
+    std::string get_type() const;
 };
 
-// ponte ss
-//
 class ss : public base
 {
 private:
@@ -343,39 +220,23 @@ private:
     std::string const _target_chain;
     std::string const _target_name;
 
-    ss(records::ss const& record)
-            : base(record.length(), 167) // TODO va in config
-
-            ,
-            _source_name(record.name_1()),
-            _target_name(record.name_2()),
-            _source_chain(record.chain_id_1()),
-            _target_chain(record.chain_id_2()),
-            _source_seq(record.seq_num_1()),
-            _target_seq(record.seq_num_2())
-    {}
+    ss(records::ss const& record);
 
 public:
-    std::string source_id() const
-    { return _source_chain + ":" + std::to_string(_source_seq) + ":_:" + _source_name; }
+    std::string source_id() const;
 
-    std::string target_id() const
-    { return _target_chain + ":" + std::to_string(_target_seq) + ":_:" + _target_name; }
+    std::string target_id() const;
 
-    std::string get_interaction() const
-    { return "SSBOND:SC_SC"; } // TODO va in config
-    rin::edge to_edge() const
-    { return rin::edge(*this); }
+    std::string get_interaction() const;
 
-    std::string id() const
-    { return prelude::sort(source_id(), target_id()); }
+    // TODO va in config
+    rin::edge to_edge() const;
 
-    std::string get_type() const
-    { return "ss"; } // TODO va in config
+    std::string id() const;
+
+    std::string get_type() const;
 };
 
-// legame di van der waals
-//
 class vdw : public computed
 {
 private:
@@ -384,55 +245,22 @@ private:
     chemical_entity::atom const* _source_atom;
     chemical_entity::atom const* _target_atom;
 
-    double energy(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom)
-    {
-        double* source_opts = get_vdw_opsl_values(source_atom.res().name(), source_atom.name(), source_atom.symbol());
-        double* target_opts = get_vdw_opsl_values(target_atom.res().name(), target_atom.name(), target_atom.symbol());
+    double energy(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
 
-        double source_sigma = source_opts[1];
-        double target_sigma = target_opts[1];
-        double source_epsilon = source_opts[2];
-        double target_epsilon = target_opts[2];
-
-        double sigma = sqrt(source_sigma * target_sigma);
-        double epsilon = sqrt(source_epsilon * target_epsilon);
-        double distance = source_atom.distance(target_atom); //Rij is the distance between center
-
-        double sigma_distance_12 = pow(sigma / distance, 12);
-
-        // double sigma_distance_6 = pow(sigma / distance, 6);
-        double sigma_distance_10 = pow(sigma / distance, 10);
-
-        return 4 * epsilon * (sigma_distance_12 - sigma_distance_10);
-    }
-
-    vdw(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom)
-            : computed(source_atom.res(), target_atom.res(), source_atom.distance(target_atom), energy(source_atom, target_atom))  // TODO va in config
-            , _source_atom(&source_atom), _target_atom(&target_atom)
-    {}
+    vdw(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
 
 public:
-    chemical_entity::atom const& source_atom() const
-    { return *_source_atom; }
+    chemical_entity::atom const& source_atom() const;
 
-    chemical_entity::atom const& target_atom() const
-    { return *_target_atom; }
+    chemical_entity::atom const& target_atom() const;
 
-    std::string get_interaction() const
-    {
-        chemical_entity::atom const& source = *_source_atom;
-        chemical_entity::atom const& target = *_target_atom;
+    [[nodiscard]]
+    std::string get_interaction() const override;
 
-        string sourceChain = source.name() == "C" || source.name() == "S" ? "MC" : "SC";
-        string targetChain = target.name() == "C" || target.name() == "S" ? "MC" : "SC";
+    [[nodiscard]]
+    rin::edge to_edge() const override;
 
-        return "VDW:" + sourceChain + "_" + targetChain;
-    }
-
-    rin::edge to_edge() const
-    { return rin::edge(*this); }
-
-    std::string get_type() const
-    { return "vdw"; }
+    [[nodiscard]]
+    std::string get_type() const override;
 };
 }
