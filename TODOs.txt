@@ -8,8 +8,6 @@ TODO:
 - Testare i parametri da riga di comando
 - Cambiare estensione di output e mettere output di default se non viene specificato
 - Rivedere costanti di energia (Jacopo)
-- [x] Unificare palette di xrmol (xrmol diventerà simile a quello di Francesco) (Francesco)
-- [x] Trasferire la ownership della repo di Francesco sotto l'organizzazione
 - TODO mancano unita di misura sulla ui
 - Dare un nome ai graphml uscenti perchè ora si chiamano tutti G
 - Mettere pication
@@ -17,8 +15,6 @@ TODO:
 - Aprire qualche issue
 - Controllare che le formule dell'energia diano i risultati tutti nella stessa U.M. (kj o kcal)
 - UI avere la conversione tra kj e kcal
-- [x] UI mostrare somma energie
-- [x] eccezioni nel parsing/costruzione degli amminoacidi
 
 WIP:
 - Documento contenete la lista e il risultato atteso dei test (Jacopo)
@@ -26,3 +22,8 @@ WIP:
 
 DONE:
 - Cambiare nome ai file dei test
+- Trasferire la ownership della repo di Francesco sotto l'organizzazione
+- UI mostrare somma energie
+- eccezioni nel parsing/costruzione degli amminoacidi
+- Trasferire la ownership della repo di Francesco sotto l'organizzazione
+- Unificare palette di xrmol (xrmol diventerà simile a quello di Francesco) (Francesco)
