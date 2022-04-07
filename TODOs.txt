@@ -17,7 +17,8 @@ TODO:
 - UI avere la conversione tra kj e kcal
 
 WIP:
-- tag multipli => multiple run su multiple proteine
+- passare a smart ptrs (lore) (razionale: abbiamo già la semantica di ownership, inutile fare le cose manualmente)
+- tag multipli => multiple run su multiple proteine (lore)
 - Documento contenete la lista e il risultato atteso dei test (Jacopo)
 - Lanciare eccezione in casi unexpected (Ad esempio nei ring accediamo con [0] [1])
 
