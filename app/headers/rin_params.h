@@ -19,6 +19,11 @@ public:
         ALL, BEST_PER_TYPE, BEST_ONE
     };
 
+
+    static std::string to_string(parameters::network_policy_t np);
+
+    static std::string to_string(parameters::interaction_type_t it);
+
 private:
     double _query_dist_hbond, _surface_dist_vdw, _query_dist_ionic, _query_dist_pipi, _query_dist_pica;
     double _query_dist_alpha, _query_dist_beta;

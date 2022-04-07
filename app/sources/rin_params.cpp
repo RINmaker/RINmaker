@@ -7,39 +7,39 @@ using netp = rin::parameters::network_policy_t;
 using intt = rin::parameters::interaction_type_t;
 using std::string;
 
-string to_string(intt i)
+string rin::parameters::to_string(netp np)
 {
-    switch (i)
+    switch (np)
     {
-    case intt::NONCOVALENT_BONDS:
-        return "\"closest\"";
+    case netp::ALL:
+        return "all";
 
-    case intt::ALPHA_BACKBONE:
-        return "\"ca\"";
+    case netp::BEST_PER_TYPE:
+        return "multiple";
 
-    case intt::BETA_BACKBONE:
-        return "\"cb\"";
+    case netp::BEST_ONE:
+        return "one";
 
     default:
-        return "\"unknown\"";
+        return "unknown";
     }
 }
 
-string to_string(netp p)
+string rin::parameters::to_string(intt it)
 {
-    switch (p)
+    switch (it)
     {
-    case netp::ALL:
-        return "\"all\"";
+    case intt::NONCOVALENT_BONDS:
+        return "non_covalent";
 
-    case netp::BEST_PER_TYPE:
-        return "\"multiple\"";
+    case intt::ALPHA_BACKBONE:
+        return "alpha_backbone";
 
-    case netp::BEST_ONE:
-        return "\"one\"";
+    case intt::BETA_BACKBONE:
+        return "beta_backbone";
 
     default:
-        return "\"unknown\"";
+        return "unknown";
     }
 }
 
@@ -50,7 +50,7 @@ string rin::parameters::pretty() const
     strs << "{";
 
     auto pc = interaction_type();
-    strs << "interaction_type:" << to_string(pc) << ", ";
+    strs << "interaction_type:" << rin::parameters::to_string(pc) << ", ";
     switch (pc)
     {
     case intt::NONCOVALENT_BONDS:
@@ -71,7 +71,7 @@ string rin::parameters::pretty() const
         break;
     }
 
-    strs << "seq_sep:" << sequence_separation() << ", " << "network_policy:" << to_string(network_policy()) << "}";
+    strs << "seq_sep:" << sequence_separation() << ", " << "network_policy:" << rin::parameters::to_string(network_policy()) << "}";
 
     return strs.str();
 }
