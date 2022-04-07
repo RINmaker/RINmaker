@@ -213,6 +213,9 @@ rin::maker::maker(fs::path const& pdb_path)
     _beta_carbon_tree = kdtree<atom, 3>(_beta_carbon_vector);
 }
 
+rin::maker::~maker()
+{ for (auto* res: _aminoacids) delete res; }
+
 using chemical_entity::component;
 
 template<typename BondFunc, typename Entity1, typename Entity2>

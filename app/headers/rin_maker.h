@@ -45,8 +45,7 @@ private:
 
 public:
     explicit maker(fs::path const& pdb_path);
-    ~maker()
-    { for (auto* res: _aminoacids) delete res; }
+    ~maker();
 
     rin::graph operator()(parameters const& params) const;
 };
