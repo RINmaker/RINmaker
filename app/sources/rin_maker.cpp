@@ -12,7 +12,7 @@
 
 #include "rin_network.h"
 #include "rin_params.h"
-#include "noncovalent_bonds.h"
+#include "bonds.h"
 
 using std::list;
 using std::string;

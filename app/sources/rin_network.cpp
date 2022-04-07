@@ -1,6 +1,6 @@
 #include "rin_network.h"
 
-#include "noncovalent_bonds.h"
+#include "bonds.h"
 
 #include "chemical_entity.h"
 

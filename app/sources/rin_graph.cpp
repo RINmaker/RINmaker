@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <string>
 
-#include "noncovalent_bonds.h"
+#include "bonds.h"
 #include "chemical_entity.h"
 #include "config.h"
 

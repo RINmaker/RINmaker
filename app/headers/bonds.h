@@ -275,7 +275,7 @@ public:
     std::string get_interaction() const override;
 
     [[nodiscard]]
-    explicit operator rin::edge() const
+    explicit operator rin::edge() const override
     { return rin::edge(*this); }
 
     [[nodiscard]]
