@@ -3,6 +3,7 @@
 #include <utility>
 
 #include "chemical_entity.h"
+#include "rin_network.h"
 
 using std::shared_ptr;
 using chemical_entity::aminoacid;
@@ -279,3 +280,114 @@ std::string bonds::vdw::get_interaction() const
 
 std::string bonds::vdw::get_type() const
 { return "vdw"; }
+
+
+bool bonds::hydrogen::test(network& net, rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor)
+{
+    if (acceptor.res().satisfies_minimum_separation(donor.res()))
+    {
+        if (!(acceptor.res() == donor.res()))
+        {
+            auto hydrogens = donor.attached_hydrogens();
+            for (auto* h: hydrogens)
+            {
+                std::array<double, 3> const da = (std::array<double, 3>) (acceptor - donor);
+                std::array<double, 3> const dh = (std::array<double, 3>) (*h - donor);
+                double angle_adh = geom::angle<3>(da, dh);
+
+                std::array<double, 3> const ha = (std::array<double, 3>) (acceptor - *h);
+                std::array<double, 3> const hd = (std::array<double, 3>) (donor - *h);
+                double angle_ahd = geom::angle<3>(ha, hd);
+
+                if (angle_adh <= cfg::params::hbond_angle) // 63
+                {
+                    net.find(acceptor.res(), donor.res()).push(*new bonds::hydrogen(acceptor, donor, h, angle_ahd));
+                    return true;
+                }
+            }
+        }
+    }
+
+    return false;
+}
+
+bool bonds::vdw::test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b)
+{
+    if (a.res().satisfies_minimum_separation(b.res()) &&
+        a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= params.surface_dist_vdw())
+    {
+        // FIXME qui ne prende il doppio!
+        auto& pb = net.find(a.res(), b.res());
+        if (!pb.has_vdw())
+            pb.push(*new bonds::vdw(a, b));
+        return true;
+    }
+
+    return false;
+}
+
+
+bool bonds::ionic::test(network& net, rin::parameters const& params, chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive)
+{
+    if (negative.res().satisfies_minimum_separation(positive.res()) && negative.charge() == -positive.charge())
+    {
+        net.find(negative.res(), positive.res()).push(*new bonds::ionic(negative, positive));
+        return true;
+    }
+
+    return false;
+}
+
+
+bool bonds::pication::test(network& net, rin::parameters const& params, chemical_entity::atom const& cation, chemical_entity::ring const& ring)
+{
+    if (ring.res().satisfies_minimum_separation(cation.res(), params.sequence_separation()))
+    {
+        double theta = 90 - geom::d_angle<3>(ring.normal(), (std::array<double, 3>) (ring - cation));
+
+        if (theta >= cfg::params::pication_angle) // 45
+        {
+            net.find(ring.res(), cation.res()).push(*new bonds::pication(ring, cation, theta));
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool bonds::pipistack::test(network& net, rin::parameters const& params, chemical_entity::ring const& a, chemical_entity::ring const& b)
+{
+    double nc1 = a.angle_between_normal_and_centres_joining(b);
+    double nc2 = b.angle_between_normal_and_centres_joining(a);
+    double nn = a.angle_between_normals(b);
+    double mn = a.closest_distance_between_atoms(b);
+
+    if (a.res().satisfies_minimum_separation(b.res()) &&
+        (0 <= nn && nn <= cfg::params::pipistack_normal_normal_angle_range) &&
+        ((0 <= nc1 && nc1 <= cfg::params::pipistack_normal_centre_angle_range) ||
+         (0 <= nc2 && nc2 <= cfg::params::pipistack_normal_centre_angle_range)) &&
+        mn <= cfg::params::max_pipi_atom_atom_distance)
+    {
+        auto& pb = net.find(a.res(), b.res());
+        if (!pb.has_pipi())
+            pb.push(*new pipistack(a, b, nn));
+
+        return true;
+    }
+
+    return false;
+}
+
+bool bonds::generico::test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b)
+{
+    if (a.res().satisfies_minimum_separation(b.res()))
+    {
+        auto& pb = net.find(a.res(), b.res());
+        if (!pb.has_backbone())
+            pb.push(*new bonds::generico(a.res(), b.res()));
+
+        return true;
+    }
+
+    return false;
+}

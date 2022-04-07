@@ -20,6 +20,13 @@ class ring;
 class ionic_group;
 }
 
+namespace rin
+{
+class params;
+}
+
+class network;
+
 namespace bonds
 {
 class base
@@ -71,6 +78,7 @@ public:
     ~computed() override = default;
 
     [[nodiscard]]
+
     std::string get_type() const override = 0;
 
     [[nodiscard]]
@@ -86,6 +94,8 @@ public:
 class generico final : public computed
 {
 public:
+    static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
+
     generico(chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target);
 
     [[nodiscard]]
@@ -115,6 +125,8 @@ private:
     double energy(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor, chemical_entity::atom const* hydrogen);
 
 public:
+    static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor);
+
     hydrogen(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle);
 
     [[nodiscard]]
@@ -153,6 +165,8 @@ private:
     chemical_entity::ionic_group const& _positive;
 
 public:
+    static bool test(network& net, rin::parameters const& params, chemical_entity::ionic_group const& a, chemical_entity::ionic_group const& b);
+
     ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive);
 
     [[nodiscard]]
@@ -181,6 +195,8 @@ private:
     double _angle;
 
 public:
+    static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& cation, chemical_entity::ring const& ring);
+
     pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle);
 
     [[nodiscard]]
@@ -211,6 +227,8 @@ private:
     double const _angle;
 
 public:
+    static bool test(network& net, rin::parameters const& params, chemical_entity::ring const& a, chemical_entity::ring const& b);
+
     pipistack(chemical_entity::ring const& source_ring, chemical_entity::ring const& target_ring, double angle);
 
     [[nodiscard]]
@@ -276,6 +294,8 @@ private:
     double energy(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
 
 public:
+    static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
+
     vdw(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
 
     [[nodiscard]]

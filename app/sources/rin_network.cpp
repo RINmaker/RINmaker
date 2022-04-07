@@ -14,28 +14,28 @@ void push_sort(std::list<const Bond*>& l, Bond const& b)
         l.push_back(&b);
 }
 
-void network::pairbond::push(bonds::ss const& bond)
+void pairbond::push(bonds::ss const& bond)
 { push_sort(_sss, bond); }
 
-void network::pairbond::push(bonds::vdw const& bond)
+void pairbond::push(bonds::vdw const& bond)
 { push_sort(_vdws, bond); }
 
-void network::pairbond::push(bonds::ionic const& bond)
+void pairbond::push(bonds::ionic const& bond)
 { push_sort(_ionics, bond); }
 
-void network::pairbond::push(bonds::hydrogen const& bond)
+void pairbond::push(bonds::hydrogen const& bond)
 { push_sort(_hydrogens, bond); }
 
-void network::pairbond::push(bonds::pication const& bond)
+void pairbond::push(bonds::pication const& bond)
 { push_sort(_pications, bond); }
 
-void network::pairbond::push(bonds::pipistack const& bond)
+void pairbond::push(bonds::pipistack const& bond)
 { push_sort(_pipistacks, bond); }
 
-void network::pairbond::push(bonds::generico const& bond)
+void pairbond::push(bonds::generico const& bond)
 { push_sort(_generics, bond); }
 
-network::pairbond::~pairbond()
+pairbond::~pairbond()
 {
     for (bonds::base const* bond: _hydrogens)
         delete bond;
@@ -62,19 +62,18 @@ network::pairbond::~pairbond()
 network::~network()
 { for (auto const& kv: pairbonds_map) delete kv.second; }
 
-network::pairbond& network::select_pairbond(std::string const& get_id)
+pairbond& network::find(chemical_entity::aminoacid const& a, chemical_entity::aminoacid const& b)
 {
-    if (pairbonds_map.find(get_id) == pairbonds_map.end())
+    auto const key = prelude::sort(a.id(), b.id());
+    if (pairbonds_map.find(key) == pairbonds_map.end())
     {
         auto* p = new pairbond();
-        pairbonds_map.insert({get_id, p});
+        pairbonds_map.insert({key, p});
         return *p;
     }
 
     else
-    {
-        return *pairbonds_map[get_id];
-    }
+        return *pairbonds_map[key];
 }
 
 std::list<bonds::base const*> network::get_one() const
@@ -115,7 +114,7 @@ std::list<bonds::base const*> network::get_multiple() const
 }
 
 
-std::list<bonds::base const*> network::pairbond::get_all() const
+std::list<bonds::base const*> pairbond::get_all() const
 {
     std::list<bonds::base const*> tmp;
 
@@ -130,7 +129,7 @@ std::list<bonds::base const*> network::pairbond::get_all() const
     return tmp;
 }
 
-std::list<bonds::base const*> network::pairbond::get_multiple() const
+std::list<bonds::base const*> pairbond::get_multiple() const
 {
     std::list<bonds::base const*> tmp;
 
@@ -186,7 +185,7 @@ bonds::base const* __best(std::list<const Bond*> const& l, bonds::base const* b)
     }
 }
 
-bonds::base const* network::pairbond::get_one() const
+bonds::base const* pairbond::get_one() const
 {
     bonds::base const* best = nullptr;
 
@@ -209,7 +208,7 @@ std::list<bonds::base const*> network::filter_hbond_realistic(std::list<bonds::b
     std::unordered_map<chemical_entity::atom const*, int> hydrogen_bond_count;
     std::unordered_map<chemical_entity::atom const*, int> acceptors_bond_count;
 
-//Get the bonds count of an atom
+    //Get the bonds count of an atom
     auto get_bond_count = [](
             std::unordered_map<chemical_entity::atom const*, int>& container, chemical_entity::atom const* atom)->int
     {
@@ -218,7 +217,8 @@ std::list<bonds::base const*> network::filter_hbond_realistic(std::list<bonds::b
         else
             return container[atom];
     };
-//Increase the bonds count of an atom
+
+    //Increase the bonds count of an atom
     auto inc_bond_count = [](
             std::unordered_map<chemical_entity::atom const*, int>& container, chemical_entity::atom const* atom)->void
     {
@@ -243,30 +243,30 @@ std::list<bonds::base const*> network::filter_hbond_realistic(std::list<bonds::b
         hydrogen_bonds_output.insert(bond);
     };
 
-//Extract hydrogen bonds from input
+    //Extract hydrogen bonds from input
     for (auto& i: input)
     {
         if (i->get_type() == "hydrogen")
             hydrogen_bonds_input.push_back((bonds::hydrogen const*) i);
     }
 
-//Order from smallest to largest energy
+    //Order from smallest to largest energy
     sort(
             hydrogen_bonds_input.begin(), hydrogen_bonds_input.end(), [](bonds::hydrogen const* a, bonds::hydrogen const* b)
             { return a->get_energy() < b->get_energy(); });
 
-//Add as many hydrogen bonds as possible
+    //Add as many hydrogen bonds as possible
     for (auto i: hydrogen_bonds_input)
     {
         if (can_be_added(i))
             add_bond(i);
     }
 
-//Let's make_instance the output list
+    //Let's make_instance the output list
     std::list<bonds::base const*> output;
     for (auto i: input)
     {
-//Insert i into the output if it is not an hydrogen or if it is in the filtered list
+        //Insert i into the output if it is not an hydrogen or if it is in the filtered list
         if (i->get_type() != "hydrogen" ||
             hydrogen_bonds_output.find((bonds::hydrogen const*) i) != hydrogen_bonds_output.end())
         {

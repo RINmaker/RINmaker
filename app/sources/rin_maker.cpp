@@ -12,7 +12,7 @@
 
 #include "rin_network.h"
 #include "rin_params.h"
-#include "bond_queries.h"
+#include "noncovalent_bonds.h"
 
 using std::list;
 using std::string;
@@ -202,23 +202,22 @@ rin::maker::~maker()
 
 using chemical_entity::component;
 
-template<typename BondFunc, typename Entity1, typename Entity2>
+template<typename Bond, typename Entity1, typename Entity2>
 static void find_bonds(
-        network& net, std::vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double distance)
+        network& net, std::vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double dist, rin::parameters const& params)
 {
     static_assert(
             std::is_base_of<component, Entity1>::value, "template typename Entity1 must inherit from type entity::component");
     static_assert(
             std::is_base_of<component, Entity2>::value, "template typename Entity2 must inherit from type entity::component");
     static_assert(
-            std::is_base_of<bondfunctors::base, BondFunc>::value, "template typename BondFunc must inherit from type bondfunctor::base");
+            std::is_base_of<bonds::computed, Bond>::value, "template typename BondFunc must inherit from type bond::computed");
 
-    BondFunc if_test_insert(net);
     for (auto* e1: vec)
     {
-        auto neighbors = tree.range_search(*e1, distance);
+        auto neighbors = tree.range_search(*e1, dist);
         for (auto* e2: neighbors)
-            if_test_insert(*e1, *e2);
+            Bond::test(net, params, *e1, *e2);
     }
 }
 
@@ -230,20 +229,20 @@ rin::graph rin::maker::operator()(parameters const& params) const
     switch (params.interaction_type())
     {
     case parameters::interaction_type_t::NONCOVALENT_BONDS:
-        find_bonds<bondfunctors::hydrogen>(
-                _network, _hacceptor_vector, _hdonor_tree, params.query_dist_hbond());
+        find_bonds<bonds::hydrogen>(
+                _network, _hacceptor_vector, _hdonor_tree, params.query_dist_hbond(), params);
 
-        find_bonds<bondfunctors::vdw>(
-                _network, _vdw_vector, _vdw_tree, params.query_dist_vdw());
+        find_bonds<bonds::vdw>(
+                _network, _vdw_vector, _vdw_tree, params.query_dist_vdw(), params);
 
-        find_bonds<bondfunctors::ionic>(
-                _network, _negative_ion_vector, _positive_ion_tree, params.query_dist_ionic());
+        find_bonds<bonds::ionic>(
+                _network, _negative_ion_vector, _positive_ion_tree, params.query_dist_ionic(), params);
 
-        find_bonds<bondfunctors::pication>(
-                _network, _cation_vector, _pication_ring_tree, params.query_dist_pica());
+        find_bonds<bonds::pication>(
+                _network, _cation_vector, _pication_ring_tree, params.query_dist_pica(), params);
 
-        find_bonds<bondfunctors::pipistack>(
-                _network, _ring_vector, _ring_tree, params.query_dist_pipi());
+        find_bonds<bonds::pipistack>(
+                _network, _ring_vector, _ring_tree, params.query_dist_pipi(), params);
 
         switch (params.network_policy())
         {
@@ -268,14 +267,14 @@ rin::graph rin::maker::operator()(parameters const& params) const
         break;
 
     case parameters::interaction_type_t::ALPHA_BACKBONE:
-        find_bonds<bondfunctors::generico>(
-                _network, _alpha_carbon_vector, _alpha_carbon_tree, params.query_dist_alpha());
+        find_bonds<bonds::generico>(
+                _network, _alpha_carbon_vector, _alpha_carbon_tree, params.query_dist_alpha(), params);
         results = _network.get_one();
         break;
 
     case parameters::interaction_type_t::BETA_BACKBONE:
-        find_bonds<bondfunctors::generico>(
-                _network, _beta_carbon_vector, _beta_carbon_tree, params.query_dist_beta());
+        find_bonds<bonds::generico>(
+                _network, _beta_carbon_vector, _beta_carbon_tree, params.query_dist_beta(), params);
         results = _network.get_one();
         break;
     }
