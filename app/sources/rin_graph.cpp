@@ -14,7 +14,7 @@ graph::graph(rin::parameters const& params, vector<aminoacid const*> const& amin
 {
     for (auto a: aminoacids)
     {
-        auto n = a->to_node();
+        auto n = (rin::node) *a;
         _nodes.insert({n.get_id(), n});
     }
 

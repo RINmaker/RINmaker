@@ -145,7 +145,7 @@ public:
     }
 
     [[nodiscard]]
-    rin::node to_node() const
+    explicit operator rin::node() const
     { return rin::node(*this); } // TODO può diventare un operatore di conversione
 
 public:
