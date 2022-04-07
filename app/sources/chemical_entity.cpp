@@ -418,11 +418,11 @@ chemical_entity::ionic_group::ionic_group(std::vector<atom const*> const& atoms,
 double chemical_entity::ionic_group::ionion_energy_q() const
 {
     //                                    q  // * number of protons
-    if (_res->name() == "LYS") return 0.640; // * 81;
-    if (_res->name() == "ASP") return 0.380; // * 95;
-    if (_res->name() == "HIS") return 0.380; // * 83;
-    if (_res->name() == "ARG") return 0.260; // * 77;
-    if (_res->name() == "GLU") return 0.635; // * 69;
+    if (_res.name() == "LYS") return 0.640; // * 81;
+    if (_res.name() == "ASP") return 0.380; // * 95;
+    if (_res.name() == "HIS") return 0.380; // * 83;
+    if (_res.name() == "ARG") return 0.260; // * 77;
+    if (_res.name() == "GLU") return 0.635; // * 69;
 
     // TODO exception
     return 0;

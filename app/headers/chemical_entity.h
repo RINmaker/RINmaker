@@ -156,15 +156,13 @@ public:
     std::string secondary_structure_id() const;
 };
 
-
 class component
 {
 protected:
     friend class aminoacid;
 
-    aminoacid const* _res;
-
-    explicit component(aminoacid const& res) : _res(&res)
+    aminoacid const& _res;
+    explicit component(aminoacid const& res) : _res(res)
     {}
 
     virtual ~component() = default;
@@ -172,7 +170,7 @@ protected:
 public:
     [[nodiscard]]
     aminoacid const& res() const
-    { return *_res; }
+    { return _res; }
 };
 
 class atom final : public kdpoint<3>, public component
