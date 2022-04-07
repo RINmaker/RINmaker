@@ -17,6 +17,7 @@ TODO:
 - UI avere la conversione tra kj e kcal
 
 WIP:
+- tag multipli => multiple run su multiple proteine
 - Documento contenete la lista e il risultato atteso dei test (Jacopo)
 - Lanciare eccezione in casi unexpected (Ad esempio nei ring accediamo con [0] [1])
 
