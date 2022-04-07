@@ -12,7 +12,7 @@ namespace chemical_entity
 class aminoacid;
 }
 
-namespace bonds
+namespace bond
 {
 class base;
 
@@ -34,43 +34,43 @@ class generico;
 class pairbond final
 {
 private:
-    std::list<bonds::ss const*> _sss;
-    std::list<bonds::vdw const*> _vdws;
-    std::list<bonds::ionic const*> _ionics;
-    std::list<bonds::hydrogen const*> _hydrogens;
-    std::list<bonds::pication const*> _pications;
-    std::list<bonds::pipistack const*> _pipistacks;
-    std::list<bonds::generico const*> _generics;
+    std::list<bond::ss const*> _sss;
+    std::list<bond::vdw const*> _vdws;
+    std::list<bond::ionic const*> _ionics;
+    std::list<bond::hydrogen const*> _hydrogens;
+    std::list<bond::pication const*> _pications;
+    std::list<bond::pipistack const*> _pipistacks;
+    std::list<bond::generico const*> _generics;
 
 public:
     ~pairbond();
 
-    void push(bonds::ss const& bond);
+    void push(bond::ss const& bond);
 
-    void push(bonds::vdw const& bond);
+    void push(bond::vdw const& bond);
 
-    void push(bonds::ionic const& bond);
+    void push(bond::ionic const& bond);
 
-    void push(bonds::hydrogen const& bond);
+    void push(bond::hydrogen const& bond);
 
-    void push(bonds::pication const& bond);
+    void push(bond::pication const& bond);
 
-    void push(bonds::pipistack const& bond);
+    void push(bond::pipistack const& bond);
 
-    void push(bonds::generico const& bond);
-
-    [[nodiscard]]
-    std::list<bonds::base const*> get_multiple() const;
+    void push(bond::generico const& bond);
 
     [[nodiscard]]
-    std::list<bonds::hydrogen const*> get_hydrogens() const
+    std::list<bond::base const*> get_multiple() const;
+
+    [[nodiscard]]
+    std::list<bond::hydrogen const*> get_hydrogens() const
     { return _hydrogens; }
 
     [[nodiscard]]
-    std::list<bonds::base const*> get_all() const;
+    std::list<bond::base const*> get_all() const;
 
     [[nodiscard]]
-    bonds::base const* get_one() const;
+    bond::base const* get_one() const;
 
     [[nodiscard]]
     bool has_vdw()
@@ -106,11 +106,11 @@ public:
     }
     */
 
-    std::list<bonds::base const*> get_one() const;
+    std::list<bond::base const*> get_one() const;
 
-    std::list<bonds::base const*> get_all() const;
+    std::list<bond::base const*> get_all() const;
 
-    std::list<bonds::base const*> get_multiple() const;
+    std::list<bond::base const*> get_multiple() const;
 
-    std::list<bonds::base const*> filter_hbond_realistic(std::list<bonds::base const*> const& input) const;
+    std::list<bond::base const*> filter_hbond_realistic(std::list<bond::base const*> const& input) const;
 };

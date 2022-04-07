@@ -27,7 +27,7 @@ class params;
 
 class network;
 
-namespace bonds
+namespace bond
 {
 class base
 {

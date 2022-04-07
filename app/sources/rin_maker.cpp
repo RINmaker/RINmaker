@@ -211,7 +211,7 @@ static void find_bonds(
     static_assert(
             std::is_base_of<component, Entity2>::value, "template typename Entity2 must inherit from type entity::component");
     static_assert(
-            std::is_base_of<bonds::computed, Bond>::value, "template typename BondFunc must inherit from type bond::computed");
+            std::is_base_of<bond::computed, Bond>::value, "template typename BondFunc must inherit from type bond::computed");
 
     for (auto* e1: vec)
     {
@@ -225,23 +225,23 @@ rin::graph rin::maker::operator()(parameters const& params) const
 {
     network _network;
 
-    list<bonds::base const*> results;
+    list<bond::base const*> results;
     switch (params.interaction_type())
     {
     case parameters::interaction_type_t::NONCOVALENT_BONDS:
-        find_bonds<bonds::hydrogen>(
+        find_bonds<bond::hydrogen>(
                 _network, _hacceptor_vector, _hdonor_tree, params.query_dist_hbond(), params);
 
-        find_bonds<bonds::vdw>(
+        find_bonds<bond::vdw>(
                 _network, _vdw_vector, _vdw_tree, params.query_dist_vdw(), params);
 
-        find_bonds<bonds::ionic>(
+        find_bonds<bond::ionic>(
                 _network, _negative_ion_vector, _positive_ion_tree, params.query_dist_ionic(), params);
 
-        find_bonds<bonds::pication>(
+        find_bonds<bond::pication>(
                 _network, _cation_vector, _pication_ring_tree, params.query_dist_pica(), params);
 
-        find_bonds<bonds::pipistack>(
+        find_bonds<bond::pipistack>(
                 _network, _ring_vector, _ring_tree, params.query_dist_pipi(), params);
 
         switch (params.network_policy())
@@ -267,13 +267,13 @@ rin::graph rin::maker::operator()(parameters const& params) const
         break;
 
     case parameters::interaction_type_t::ALPHA_BACKBONE:
-        find_bonds<bonds::generico>(
+        find_bonds<bond::generico>(
                 _network, _alpha_carbon_vector, _alpha_carbon_tree, params.query_dist_alpha(), params);
         results = _network.get_one();
         break;
 
     case parameters::interaction_type_t::BETA_BACKBONE:
-        find_bonds<bonds::generico>(
+        find_bonds<bond::generico>(
                 _network, _beta_carbon_vector, _beta_carbon_tree, params.query_dist_beta(), params);
         results = _network.get_one();
         break;

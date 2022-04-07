@@ -10,7 +10,7 @@
 using namespace rin;
 using chemical_entity::aminoacid;
 
-graph::graph(rin::parameters const& params, vector<aminoacid const*> const& aminoacids, list<bonds::base const*> const& bonds) : _params(params)
+graph::graph(rin::parameters const& params, vector<aminoacid const*> const& aminoacids, list<bond::base const*> const& bonds) : _params(params)
 {
     for (auto a: aminoacids)
     {
@@ -75,7 +75,7 @@ void graph::write_to_file(std::filesystem::path const& out_path) const
     doc.save_file(out_path.c_str());
 }
 
-edge::edge(bonds::ss const& bond) :
+edge::edge(bond::ss const& bond) :
         _source(bond.source_id()),
         _target(bond.target_id()),
         _distance(std::to_string(bond.get_length())),
@@ -90,7 +90,7 @@ edge::edge(bonds::ss const& bond) :
         _angle(cfg::graphml::null)
 {}
 
-edge::edge(bonds::vdw const& bond) :
+edge::edge(bond::vdw const& bond) :
         _source(bond.source_atom().res().id()),
         _target(bond.target_atom().res().id()),
         _distance(std::to_string(bond.get_length())),
@@ -105,7 +105,7 @@ edge::edge(bonds::vdw const& bond) :
         _positive(cfg::graphml::none)
 {}
 
-edge::edge(bonds::ionic const& bond) :
+edge::edge(bond::ionic const& bond) :
         _source(bond.positive().res().id()),
         _target(bond.negative().res().id()),
         _distance(std::to_string(bond.get_length())),
@@ -120,7 +120,7 @@ edge::edge(bonds::ionic const& bond) :
         _orientation(cfg::graphml::none)
 {}
 
-edge::edge(bonds::hydrogen const& bond)
+edge::edge(bond::hydrogen const& bond)
         :
         _source(bond.acceptor().res().id()),
         _target(bond.donor().res().id()),
@@ -136,7 +136,7 @@ edge::edge(bonds::hydrogen const& bond)
         _orientation(cfg::graphml::none)
 {}
 
-edge::edge(bonds::pipistack const& bond) :
+edge::edge(bond::pipistack const& bond) :
         _source(bond.source_ring().res().id()),
         _target(bond.target_ring().res().id()),
         _distance(std::to_string(bond.get_length())),
@@ -151,7 +151,7 @@ edge::edge(bonds::pipistack const& bond) :
         _orientation(cfg::graphml::none)
 {}
 
-edge::edge(bonds::pication const& bond) :
+edge::edge(bond::pication const& bond) :
         _source(bond.ring().res().id()),
         _target(bond.cation().res().id()),
         _distance(std::to_string(bond.get_length())),
@@ -166,7 +166,7 @@ edge::edge(bonds::pication const& bond) :
         _orientation(cfg::graphml::none)
 {}
 
-edge::edge(bonds::generico const& bond)
+edge::edge(bond::generico const& bond)
         :
         _source(bond.source().id()),
         _target(bond.target().id()),

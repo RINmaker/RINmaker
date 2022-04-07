@@ -16,7 +16,7 @@ namespace chemical_entity
 class aminoacid;
 }
 
-namespace bonds
+namespace bond
 {
 class base;
 
@@ -48,19 +48,19 @@ private:
     string _donor, _cation, _positive;
 
 public:
-    explicit edge(bonds::ss const& bond);
+    explicit edge(bond::ss const& bond);
 
-    explicit edge(bonds::vdw const& bond);
+    explicit edge(bond::vdw const& bond);
 
-    explicit edge(bonds::ionic const& bond);
+    explicit edge(bond::ionic const& bond);
 
-    explicit edge(bonds::hydrogen const& bond);
+    explicit edge(bond::hydrogen const& bond);
 
-    explicit edge(bonds::pication const& bond);
+    explicit edge(bond::pication const& bond);
 
-    explicit edge(bonds::pipistack const& bond);
+    explicit edge(bond::pipistack const& bond);
 
-    explicit edge(bonds::generico const& bond);
+    explicit edge(bond::generico const& bond);
 
 public:
     [[nodiscard]]
@@ -160,7 +160,7 @@ private:
     vector<edge> _edges;
 
 public:
-    graph(parameters const& params, vector<aminoacid const*> const& aminoacids, list<bonds::base const*> const& bonds);
+    graph(parameters const& params, vector<aminoacid const*> const& aminoacids, list<bond::base const*> const& bonds);
 
     void write_to_file(fs::path const& out_path) const;
 

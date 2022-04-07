@@ -8,41 +8,41 @@
 using std::shared_ptr;
 using chemical_entity::aminoacid;
 
-bonds::base::base(double length, double energy) : _length(length), _energy(energy)
+bond::base::base(double length, double energy) : _length(length), _energy(energy)
 {}
 
-double bonds::base::get_length() const
+double bond::base::get_length() const
 { return _length; }
 
-double bonds::base::get_energy() const
+double bond::base::get_energy() const
 { return _energy; }
 
-bool bonds::base::operator<(base const& rhs) const
+bool bond::base::operator<(base const& rhs) const
 { return _energy < rhs._energy || (_energy == rhs._energy && _length < rhs._length); }
 
-bool bonds::base::operator>(base const& rhs) const
+bool bond::base::operator>(base const& rhs) const
 { return rhs < *this; }
 
-bonds::computed::computed(aminoacid const& source, aminoacid const& target, double distance, double energy) :
+bond::computed::computed(aminoacid const& source, aminoacid const& target, double distance, double energy) :
         base(distance, energy),
         _source(source),
         _target(target)
 {}
 
-std::string bonds::computed::id() const
+std::string bond::computed::id() const
 { return prelude::sort(_source.id(), _target.id()); }
 
-chemical_entity::aminoacid const& bonds::computed::source() const
+chemical_entity::aminoacid const& bond::computed::source() const
 { return _source; }
 
-chemical_entity::aminoacid const& bonds::computed::target() const
+chemical_entity::aminoacid const& bond::computed::target() const
 { return _target; }
 
-bonds::generico::generico(aminoacid const& source, aminoacid const& target)
+bond::generico::generico(aminoacid const& source, aminoacid const& target)
         : computed(source, target, source.distance(target), 0) // TODO res horribilis
 {}
 
-std::string bonds::generico::get_interaction() const
+std::string bond::generico::get_interaction() const
 {
     std::string get_interaction = "GENERIC:";
     switch (rin::parameters::global::instance().get().interaction_type())
@@ -63,11 +63,11 @@ std::string bonds::generico::get_interaction() const
     return get_interaction;
 }
 
-std::string bonds::generico::get_type() const
+std::string bond::generico::get_type() const
 { return "generic"; } // TODO config
 
 //Returns a pair of Sigmaij Epsilonij
-std::pair<double, double> bonds::hydrogen::getSigmaEpsilon(
+std::pair<double, double> bond::hydrogen::getSigmaEpsilon(
         chemical_entity::atom const& donor, chemical_entity::atom const& acceptor)
 {
     std::function<bool(string const&, int, string const&, int)> compare =
@@ -93,7 +93,7 @@ std::pair<double, double> bonds::hydrogen::getSigmaEpsilon(
     return std::make_pair(0, 0); //TODO log: non dovrebbe accadere
 }
 
-double bonds::hydrogen::energy(
+double bond::hydrogen::energy(
         chemical_entity::atom const& donor, chemical_entity::atom const& acceptor, chemical_entity::atom const* hydrogen)
 {
     std::pair<double, double> sigmaEpsilon = getSigmaEpsilon(donor, acceptor);
@@ -107,7 +107,7 @@ double bonds::hydrogen::energy(
     return 4 * epsilon * (sigma_distance_12 - sigma_distance_10);
 }
 
-bonds::hydrogen::hydrogen(
+bond::hydrogen::hydrogen(
         chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle) :
         computed(acceptor.res(), donor.res(), acceptor.distance(donor), energy(donor, acceptor, hydrogen)),
         _acceptor(acceptor),
@@ -116,25 +116,25 @@ bonds::hydrogen::hydrogen(
         _angle(angle)
 {}
 
-chemical_entity::atom const& bonds::hydrogen::acceptor() const
+chemical_entity::atom const& bond::hydrogen::acceptor() const
 { return _acceptor; }
 
-chemical_entity::atom const& bonds::hydrogen::donor() const
+chemical_entity::atom const& bond::hydrogen::donor() const
 { return _donor; }
 
-chemical_entity::atom const* bonds::hydrogen::acceptor_ptr() const
+chemical_entity::atom const* bond::hydrogen::acceptor_ptr() const
 { return &_acceptor; }
 
-chemical_entity::atom const* bonds::hydrogen::donor_ptr() const
+chemical_entity::atom const* bond::hydrogen::donor_ptr() const
 { return &_donor; }
 
-chemical_entity::atom const* bonds::hydrogen::hydrogen_ptr() const
+chemical_entity::atom const* bond::hydrogen::hydrogen_ptr() const
 { return _hydrogen; }
 
-double bonds::hydrogen::get_angle() const
+double bond::hydrogen::get_angle() const
 { return _angle; }
 
-std::string bonds::hydrogen::get_interaction() const
+std::string bond::hydrogen::get_interaction() const
 {
     string donorChain = _donor.is_main_chain() ? "MC" : "SC";
     string acceptorChain = _acceptor.is_main_chain() ? "MC" : "SC";
@@ -142,74 +142,74 @@ std::string bonds::hydrogen::get_interaction() const
     return "HBOND:" + acceptorChain + "_" + donorChain;
 }
 
-std::string bonds::hydrogen::get_type() const
+std::string bond::hydrogen::get_type() const
 { return "hydrogen"; } // TODO va in config
 
-bonds::ionic::ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive) :
+bond::ionic::ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive) :
         computed(
                 negative.res(), positive.res(), negative.distance(positive), (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))),
         _negative(negative),
         _positive(positive)
 {}
 
-chemical_entity::ionic_group const& bonds::ionic::positive() const
+chemical_entity::ionic_group const& bond::ionic::positive() const
 { return _positive; }
 
-chemical_entity::ionic_group const& bonds::ionic::negative() const
+chemical_entity::ionic_group const& bond::ionic::negative() const
 { return _negative; }
 
-std::string bonds::ionic::get_interaction() const
+std::string bond::ionic::get_interaction() const
 { return "IONIC:SC_SC"; }
 
-std::string bonds::ionic::get_type() const
+std::string bond::ionic::get_type() const
 { return "ionic"; }
 
-bonds::pication::pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle) :
+bond::pication::pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle) :
         computed(ring.res(), cation.res(), ring.distance(cation), 9.6),// TODO va in config
         _cation(cation),
         _ring(ring),
         _angle(angle)
 {}
 
-chemical_entity::ring const& bonds::pication::ring() const
+chemical_entity::ring const& bond::pication::ring() const
 { return _ring; }
 
-chemical_entity::atom const& bonds::pication::cation() const
+chemical_entity::atom const& bond::pication::cation() const
 { return _cation; }
 
-double bonds::pication::angle() const
+double bond::pication::angle() const
 { return _angle; }
 
-std::string bonds::pication::get_interaction() const
+std::string bond::pication::get_interaction() const
 { return "PICATION:SC_SC"; }
 
-std::string bonds::pication::get_type() const
+std::string bond::pication::get_type() const
 { return "pication"; }
 
 
-bonds::pipistack::pipistack(const chemical_entity::ring& source_ring, const chemical_entity::ring& target_ring, double angle) :
+bond::pipistack::pipistack(const chemical_entity::ring& source_ring, const chemical_entity::ring& target_ring, double angle) :
         computed(source_ring.res(), target_ring.res(), source_ring.distance(target_ring), 9.6), // TODO va in config
         _source_ring(source_ring),
         _target_ring(target_ring),
         _angle(angle)
 {}
 
-chemical_entity::ring const& bonds::pipistack::source_ring() const
+chemical_entity::ring const& bond::pipistack::source_ring() const
 { return _source_ring; }
 
-chemical_entity::ring const& bonds::pipistack::target_ring() const
+chemical_entity::ring const& bond::pipistack::target_ring() const
 { return _target_ring; }
 
-double bonds::pipistack::angle() const
+double bond::pipistack::angle() const
 { return _angle; }
 
-std::string bonds::pipistack::get_interaction() const
+std::string bond::pipistack::get_interaction() const
 { return "PIPISTACK:SC_SC"; }
 
-std::string bonds::pipistack::get_type() const
+std::string bond::pipistack::get_type() const
 { return "pipistack"; }
 
-bonds::ss::ss(records::ss const& record)
+bond::ss::ss(records::ss const& record)
         : base(record.length(), 167), // TODO va in config
           _source_name(record.name_1()),
           _target_name(record.name_2()),
@@ -219,23 +219,23 @@ bonds::ss::ss(records::ss const& record)
           _target_seq(record.seq_num_2())
 {}
 
-std::string bonds::ss::source_id() const
+std::string bond::ss::source_id() const
 { return _source_chain + ":" + std::to_string(_source_seq) + ":_:" + _source_name; }
 
-std::string bonds::ss::target_id() const
+std::string bond::ss::target_id() const
 { return _target_chain + ":" + std::to_string(_target_seq) + ":_:" + _target_name; }
 
-std::string bonds::ss::get_interaction() const
+std::string bond::ss::get_interaction() const
 { return "SSBOND:SC_SC"; } // TODO config
 
-std::string bonds::ss::id() const
+std::string bond::ss::id() const
 { return prelude::sort(source_id(), target_id()); }
 
-std::string bonds::ss::get_type() const
+std::string bond::ss::get_type() const
 { return "ss"; } // TODO va in config
 
 
-double bonds::vdw::energy(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom)
+double bond::vdw::energy(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom)
 {
     double* source_opts = get_vdw_opsl_values(source_atom.res().name(), source_atom.name(), source_atom.symbol());
     double* target_opts = get_vdw_opsl_values(target_atom.res().name(), target_atom.name(), target_atom.symbol());
@@ -257,20 +257,20 @@ double bonds::vdw::energy(chemical_entity::atom const& source_atom, chemical_ent
     return 4 * epsilon * (sigma_distance_12 - sigma_distance_10);
 }
 
-bonds::vdw::vdw(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom) :
+bond::vdw::vdw(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom) :
         computed(
                 source_atom.res(), target_atom.res(), source_atom.distance(target_atom), energy(source_atom, target_atom)),  // TODO config
         _source_atom(source_atom),
         _target_atom(target_atom)
 {}
 
-chemical_entity::atom const& bonds::vdw::source_atom() const
+chemical_entity::atom const& bond::vdw::source_atom() const
 { return _source_atom; }
 
-chemical_entity::atom const& bonds::vdw::target_atom() const
+chemical_entity::atom const& bond::vdw::target_atom() const
 { return _target_atom; }
 
-std::string bonds::vdw::get_interaction() const
+std::string bond::vdw::get_interaction() const
 {
     string sourceChain = _source_atom.name() == "C" || _source_atom.name() == "S" ? "MC" : "SC";
     string targetChain = _target_atom.name() == "C" || _target_atom.name() == "S" ? "MC" : "SC";
@@ -278,11 +278,11 @@ std::string bonds::vdw::get_interaction() const
     return "VDW:" + sourceChain + "_" + targetChain;
 }
 
-std::string bonds::vdw::get_type() const
+std::string bond::vdw::get_type() const
 { return "vdw"; }
 
 
-bool bonds::hydrogen::test(network& net, rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor)
+bool bond::hydrogen::test(network& net, rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor)
 {
     if (acceptor.res().satisfies_minimum_separation(donor.res()))
     {
@@ -301,7 +301,7 @@ bool bonds::hydrogen::test(network& net, rin::parameters const& params, chemical
 
                 if (angle_adh <= cfg::params::hbond_angle) // 63
                 {
-                    net.find(acceptor.res(), donor.res()).push(*new bonds::hydrogen(acceptor, donor, h, angle_ahd));
+                    net.find(acceptor.res(), donor.res()).push(*new bond::hydrogen(acceptor, donor, h, angle_ahd));
                     return true;
                 }
             }
@@ -311,7 +311,7 @@ bool bonds::hydrogen::test(network& net, rin::parameters const& params, chemical
     return false;
 }
 
-bool bonds::vdw::test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b)
+bool bond::vdw::test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b)
 {
     if (a.res().satisfies_minimum_separation(b.res()) &&
         a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= params.surface_dist_vdw())
@@ -319,7 +319,7 @@ bool bonds::vdw::test(network& net, rin::parameters const& params, chemical_enti
         // FIXME qui ne prende il doppio!
         auto& pb = net.find(a.res(), b.res());
         if (!pb.has_vdw())
-            pb.push(*new bonds::vdw(a, b));
+            pb.push(*new bond::vdw(a, b));
         return true;
     }
 
@@ -327,11 +327,11 @@ bool bonds::vdw::test(network& net, rin::parameters const& params, chemical_enti
 }
 
 
-bool bonds::ionic::test(network& net, rin::parameters const& params, chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive)
+bool bond::ionic::test(network& net, rin::parameters const& params, chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive)
 {
     if (negative.res().satisfies_minimum_separation(positive.res()) && negative.charge() == -positive.charge())
     {
-        net.find(negative.res(), positive.res()).push(*new bonds::ionic(negative, positive));
+        net.find(negative.res(), positive.res()).push(*new bond::ionic(negative, positive));
         return true;
     }
 
@@ -339,7 +339,7 @@ bool bonds::ionic::test(network& net, rin::parameters const& params, chemical_en
 }
 
 
-bool bonds::pication::test(network& net, rin::parameters const& params, chemical_entity::atom const& cation, chemical_entity::ring const& ring)
+bool bond::pication::test(network& net, rin::parameters const& params, chemical_entity::atom const& cation, chemical_entity::ring const& ring)
 {
     if (ring.res().satisfies_minimum_separation(cation.res(), params.sequence_separation()))
     {
@@ -347,7 +347,7 @@ bool bonds::pication::test(network& net, rin::parameters const& params, chemical
 
         if (theta >= cfg::params::pication_angle) // 45
         {
-            net.find(ring.res(), cation.res()).push(*new bonds::pication(ring, cation, theta));
+            net.find(ring.res(), cation.res()).push(*new bond::pication(ring, cation, theta));
             return true;
         }
     }
@@ -355,7 +355,7 @@ bool bonds::pication::test(network& net, rin::parameters const& params, chemical
     return false;
 }
 
-bool bonds::pipistack::test(network& net, rin::parameters const& params, chemical_entity::ring const& a, chemical_entity::ring const& b)
+bool bond::pipistack::test(network& net, rin::parameters const& params, chemical_entity::ring const& a, chemical_entity::ring const& b)
 {
     double nc1 = a.angle_between_normal_and_centres_joining(b);
     double nc2 = b.angle_between_normal_and_centres_joining(a);
@@ -378,13 +378,13 @@ bool bonds::pipistack::test(network& net, rin::parameters const& params, chemica
     return false;
 }
 
-bool bonds::generico::test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b)
+bool bond::generico::test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b)
 {
     if (a.res().satisfies_minimum_separation(b.res()))
     {
         auto& pb = net.find(a.res(), b.res());
         if (!pb.has_backbone())
-            pb.push(*new bonds::generico(a.res(), b.res()));
+            pb.push(*new bond::generico(a.res(), b.res()));
 
         return true;
     }
