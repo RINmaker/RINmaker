@@ -21,7 +21,7 @@ graph::graph(rin::parameters const& params, vector<aminoacid const*> const& amin
     // adjust _nodes degree at edge insertion
     for (auto b: bonds)
     {
-        auto edge = b->to_edge();
+        auto edge = (rin::edge) *b;
 
         auto it = _nodes.find(edge.source_id());
         if (it != _nodes.end())

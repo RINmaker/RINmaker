@@ -55,7 +55,7 @@ public:
     virtual std::string id() const = 0;
 
     [[nodiscard]]
-    virtual rin::edge to_edge() const = 0;
+    virtual operator rin::edge() const = 0;
 };
 
 class computed : public base
@@ -95,7 +95,7 @@ public:
     std::string get_type() const override;
 
     [[nodiscard]]
-    rin::edge to_edge() const override;
+    operator rin::edge() const override;
 };
 
 class hydrogen final : public computed
@@ -138,7 +138,7 @@ public:
     std::string get_interaction() const override;
 
     [[nodiscard]]
-    rin::edge to_edge() const override;
+    operator rin::edge() const override;
 
     [[nodiscard]]
     std::string get_type() const override;
@@ -163,7 +163,7 @@ public:
     std::string get_interaction() const override;
 
     [[nodiscard]]
-    rin::edge to_edge() const override;
+    operator rin::edge() const override;
 
     [[nodiscard]]
     std::string get_type() const override;
@@ -193,7 +193,7 @@ public:
     std::string get_interaction() const override;
 
     [[nodiscard]]
-    rin::edge to_edge() const override;
+    operator rin::edge() const override;
 
     [[nodiscard]]
     std::string get_type() const override;
@@ -222,7 +222,7 @@ public:
     std::string get_interaction() const override;
 
     [[nodiscard]]
-    rin::edge to_edge() const override;
+    operator rin::edge() const override;
 
     [[nodiscard]]
     std::string get_type() const override;
@@ -252,7 +252,7 @@ public:
     std::string get_interaction() const override;
 
     [[nodiscard]]
-    rin::edge to_edge() const override;
+    operator rin::edge() const override;
 
     [[nodiscard]]
     std::string id() const;
@@ -282,7 +282,7 @@ public:
     std::string get_interaction() const override;
 
     [[nodiscard]]
-    rin::edge to_edge() const override;
+    operator rin::edge() const override;
 
     [[nodiscard]]
     std::string get_type() const override;

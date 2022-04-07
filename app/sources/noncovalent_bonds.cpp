@@ -65,7 +65,7 @@ std::string bonds::generico::get_interaction() const
 std::string bonds::generico::get_type() const
 { return "generic"; } // TODO config
 
-rin::edge bonds::generico::to_edge() const
+bonds::generico::operator rin::edge() const
 { return rin::edge(*this); }
 
 
@@ -145,7 +145,7 @@ std::string bonds::hydrogen::get_interaction() const
     return "HBOND:" + acceptorChain + "_" + donorChain;
 }
 
-rin::edge bonds::hydrogen::to_edge() const
+bonds::hydrogen::operator rin::edge() const
 { return rin::edge(*this); }
 
 std::string bonds::hydrogen::get_type() const
@@ -167,7 +167,7 @@ chemical_entity::ionic_group const& bonds::ionic::negative() const
 std::string bonds::ionic::get_interaction() const
 { return "IONIC:SC_SC"; }
 
-rin::edge bonds::ionic::to_edge() const
+bonds::ionic::operator rin::edge() const
 { return rin::edge(*this); }
 
 std::string bonds::ionic::get_type() const
@@ -192,7 +192,7 @@ double bonds::pication::angle() const
 std::string bonds::pication::get_interaction() const
 { return "PICATION:SC_SC"; }
 
-rin::edge bonds::pication::to_edge() const
+bonds::pication::operator rin::edge() const
 { return rin::edge(*this); }
 
 std::string bonds::pication::get_type() const
@@ -218,7 +218,7 @@ double bonds::pipistack::angle() const
 std::string bonds::pipistack::get_interaction() const
 { return "PIPISTACK:SC_SC"; }
 
-rin::edge bonds::pipistack::to_edge() const
+bonds::pipistack::operator rin::edge() const
 { return rin::edge(*this); }
 
 std::string bonds::pipistack::get_type() const
@@ -244,7 +244,7 @@ std::string bonds::ss::target_id() const
 std::string bonds::ss::get_interaction() const
 { return "SSBOND:SC_SC"; } // TODO config
 
-rin::edge bonds::ss::to_edge() const
+bonds::ss::operator rin::edge() const
 { return rin::edge(*this); }
 
 std::string bonds::ss::id() const
@@ -297,7 +297,7 @@ std::string bonds::vdw::get_interaction() const
     return "VDW:" + sourceChain + "_" + targetChain;
 }
 
-rin::edge bonds::vdw::to_edge() const
+bonds::vdw::operator rin::edge() const
 { return rin::edge(*this); }
 
 std::string bonds::vdw::get_type() const
