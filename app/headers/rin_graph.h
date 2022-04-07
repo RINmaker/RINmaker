@@ -43,17 +43,9 @@ using std::string;
 class edge
 {
 private:
-    string _source, _target;
-    string _distance, _energy;
-
-    string _interaction;
-    string _source_atom, _target_atom;
-
-    string _angle;
-    string _donor;
-    string _cation;
-    string _positive;
-    string _orientation;
+    string _source, _target, _source_atom, _target_atom;
+    string _distance, _energy, _angle, _interaction, _orientation;
+    string _donor, _cation, _positive;
 
 public:
     explicit edge(bonds::ss const& bond);
@@ -134,18 +126,21 @@ private:
     string _bfactor;
     string _secondary;
 
-private:
     int _degree = 0;
 
 public:
     explicit node(chemical_entity::aminoacid const& res);
 
+    void inc_degree()
+    { ++_degree; }
+
+    [[nodiscard]]
+    int degree() const
+    { return _degree; }
+
     [[nodiscard]]
     string const& get_id() const
     { return _id; }
-
-    int& degree()
-    { return _degree; }
 
     void append_to(pugi::xml_node& graphml, bool with_metadata) const;
 };
@@ -167,12 +162,12 @@ private:
 public:
     graph(parameters const& params, vector<aminoacid const*> const& aminoacids, list<bonds::base const*> const& bonds);
 
-    void write_to_file(fs::path const& out_path);
+    void write_to_file(fs::path const& out_path) const;
 
-    std::vector<edge> get_edges()
+    std::vector<edge> get_edges() const
     { return _edges; }
 
-    std::unordered_map<std::string, node> get_nodes()
+    std::unordered_map<std::string, node> get_nodes() const
     {
         std::unordered_map<std::string, node> out;
         for (const auto& i: _nodes)

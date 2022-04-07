@@ -25,17 +25,17 @@ graph::graph(rin::parameters const& params, vector<aminoacid const*> const& amin
 
         auto it = _nodes.find(edge.source_id());
         if (it != _nodes.end())
-            ++(it->second.degree());
+            it->second.inc_degree();
 
         it = _nodes.find(edge.target_id());
         if (it != _nodes.end())
-            ++(it->second.degree());
+            it->second.inc_degree();
 
         _edges.push_back(edge);
     }
 }
 
-void graph::write_to_file(std::filesystem::path const& out_path)
+void graph::write_to_file(std::filesystem::path const& out_path) const
 {
     pugi::xml_document doc;
 
