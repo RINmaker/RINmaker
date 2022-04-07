@@ -8,16 +8,18 @@
 
 using std::vector;
 using std::array;
+using std::unique_ptr;
+using chemical_entity::atom;
 
-array<double, 3> centre_of_mass(vector<chemical_entity::atom const*> const& atoms)
+array<double, 3> centre_of_mass(vector<atom const*> const& atoms)
 {
     double mass{0.0};
     array<double, 3> centroid{0.0, 0.0, 0.0};
-    for (auto a: atoms)
+    for (auto a_ptr: atoms)
     {
-        double const m = a->mass();
+        double const m = a_ptr->mass();
         for (size_t i = 0; i < 3; ++i)
-            centroid[i] += (*a)[i] * m;
+            centroid[i] += (*a_ptr)[i] * m;
         mass += m;
     }
     for (size_t i = 0; i < 3; ++i)
@@ -27,19 +29,21 @@ array<double, 3> centre_of_mass(vector<chemical_entity::atom const*> const& atom
 }
 
 chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records, std::string pdb_name) :
-        kdpoint<3>({0, 0, 0}), _pdb_name(std::move(pdb_name)), _secondary_structure(new structure::base())
+        kdpoint<3>({0, 0, 0}),
+        _pdb_name(std::move(pdb_name)),
+        _secondary_structure(std::make_unique<structure::base>())
 {
     auto assert_ring_correctness =
-        [](string const& name, uint32_t line_number, std::vector<std::string> const& expected_atoms, std::vector<atom const*> const& found_atoms)
-    {
-        if(expected_atoms.size() != found_atoms.size())
-        {
-            string expected_atoms_str = joinStrings(expected_atoms, ", ");
-            string found_atoms_str = getNameFromAtoms(found_atoms, ", ");
-            string exception_description = "line number: " + std::to_string(line_number) + ", aminoacid: " + name + " - expected aromatic ring: " + expected_atoms_str + ", found: " + found_atoms_str;
-            throw std::invalid_argument(exception_description);
-        }
-    };
+            [](string const& name, uint32_t line_number, std::vector<std::string> const& expected_atoms, std::vector<atom const*> const& found_atoms)
+            {
+                if (expected_atoms.size() != found_atoms.size())
+                {
+                    string expected_atoms_str = joinStrings(expected_atoms, ", ");
+                    string found_atoms_str = getNameFromAtoms(found_atoms, ", ");
+                    string exception_description = "line number: " + std::to_string(line_number) + ", aminoacid: " + name + " - expected aromatic ring: " + expected_atoms_str + ", found: " + found_atoms_str;
+                    throw std::invalid_argument(exception_description);
+                }
+            };
 
     /* TODO throw exception. It cannot happen.
     if (records.empty())
@@ -56,7 +60,6 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
 
     // discover if this has 0, 1 or 2 aromatic rings
     int n_of_rings = 0;
-    std::vector<atom const*> ring_1, ring_2;
     std::vector<std::string> patterns_1, patterns_2;
 
     if (_name == "HIS")
@@ -82,19 +85,17 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
 
     // note: are they mutually exclusive? should be addressed
     std::vector<atom const*> positive, negative;
+    std::vector<atom const*> ring_1, ring_2;
 
     for (auto const& record: records)
     {
-        atom const* a = new chemical_entity::atom(record, *this);
-        _atoms.push_back(a);
+        _atoms.push_back(std::make_unique<atom const>(record, *this));
+        auto const a = _atoms.back().get();
 
         if (a->name() == "CA")
-            // try to get alpha backbone (there should be only one)
             _alpha_carbon = a;
 
-
         else if (a->name() == "CB")
-            // try to get alpha backbone (there should be only one, or zero)
             _beta_carbon = a;
 
         if (n_of_rings >= 1 && prelude::match(a->name(), patterns_1))
@@ -105,46 +106,28 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
 
         if (a->is_in_a_positive_ionic_group())
             positive.push_back(a);
-
         else if (a->is_in_a_negative_ionic_group())
             negative.push_back(a);
     }
 
-    _position = centre_of_mass(_atoms);
+    _position = centre_of_mass(atoms());
 
     if (n_of_rings >= 1)
     {
         assert_ring_correctness(_name, first.line_number(), patterns_1, ring_1);
-        _primary_ring = new ring(ring_1, *this);
+        _primary_ring = std::make_unique<ring const>(ring_1, *this);
     }
     if (n_of_rings == 2)
     {
         assert_ring_correctness(_name, first.line_number(), patterns_2, ring_2);
-        _secondary_ring = new ring(ring_2, *this);
+        _secondary_ring = std::make_unique<ring const>(ring_2, *this);
     }
 
     if (!positive.empty())
-    {
-        _positive_ionic_group = new ionic_group(positive, 1, *this);
-    }
+        _positive_ionic_group = std::make_unique<ionic_group const>(positive, 1, *this);
+
     if (!negative.empty())
-    {
-        _negative_ionic_group = new ionic_group(negative, -1, *this);
-    }
-}
-
-chemical_entity::aminoacid::~aminoacid()
-{
-    for (auto* a: _atoms)
-        delete a;
-
-    delete _primary_ring;
-    delete _secondary_ring;
-
-    delete _positive_ionic_group;
-    delete _negative_ionic_group;
-
-    delete _secondary_structure;
+        _negative_ionic_group = std::make_unique<ionic_group const>(negative, -1, *this);
 }
 
 double chemical_entity::atom::mass() const
@@ -360,7 +343,7 @@ std::vector<chemical_entity::atom const*> chemical_entity::atom::attached_hydrog
 chemical_entity::ring::ring(std::vector<atom const*> const& atoms, aminoacid const& res)
         : kdpoint<3>({0, 0, 0}), component(res), _atoms(atoms)
 {
-    if(atoms.size() < 3)
+    if (atoms.size() < 3)
         throw std::invalid_argument("rings should have at least 3 atoms");
 
     double sum_radii = 0;
@@ -402,7 +385,7 @@ string getNameFromAtoms(std::vector<const chemical_entity::atom*> const& atoms, 
         atoms_name.push_back(i->name());
 
     sort(atoms_name.begin(), atoms_name.end());
-    
+
     return joinStrings(atoms_name, delimiter);
 }
 
@@ -433,26 +416,22 @@ string chemical_entity::ionic_group::name() const
     return getNameFromAtoms(_atoms);
 }
 
-
 void chemical_entity::aminoacid::make_secondary_structure()
 {
-    delete _secondary_structure;
-    _secondary_structure = new structure::loop();
+    _secondary_structure = std::make_unique<structure::loop>();
 }
 
 void chemical_entity::aminoacid::make_secondary_structure(records::helix const& record)
 {
-    delete _secondary_structure;
-    _secondary_structure = new structure::helix(record);
+    _secondary_structure = std::make_unique<structure::helix>(record, *this);
 }
 
 void chemical_entity::aminoacid::make_secondary_structure(const records::sheet_piece& record)
 {
-    delete _secondary_structure;
-    _secondary_structure = new structure::sheet_piece(record);
+    _secondary_structure = std::make_unique<structure::sheet_piece>(record, *this);
 }
 
 std::string chemical_entity::aminoacid::secondary_structure_id() const
 {
-    return _secondary_structure->pretty_with(*this);
+    return _secondary_structure->pretty();
 }

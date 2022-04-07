@@ -4,6 +4,7 @@
 #include <vector>
 #include <array>
 #include <tuple>
+#include <memory>
 
 #include "config.h"
 #include "prelude.h"
@@ -13,17 +14,14 @@
 #include "rin_graph.h"
 #include "pdb_records.h"
 
+#include "secondary_structures.h"
+
 #include "spatial/geometry.h"
 #include "spatial/kdpoint.h"
 
 namespace rin
 {
 struct maker;
-}
-
-namespace structure
-{
-class base;
 }
 
 namespace chemical_entity
@@ -38,15 +36,15 @@ class ionic_group;
 class aminoacid : public kdpoint<3>
 {
 private:
-    std::vector<atom const*> _atoms = std::vector<atom const*>();
+    std::vector<std::unique_ptr<atom const>> _atoms;
+
+    std::unique_ptr<ring const> _primary_ring, _secondary_ring;
+    std::unique_ptr<ionic_group const> _positive_ionic_group, _negative_ionic_group;
+
+    std::unique_ptr<structure::base> _secondary_structure;
+
     atom const* _alpha_carbon = nullptr;
     atom const* _beta_carbon = nullptr;
-
-    ring const* _primary_ring = nullptr;
-    ring const* _secondary_ring = nullptr;
-
-    ionic_group const* _positive_ionic_group = nullptr;
-    ionic_group const* _negative_ionic_group = nullptr;
 
 private:
     std::string _chain_id;
@@ -56,7 +54,6 @@ private:
     int _sequence_number = 0;
 
     std::string _id;
-    structure::base* _secondary_structure;
 
 private:
     friend struct rin::maker;
@@ -65,12 +62,18 @@ private:
 
     explicit aminoacid(std::vector<records::atom> const& records, std::string pdb_name);
 
-    ~aminoacid();
-
 public:
     [[nodiscard]]
-    std::vector<atom const*> const& atoms() const
-    { return _atoms; }
+    std::vector<atom const*> atoms() const
+    {
+        std::vector<atom const*> obs;
+        obs.reserve(_atoms.size());
+
+        for (auto const& a_uptr : _atoms)
+            obs.push_back(a_uptr.get());
+
+        return obs;
+    }
 
     [[nodiscard]]
     std::string const& pdb_name() const
@@ -86,19 +89,19 @@ public:
 
     [[nodiscard]]
     ring const* primary_ring() const
-    { return _primary_ring; }
+    { return _primary_ring.get(); }
 
     [[nodiscard]]
     ring const* secondary_ring() const
-    { return _secondary_ring; }
+    { return _secondary_ring.get(); }
 
     [[nodiscard]]
     ionic_group const* positive_ionic_group() const
-    { return _positive_ionic_group; }
+    { return _positive_ionic_group.get(); }
 
     [[nodiscard]]
     ionic_group const* negative_ionic_group() const
-    { return _negative_ionic_group; }
+    { return _negative_ionic_group.get(); }
 
 public:
     [[nodiscard]]
@@ -159,13 +162,9 @@ public:
 class component
 {
 protected:
-    friend class aminoacid;
-
     aminoacid const& _res;
     explicit component(aminoacid const& res) : _res(res)
     {}
-
-    virtual ~component() = default;
 
 public:
     [[nodiscard]]
@@ -176,19 +175,14 @@ public:
 class atom final : public kdpoint<3>, public component
 {
 private:
-    friend class aminoacid;
-
-    atom(records::atom const& record, aminoacid const& res)
-            : kdpoint<3>({record.x(), record.y(), record.z()}), component(res), _record(record)
-    {}
-
-    ~atom() override = default;
-
-private:
     // the record it was parsed from
     records::atom _record;
 
 public:
+    atom(records::atom const& record, aminoacid const& res)
+            : kdpoint<3>({record.x(), record.y(), record.z()}), component(res), _record(record)
+    {}
+
     [[nodiscard]]
     std::string const& name() const
     { return _record.name(); }
@@ -262,14 +256,9 @@ private:
     std::array<double, 3> _normal{};
     double _mean_radius;
 
-private:
-    friend class aminoacid;
-
+public:
     ring(std::vector<atom const*> const& atoms, aminoacid const& res);
 
-    ~ring() override = default;
-
-public:
     [[nodiscard]]
     std::array<double, 3> const& normal() const
     { return _normal; }
@@ -329,14 +318,9 @@ private:
     std::vector<atom const*> const _atoms;
     int const _charge;
 
-private:
-    friend class aminoacid;
-
+public:
     ionic_group(std::vector<atom const*> const& atoms, int const& charge, aminoacid const& res);
 
-    ~ionic_group() override = default;
-
-public:
     [[nodiscard]]
     int charge() const
     { return _charge; }
