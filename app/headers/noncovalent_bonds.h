@@ -1,15 +1,13 @@
 #pragma once
 
 #include <string>
+#include <memory>
 #include "prelude.h"
 
 #include "rin_graph.h"
 #include "pdb_records.h"
 
 #include "energy.h"
-#include "rin_params.h"
-
-class network;
 
 namespace chemical_entity
 {
@@ -27,10 +25,7 @@ namespace bonds
 class base
 {
 private:
-    friend class ::network;
-
     double const _length;
-
     double const _energy;
 
 protected:
@@ -39,7 +34,6 @@ protected:
 public:
     virtual ~base() = default;
 
-public:
     [[nodiscard]]
     double get_length() const;
 
@@ -66,12 +60,11 @@ public:
 
 class computed : public base
 {
+private:
+    chemical_entity::aminoacid const& _source;
+    chemical_entity::aminoacid const& _target;
+
 protected:
-    friend class ::network;
-
-    chemical_entity::aminoacid const* _source;
-    chemical_entity::aminoacid const* _target;
-
     computed(chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target, double distance, double energy);
 
 public:
@@ -80,7 +73,6 @@ public:
     [[nodiscard]]
     std::string get_type() const override = 0;
 
-public:
     [[nodiscard]]
     chemical_entity::aminoacid const& source() const;
 
@@ -91,14 +83,11 @@ public:
     std::string id() const override;
 };
 
-class generico : public computed
+class generico final : public computed
 {
-private:
-    friend class ::network;
-
+public:
     generico(chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target);
 
-public:
     [[nodiscard]]
     std::string get_interaction() const override;
 
@@ -109,14 +98,13 @@ public:
     rin::edge to_edge() const override;
 };
 
-class hydrogen : public computed
+class hydrogen final : public computed
 {
 private:
-    friend class ::network;
-
-    chemical_entity::atom const* _acceptor;
-    chemical_entity::atom const* _donor;
+    chemical_entity::atom const& _acceptor;
+    chemical_entity::atom const& _donor;
     chemical_entity::atom const* _hydrogen;
+
     double const _angle;
 
     // returns a pair sigma_ij,epsilon_ij
@@ -125,9 +113,9 @@ private:
 
     double energy(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor, chemical_entity::atom const* hydrogen);
 
+public:
     hydrogen(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle);
 
-public:
     [[nodiscard]]
     chemical_entity::atom const& acceptor() const;
 
@@ -156,17 +144,15 @@ public:
     std::string get_type() const override;
 };
 
-class ionic : public computed
+class ionic final : public computed
 {
 private:
-    friend class ::network;
-
-    chemical_entity::ionic_group const* _negative;
-    chemical_entity::ionic_group const* _positive;
-
-    ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive);
+    chemical_entity::ionic_group const& _negative;
+    chemical_entity::ionic_group const& _positive;
 
 public:
+    ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive);
+
     [[nodiscard]]
     chemical_entity::ionic_group const& positive() const;
 
@@ -186,15 +172,14 @@ public:
 class pication : public computed
 {
 private:
-    friend class ::network;
+    chemical_entity::atom const& _cation;
+    chemical_entity::ring const& _ring;
 
-    chemical_entity::atom const* _cation;
-    chemical_entity::ring const* _ring;
     double _angle;
 
+public:
     pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle);
 
-public:
     [[nodiscard]]
     chemical_entity::ring const& ring() const;
 
@@ -214,18 +199,16 @@ public:
     std::string get_type() const override;
 };
 
-class pipistack : public computed
+class pipistack final : public computed
 {
 private:
-    friend class ::network;
-
-    chemical_entity::ring const* _source_ring;
-    chemical_entity::ring const* _target_ring;
+    chemical_entity::ring const& _source_ring;
+    chemical_entity::ring const& _target_ring;
     double const _angle;
 
+public:
     pipistack(chemical_entity::ring const& source_ring, chemical_entity::ring const& target_ring, double angle);
 
-public:
     [[nodiscard]]
     chemical_entity::ring const& source_ring() const;
 
@@ -245,11 +228,9 @@ public:
     std::string get_type() const override;
 };
 
-class ss : public base
+class ss final : public base
 {
 private:
-    friend class ::network;
-
     int const _source_seq;
     std::string const _source_name;
     std::string const _source_chain;
@@ -258,9 +239,9 @@ private:
     std::string const _target_chain;
     std::string const _target_name;
 
+public:
     explicit ss(records::ss const& record);
 
-public:
     [[nodiscard]]
     std::string source_id() const;
 
@@ -280,19 +261,17 @@ public:
     std::string get_type() const override;
 };
 
-class vdw : public computed
+class vdw final : public computed
 {
 private:
-    friend class ::network;
-
-    chemical_entity::atom const* _source_atom;
-    chemical_entity::atom const* _target_atom;
+    chemical_entity::atom const& _source_atom;
+    chemical_entity::atom const& _target_atom;
 
     double energy(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
 
+public:
     vdw(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
 
-public:
     [[nodiscard]]
     chemical_entity::atom const& source_atom() const;
 

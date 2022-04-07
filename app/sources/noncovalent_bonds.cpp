@@ -1,6 +1,11 @@
 #include "noncovalent_bonds.h"
 
+#include <utility>
+
 #include "chemical_entity.h"
+
+using std::shared_ptr;
+using chemical_entity::aminoacid;
 
 bonds::base::base(double length, double energy) : _length(length), _energy(energy)
 {}
@@ -17,21 +22,22 @@ bool bonds::base::operator<(base const& rhs) const
 bool bonds::base::operator>(base const& rhs) const
 { return rhs < *this; }
 
-bonds::computed::computed(
-        chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target, double distance, double energy)
-        : base(distance, energy), _source(&source), _target(&target)
+bonds::computed::computed(aminoacid const& source, aminoacid const& target, double distance, double energy) :
+        base(distance, energy),
+        _source(source),
+        _target(target)
 {}
 
 std::string bonds::computed::id() const
-{ return prelude::sort(_source->id(), _target->id()); }
+{ return prelude::sort(_source.id(), _target.id()); }
 
 chemical_entity::aminoacid const& bonds::computed::source() const
-{ return *_source; }
+{ return _source; }
 
 chemical_entity::aminoacid const& bonds::computed::target() const
-{ return *_target; }
+{ return _target; }
 
-bonds::generico::generico(chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target)
+bonds::generico::generico(aminoacid const& source, aminoacid const& target)
         : computed(source, target, source.distance(target), 0) // TODO res horribilis
 {}
 
@@ -105,22 +111,25 @@ double bonds::hydrogen::energy(
 }
 
 bonds::hydrogen::hydrogen(
-        chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle)
-        : computed(acceptor.res(), donor.res(), acceptor.distance(donor), energy(donor, acceptor, hydrogen)),
-          _acceptor(&acceptor), _donor(&donor), _hydrogen(hydrogen), _angle(angle)
+        chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle) :
+        computed(acceptor.res(), donor.res(), acceptor.distance(donor), energy(donor, acceptor, hydrogen)),
+        _acceptor(acceptor),
+        _donor(donor),
+        _hydrogen(hydrogen),
+        _angle(angle)
 {}
 
 chemical_entity::atom const& bonds::hydrogen::acceptor() const
-{ return *_acceptor; }
-
-chemical_entity::atom const& bonds::hydrogen::donor() const
-{ return *_donor; }
-
-chemical_entity::atom const* bonds::hydrogen::acceptor_ptr() const
 { return _acceptor; }
 
-chemical_entity::atom const* bonds::hydrogen::donor_ptr() const
+chemical_entity::atom const& bonds::hydrogen::donor() const
 { return _donor; }
+
+chemical_entity::atom const* bonds::hydrogen::acceptor_ptr() const
+{ return &_acceptor; }
+
+chemical_entity::atom const* bonds::hydrogen::donor_ptr() const
+{ return &_donor; }
 
 chemical_entity::atom const* bonds::hydrogen::hydrogen_ptr() const
 { return _hydrogen; }
@@ -130,11 +139,8 @@ double bonds::hydrogen::get_angle() const
 
 std::string bonds::hydrogen::get_interaction() const
 {
-    chemical_entity::atom const& donor = *_donor;
-    chemical_entity::atom const& acceptor = *_acceptor;
-
-    string donorChain = donor.is_main_chain() ? "MC" : "SC";
-    string acceptorChain = acceptor.is_main_chain() ? "MC" : "SC";
+    string donorChain = _donor.is_main_chain() ? "MC" : "SC";
+    string acceptorChain = _acceptor.is_main_chain() ? "MC" : "SC";
 
     return "HBOND:" + acceptorChain + "_" + donorChain;
 }
@@ -145,17 +151,18 @@ rin::edge bonds::hydrogen::to_edge() const
 std::string bonds::hydrogen::get_type() const
 { return "hydrogen"; } // TODO va in config
 
-bonds::ionic::ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive)
-        : computed(
-        negative.res(), positive.res(), negative.distance(positive), (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))
-), _negative(&negative), _positive(&positive)
+bonds::ionic::ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive) :
+        computed(
+                negative.res(), positive.res(), negative.distance(positive), (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))),
+        _negative(negative),
+        _positive(positive)
 {}
 
 chemical_entity::ionic_group const& bonds::ionic::positive() const
-{ return *_positive; }
+{ return _positive; }
 
 chemical_entity::ionic_group const& bonds::ionic::negative() const
-{ return *_negative; }
+{ return _negative; }
 
 std::string bonds::ionic::get_interaction() const
 { return "IONIC:SC_SC"; }
@@ -166,16 +173,18 @@ rin::edge bonds::ionic::to_edge() const
 std::string bonds::ionic::get_type() const
 { return "ionic"; }
 
-bonds::pication::pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle)
-        : computed(ring.res(), cation.res(), ring.distance(cation), 9.6) // TODO va in config
-        , _cation(&cation), _ring(&ring), _angle(angle)
+bonds::pication::pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle) :
+        computed(ring.res(), cation.res(), ring.distance(cation), 9.6),// TODO va in config
+        _cation(cation),
+        _ring(ring),
+        _angle(angle)
 {}
 
 chemical_entity::ring const& bonds::pication::ring() const
-{ return *_ring; }
+{ return _ring; }
 
 chemical_entity::atom const& bonds::pication::cation() const
-{ return *_cation; }
+{ return _cation; }
 
 double bonds::pication::angle() const
 { return _angle; }
@@ -190,16 +199,18 @@ std::string bonds::pication::get_type() const
 { return "pication"; }
 
 
-bonds::pipistack::pipistack(const chemical_entity::ring& source_ring, const chemical_entity::ring& target_ring, double angle)
-        : computed(source_ring.res(), target_ring.res(), source_ring.distance(target_ring), 9.6), // TODO va in config
-          _source_ring(&source_ring), _target_ring(&target_ring), _angle(angle)
+bonds::pipistack::pipistack(const chemical_entity::ring& source_ring, const chemical_entity::ring& target_ring, double angle) :
+        computed(source_ring.res(), target_ring.res(), source_ring.distance(target_ring), 9.6), // TODO va in config
+        _source_ring(source_ring),
+        _target_ring(target_ring),
+        _angle(angle)
 {}
 
 chemical_entity::ring const& bonds::pipistack::source_ring() const
-{ return *_source_ring; }
+{ return _source_ring; }
 
 chemical_entity::ring const& bonds::pipistack::target_ring() const
-{ return *_target_ring; }
+{ return _target_ring; }
 
 double bonds::pipistack::angle() const
 { return _angle; }
@@ -265,26 +276,23 @@ double bonds::vdw::energy(chemical_entity::atom const& source_atom, chemical_ent
     return 4 * epsilon * (sigma_distance_12 - sigma_distance_10);
 }
 
-bonds::vdw::vdw(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom)
-        : computed(
-        source_atom.res(), target_atom.res(), source_atom.distance(target_atom), energy(source_atom, target_atom)),  // TODO config
-          _source_atom(&source_atom),
-          _target_atom(&target_atom)
+bonds::vdw::vdw(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom) :
+        computed(
+                source_atom.res(), target_atom.res(), source_atom.distance(target_atom), energy(source_atom, target_atom)),  // TODO config
+        _source_atom(source_atom),
+        _target_atom(target_atom)
 {}
 
 chemical_entity::atom const& bonds::vdw::source_atom() const
-{ return *_source_atom; }
+{ return _source_atom; }
 
 chemical_entity::atom const& bonds::vdw::target_atom() const
-{ return *_target_atom; }
+{ return _target_atom; }
 
 std::string bonds::vdw::get_interaction() const
 {
-    chemical_entity::atom const& source = *_source_atom;
-    chemical_entity::atom const& target = *_target_atom;
-
-    string sourceChain = source.name() == "C" || source.name() == "S" ? "MC" : "SC";
-    string targetChain = target.name() == "C" || target.name() == "S" ? "MC" : "SC";
+    string sourceChain = _source_atom.name() == "C" || _source_atom.name() == "S" ? "MC" : "SC";
+    string targetChain = _target_atom.name() == "C" || _target_atom.name() == "S" ? "MC" : "SC";
 
     return "VDW:" + sourceChain + "_" + targetChain;
 }
