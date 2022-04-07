@@ -55,7 +55,7 @@ public:
     virtual std::string id() const = 0;
 
     [[nodiscard]]
-    virtual operator rin::edge() const = 0;
+    virtual explicit operator rin::edge() const = 0;
 };
 
 class computed : public base
@@ -95,7 +95,8 @@ public:
     std::string get_type() const override;
 
     [[nodiscard]]
-    operator rin::edge() const override;
+    explicit operator rin::edge() const override
+    { return rin::edge(*this); }
 };
 
 class hydrogen final : public computed
@@ -138,7 +139,8 @@ public:
     std::string get_interaction() const override;
 
     [[nodiscard]]
-    operator rin::edge() const override;
+    explicit operator rin::edge() const override
+    { return rin::edge(*this); }
 
     [[nodiscard]]
     std::string get_type() const override;
@@ -163,7 +165,8 @@ public:
     std::string get_interaction() const override;
 
     [[nodiscard]]
-    operator rin::edge() const override;
+    explicit operator rin::edge() const override
+    { return rin::edge(*this); }
 
     [[nodiscard]]
     std::string get_type() const override;
@@ -193,7 +196,8 @@ public:
     std::string get_interaction() const override;
 
     [[nodiscard]]
-    operator rin::edge() const override;
+    explicit operator rin::edge() const override
+    { return rin::edge(*this); }
 
     [[nodiscard]]
     std::string get_type() const override;
@@ -222,7 +226,8 @@ public:
     std::string get_interaction() const override;
 
     [[nodiscard]]
-    operator rin::edge() const override;
+    explicit operator rin::edge() const override
+    { return rin::edge(*this); }
 
     [[nodiscard]]
     std::string get_type() const override;
@@ -252,7 +257,8 @@ public:
     std::string get_interaction() const override;
 
     [[nodiscard]]
-    operator rin::edge() const override;
+    explicit operator rin::edge() const
+    { return rin::edge(*this); }
 
     [[nodiscard]]
     std::string id() const;
@@ -282,7 +288,8 @@ public:
     std::string get_interaction() const override;
 
     [[nodiscard]]
-    operator rin::edge() const override;
+    explicit operator rin::edge() const override
+    { return rin::edge(*this); }
 
     [[nodiscard]]
     std::string get_type() const override;

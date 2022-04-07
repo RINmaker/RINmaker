@@ -65,10 +65,6 @@ std::string bonds::generico::get_interaction() const
 std::string bonds::generico::get_type() const
 { return "generic"; } // TODO config
 
-bonds::generico::operator rin::edge() const
-{ return rin::edge(*this); }
-
-
 //Returns a pair of Sigmaij Epsilonij
 std::pair<double, double> bonds::hydrogen::getSigmaEpsilon(
         chemical_entity::atom const& donor, chemical_entity::atom const& acceptor)
@@ -145,9 +141,6 @@ std::string bonds::hydrogen::get_interaction() const
     return "HBOND:" + acceptorChain + "_" + donorChain;
 }
 
-bonds::hydrogen::operator rin::edge() const
-{ return rin::edge(*this); }
-
 std::string bonds::hydrogen::get_type() const
 { return "hydrogen"; } // TODO va in config
 
@@ -166,9 +159,6 @@ chemical_entity::ionic_group const& bonds::ionic::negative() const
 
 std::string bonds::ionic::get_interaction() const
 { return "IONIC:SC_SC"; }
-
-bonds::ionic::operator rin::edge() const
-{ return rin::edge(*this); }
 
 std::string bonds::ionic::get_type() const
 { return "ionic"; }
@@ -191,9 +181,6 @@ double bonds::pication::angle() const
 
 std::string bonds::pication::get_interaction() const
 { return "PICATION:SC_SC"; }
-
-bonds::pication::operator rin::edge() const
-{ return rin::edge(*this); }
 
 std::string bonds::pication::get_type() const
 { return "pication"; }
@@ -218,12 +205,8 @@ double bonds::pipistack::angle() const
 std::string bonds::pipistack::get_interaction() const
 { return "PIPISTACK:SC_SC"; }
 
-bonds::pipistack::operator rin::edge() const
-{ return rin::edge(*this); }
-
 std::string bonds::pipistack::get_type() const
 { return "pipistack"; }
-
 
 bonds::ss::ss(records::ss const& record)
         : base(record.length(), 167), // TODO va in config
@@ -243,9 +226,6 @@ std::string bonds::ss::target_id() const
 
 std::string bonds::ss::get_interaction() const
 { return "SSBOND:SC_SC"; } // TODO config
-
-bonds::ss::operator rin::edge() const
-{ return rin::edge(*this); }
 
 std::string bonds::ss::id() const
 { return prelude::sort(source_id(), target_id()); }
@@ -296,9 +276,6 @@ std::string bonds::vdw::get_interaction() const
 
     return "VDW:" + sourceChain + "_" + targetChain;
 }
-
-bonds::vdw::operator rin::edge() const
-{ return rin::edge(*this); }
 
 std::string bonds::vdw::get_type() const
 { return "vdw"; }
