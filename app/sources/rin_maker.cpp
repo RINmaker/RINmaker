@@ -62,39 +62,26 @@ public:
     }
 };
 
-rin::maker::maker(fs::path const& pdb_path)
+rin::maker::maker(std::string const& pdb_name, std::vector<numbered_line_t>::iterator const begin, std::vector<numbered_line_t>::iterator const end)
 {
-    // open pdb
-    std::ifstream pdb_file;
-    pdb_file.open(pdb_path);
-
-    // might throw
-    if (!pdb_file.is_open())
-        throw std::runtime_error("could not open " + pdb_path.string() + "\n");
-
     auto sheet_records = secondary_structure_helper<records::sheet_piece>();
     auto helix_records = secondary_structure_helper<records::helix>();
 
     vector<records::atom> tmp_atoms;
 
-    lm::main()->info("parsing pdb...");
+    lm::main()->info("parsing pdb lines...");
 
-    auto pdb_name = pdb_path.stem().string();
-
-    // parsed line
-    string line;
-    uint32_t line_number = 0;
-    while (getline(pdb_file, line))
+    for (auto it = begin; it != end; ++it)
     {
+        auto line = it->second;
+        auto line_number = it->first;
 
-        // first field is the type of the record
-        string record_type = prelude::trim(line.substr(0, 6));
-
+        auto const record_type = prelude::trim(line.substr(0, 6));
         if (record_type == "ATOM")
         {
             // atoms are grouped by aminoacid: we can simply fill a collection until we change residue
-            records::atom record(line, ++line_number);
-            if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back())) 
+            records::atom record(line, line_number);
+            if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back()))
             {
                 _aminoacids.push_back(new aminoacid(tmp_atoms, pdb_name));
                 tmp_atoms.clear();
@@ -102,15 +89,14 @@ rin::maker::maker(fs::path const& pdb_path)
 
             tmp_atoms.push_back(record);
         }
+
         else if (record_type == "HELIX")
-        {
-            helix_records.insert(records::helix(line, ++line_number));
-        }
+            helix_records.insert(records::helix(line, line_number));
+
         else if (record_type == "SHEET")
-        {
-            sheet_records.insert(records::sheet_piece(line, ++line_number));
-        }
-        /* TODO ssbonds
+            sheet_records.insert(records::sheet_piece(line, line_number));
+
+        /*
         else if (record_type == "SSBOND") {
             _rin_network.new_bond<bonds::ss>(records::ss(line));
         }
@@ -118,15 +104,13 @@ rin::maker::maker(fs::path const& pdb_path)
     }
 
     if (!tmp_atoms.empty())
-    {
         _aminoacids.push_back(new aminoacid(tmp_atoms, pdb_name));
-    }
 
     lm::main()->info("finding the appropriate secondary structure for each aminoacid...");
 
     if (sheet_records.size() != 0 || helix_records.size() != 0)
     {
-        for (auto* res: _aminoacids)
+        for (auto& res: _aminoacids)
         {
             res->make_secondary_structure();
             sheet_records.update_if_contains(*res);
@@ -140,7 +124,7 @@ rin::maker::maker(fs::path const& pdb_path)
     vector<atom const*> hdonors;
     vector<ionic_group const*> positives;
 
-    for (auto* res: _aminoacids)
+    for (auto const* res: _aminoacids)
     {
 
         auto carbon = res->ca();

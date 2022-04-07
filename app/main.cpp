@@ -21,11 +21,14 @@ int main(int argc, const char* argv[])
             // does this hold? --lore
             lm::main()->info("params summary: " + parsed.params.pretty());
 
+            auto file_contents = read_lines(parsed.pdb_path);
+
             // parse file and build acceleration structures
-            auto rm = rin::maker(parsed.pdb_path);
+            auto rm = rin::maker(parsed.pdb_path.stem().string(), file_contents.begin(), file_contents.end());
 
             // create rin and write to graphml
-            rm(parsed.params).write_to_file(parsed.out_path);
+            auto view = rm(parsed.params);
+            view.write_to_file(parsed.out_path);
 
 #           if _MSC_VER
             spdlog::drop_all();

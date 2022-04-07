@@ -88,10 +88,12 @@ protected:
 
         std::optional<arguments> maybe_args;
         read_args(2, args, maybe_args);
-
         // won't throw std::bad_optional because args are hand crafted above
         arguments parsed = maybe_args.value();
-        return Result(rin::maker(parsed.pdb_path), parsed.params);
+
+        auto file_contents = read_lines(parsed.pdb_path);
+        auto pdb_name = parsed.pdb_path.stem().string();
+        return Result(rin::maker(pdb_name, file_contents.begin(), file_contents.end()), parsed.params);
     }
 
     void TearDown() override { }

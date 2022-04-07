@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <utility>
 #include <filesystem>
 
 #include "rin_graph.h"
@@ -24,12 +25,12 @@ using chemical_entity::ionic_group;
 
 struct parameters;
 
+typedef std::pair<uint32_t, std::string> numbered_line_t;
 struct maker final
 {
 private:
     vector<aminoacid*> _aminoacids;
 
-    // stuff for non-convalent bonds
     kdtree<atom, 3> _hdonor_tree, _vdw_tree;
     vector<atom const*> _hacceptor_vector, _vdw_vector, _cation_vector;
 
@@ -39,12 +40,11 @@ private:
     kdtree<ionic_group, 3> _positive_ion_tree;
     vector<ionic_group const*> _negative_ion_vector;
 
-    // stuff for backbone
     kdtree<atom, 3> _alpha_carbon_tree, _beta_carbon_tree;
     vector<atom const*> _alpha_carbon_vector, _beta_carbon_vector;
 
 public:
-    explicit maker(fs::path const& pdb_path);
+    explicit maker(std::string const& pdb_name, std::vector<numbered_line_t>::iterator begin, std::vector<numbered_line_t>::iterator end);
     ~maker();
 
     rin::graph operator()(parameters const& params) const;

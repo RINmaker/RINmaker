@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+#include <utility>
 #include <optional>
 #include <filesystem>
 
@@ -18,6 +20,8 @@ struct arguments final
 };
 
 bool read_args(int argc, const char* argv[], std::optional<arguments>& result);
+
+std::vector<std::pair<uint32_t, std::string>> read_lines(std::filesystem::path const& file_path);
 
 std::string app_full_name();
 
