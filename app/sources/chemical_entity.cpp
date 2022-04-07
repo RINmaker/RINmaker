@@ -340,8 +340,10 @@ std::vector<chemical_entity::atom const*> chemical_entity::atom::attached_hydrog
     return hydrogens;
 }
 
-chemical_entity::ring::ring(std::vector<atom const*> const& atoms, aminoacid const& res)
-        : kdpoint<3>({0, 0, 0}), component(res), _atoms(atoms)
+chemical_entity::ring::ring(std::vector<atom const*> const& atoms, aminoacid const& res) :
+        kdpoint<3>({0, 0, 0}),
+        component(res),
+        _atoms(atoms)
 {
     if (atoms.size() < 3)
         throw std::invalid_argument("rings should have at least 3 atoms");

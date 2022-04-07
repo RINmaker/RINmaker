@@ -163,6 +163,7 @@ class component
 {
 protected:
     aminoacid const& _res;
+
     explicit component(aminoacid const& res) : _res(res)
     {}
 
@@ -306,7 +307,6 @@ public:
 
     [[nodiscard]]
     atom const& atom_closest_to(atom const& atom) const;
-
 
     [[nodiscard]]
     string name() const;
