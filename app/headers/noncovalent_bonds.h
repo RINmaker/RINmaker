@@ -30,6 +30,7 @@ private:
     friend class ::network;
 
     double const _length;
+
     double const _energy;
 
 protected:
@@ -39,8 +40,10 @@ public:
     virtual ~base() = default;
 
 public:
+    [[nodiscard]]
     double get_length() const;
 
+    [[nodiscard]]
     double get_energy() const;
 
     bool operator<(base const& rhs) const;
@@ -48,13 +51,16 @@ public:
     bool operator>(base const& rhs) const;
 
 public:
+    [[nodiscard]]
     virtual std::string get_interaction() const = 0;
 
+    [[nodiscard]]
     virtual std::string get_type() const = 0;
 
     [[nodiscard]]
     virtual std::string id() const = 0;
 
+    [[nodiscard]]
     virtual rin::edge to_edge() const = 0;
 };
 
@@ -69,13 +75,16 @@ protected:
     computed(chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target, double distance, double energy);
 
 public:
-    virtual ~computed() = default;
+    ~computed() override = default;
 
-    virtual std::string get_type() const = 0;
+    [[nodiscard]]
+    std::string get_type() const override = 0;
 
 public:
+    [[nodiscard]]
     chemical_entity::aminoacid const& source() const;
 
+    [[nodiscard]]
     chemical_entity::aminoacid const& target() const;
 
     [[nodiscard]]
@@ -90,11 +99,14 @@ private:
     generico(chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target);
 
 public:
-    std::string get_interaction() const;
+    [[nodiscard]]
+    std::string get_interaction() const override;
 
-    std::string get_type() const;
+    [[nodiscard]]
+    std::string get_type() const override;
 
-    rin::edge to_edge() const;
+    [[nodiscard]]
+    rin::edge to_edge() const override;
 };
 
 class hydrogen : public computed
@@ -107,7 +119,7 @@ private:
     chemical_entity::atom const* _hydrogen;
     double const _angle;
 
-    //Returns a pair of Sigmaij Epsilonij
+    // returns a pair sigma_ij,epsilon_ij
     std::pair<double, double> getSigmaEpsilon(
             chemical_entity::atom const& donor, chemical_entity::atom const& acceptor);
 
@@ -116,23 +128,32 @@ private:
     hydrogen(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle);
 
 public:
+    [[nodiscard]]
     chemical_entity::atom const& acceptor() const;
 
+    [[nodiscard]]
     chemical_entity::atom const& donor() const;
 
+    [[nodiscard]]
     chemical_entity::atom const* acceptor_ptr() const;
 
+    [[nodiscard]]
     chemical_entity::atom const* donor_ptr() const;
 
+    [[nodiscard]]
     chemical_entity::atom const* hydrogen_ptr() const;
 
+    [[nodiscard]]
     double get_angle() const;
 
-    std::string get_interaction() const;
+    [[nodiscard]]
+    std::string get_interaction() const override;
 
-    rin::edge to_edge() const;
+    [[nodiscard]]
+    rin::edge to_edge() const override;
 
-    std::string get_type() const;
+    [[nodiscard]]
+    std::string get_type() const override;
 };
 
 class ionic : public computed
@@ -146,15 +167,20 @@ private:
     ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive);
 
 public:
+    [[nodiscard]]
     chemical_entity::ionic_group const& positive() const;
 
+    [[nodiscard]]
     chemical_entity::ionic_group const& negative() const;
 
-    std::string get_interaction() const;
+    [[nodiscard]]
+    std::string get_interaction() const override;
 
-    rin::edge to_edge() const;
+    [[nodiscard]]
+    rin::edge to_edge() const override;
 
-    std::string get_type() const;
+    [[nodiscard]]
+    std::string get_type() const override;
 };
 
 class pication : public computed
@@ -169,17 +195,23 @@ private:
     pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle);
 
 public:
+    [[nodiscard]]
     chemical_entity::ring const& ring() const;
 
+    [[nodiscard]]
     chemical_entity::atom const& cation() const;
 
+    [[nodiscard]]
     double angle() const;
 
-    std::string get_interaction() const;
+    [[nodiscard]]
+    std::string get_interaction() const override;
 
-    rin::edge to_edge() const;
+    [[nodiscard]]
+    rin::edge to_edge() const override;
 
-    std::string get_type() const;
+    [[nodiscard]]
+    std::string get_type() const override;
 };
 
 class pipistack : public computed
@@ -194,17 +226,23 @@ private:
     pipistack(chemical_entity::ring const& source_ring, chemical_entity::ring const& target_ring, double angle);
 
 public:
+    [[nodiscard]]
     chemical_entity::ring const& source_ring() const;
 
+    [[nodiscard]]
     chemical_entity::ring const& target_ring() const;
 
+    [[nodiscard]]
     double angle() const;
 
-    std::string get_interaction() const;
+    [[nodiscard]]
+    std::string get_interaction() const override;
 
-    rin::edge to_edge() const;
+    [[nodiscard]]
+    rin::edge to_edge() const override;
 
-    std::string get_type() const;
+    [[nodiscard]]
+    std::string get_type() const override;
 };
 
 class ss : public base
@@ -220,21 +258,26 @@ private:
     std::string const _target_chain;
     std::string const _target_name;
 
-    ss(records::ss const& record);
+    explicit ss(records::ss const& record);
 
 public:
+    [[nodiscard]]
     std::string source_id() const;
 
+    [[nodiscard]]
     std::string target_id() const;
 
-    std::string get_interaction() const;
+    [[nodiscard]]
+    std::string get_interaction() const override;
 
-    // TODO va in config
-    rin::edge to_edge() const;
+    [[nodiscard]]
+    rin::edge to_edge() const override;
 
+    [[nodiscard]]
     std::string id() const;
 
-    std::string get_type() const;
+    [[nodiscard]]
+    std::string get_type() const override;
 };
 
 class vdw : public computed
@@ -250,8 +293,10 @@ private:
     vdw(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
 
 public:
+    [[nodiscard]]
     chemical_entity::atom const& source_atom() const;
 
+    [[nodiscard]]
     chemical_entity::atom const& target_atom() const;
 
     [[nodiscard]]
