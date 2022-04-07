@@ -55,14 +55,11 @@ private:
 
     std::string _id;
 
-private:
-    friend struct rin::maker;
-
     std::string _pdb_name;
 
+public:
     explicit aminoacid(std::vector<records::atom> const& records, std::string pdb_name);
 
-public:
     [[nodiscard]]
     std::vector<atom const*> atoms() const
     {
