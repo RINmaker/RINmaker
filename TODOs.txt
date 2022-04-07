@@ -6,7 +6,6 @@ TODO:
 - Scrivere un readme documentativo con la descrizione di cosa fa il programma
 - Documentare la modalità test nel readme principale, e specificare i due target di cmake
 - Testare i parametri da riga di comando
-- Cambiare estensione di output e mettere output di default se non viene specificato
 - Rivedere costanti di energia (Jacopo)
 - TODO mancano unita di misura sulla ui
 - Dare un nome ai graphml uscenti perchè ora si chiamano tutti G
@@ -17,8 +16,12 @@ TODO:
 - UI avere la conversione tra kj e kcal
 
 WIP:
-- passare a smart ptrs (lore) (razionale: abbiamo già la semantica di ownership, inutile fare le cose manualmente)
+- rimuovere qualunque tipo di stato globale
+    status: quasi terminato con le commit precedenti
+- cambiare estensione di output e mettere output di default se non viene specificato
+- rimuovere rin_network in favore di filtri dentro a rin_maker::operator ()(rin::parameters const&)
 - tag multipli => multiple run su multiple proteine (lore)
+    status: la lettura del file adesso avviene fuori da rin_maker, aspetto le indicazioni da jacopo per sapere dove "spezzare" le righe
 - Documento contenete la lista e il risultato atteso dei test (Jacopo)
 - Lanciare eccezione in casi unexpected (Ad esempio nei ring accediamo con [0] [1])
 
