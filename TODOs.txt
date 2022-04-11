@@ -16,8 +16,6 @@ TODO:
 - UI avere la conversione tra kj e kcal
 
 WIP:
-- rimuovere qualunque tipo di stato globale
-    status: quasi terminato con le commit precedenti
 - cambiare estensione di output e mettere output di default se non viene specificato
 - rimuovere rin_network in favore di filtri dentro a rin_maker::operator ()(rin::parameters const&)
 - tag multipli => multiple run su multiple proteine (lore)
@@ -32,3 +30,4 @@ DONE:
 - eccezioni nel parsing/costruzione degli amminoacidi
 - Trasferire la ownership della repo di Francesco sotto l'organizzazione
 - Unificare palette di xrmol (xrmol diventerà simile a quello di Francesco) (Francesco)
+- Rimuovere qualunque tipo di stato globale
