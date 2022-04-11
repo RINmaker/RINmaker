@@ -51,7 +51,6 @@ private:
 
 public:
     struct configurator;
-    struct global;
 
     [[nodiscard]]
     double query_dist_hbond() const
@@ -178,30 +177,6 @@ public:
     {
         params._hbond_realistics = val;
         return *this;
-    }
-};
-
-// fixme this is temporary
-struct parameters::global final
-{
-private:
-    parameters _params;
-
-public:
-    static global& instance()
-    {
-        static global inst = global();
-        return inst;
-    }
-
-    parameters const& get()
-    {
-        return _params;
-    }
-
-    void set(parameters params)
-    {
-        _params = params;
     }
 };
 }

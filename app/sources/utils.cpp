@@ -184,7 +184,6 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
     log_manager::initialize(log_dir);
 
     auto params = pcfg.build();
-    rin::parameters::global::instance().set(params);
 
     std::filesystem::create_directory(cfg::graphml::default_dirname);
     auto out_path = std::filesystem::path(cfg::graphml::default_dirname) / out_name;

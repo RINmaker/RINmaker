@@ -8,6 +8,7 @@
 #include "pdb_records.h"
 
 #include "energy.h"
+#include "rin_params.h"
 
 namespace chemical_entity
 {
@@ -18,11 +19,6 @@ class atom;
 class ring;
 
 class ionic_group;
-}
-
-namespace rin
-{
-class params;
 }
 
 class network;
@@ -72,13 +68,15 @@ private:
     chemical_entity::aminoacid const& _target;
 
 protected:
-    computed(chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target, double distance, double energy);
+    // computed bonds need to store the parameters that generated them
+    rin::parameters const _params;
+
+    computed(rin::parameters const& params, chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target, double distance, double energy);
 
 public:
     ~computed() override = default;
 
     [[nodiscard]]
-
     std::string get_type() const override = 0;
 
     [[nodiscard]]
@@ -96,7 +94,7 @@ class generico final : public computed
 public:
     static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
-    generico(chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target);
+    generico(rin::parameters const& params, chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target);
 
     [[nodiscard]]
     std::string get_interaction() const override;
@@ -127,7 +125,7 @@ private:
 public:
     static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor);
 
-    hydrogen(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle);
+    hydrogen(rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle);
 
     [[nodiscard]]
     chemical_entity::atom const& acceptor() const;
@@ -167,7 +165,7 @@ private:
 public:
     static bool test(network& net, rin::parameters const& params, chemical_entity::ionic_group const& a, chemical_entity::ionic_group const& b);
 
-    ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive);
+    ionic(rin::parameters const& params, chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive);
 
     [[nodiscard]]
     chemical_entity::ionic_group const& positive() const;
@@ -197,7 +195,7 @@ private:
 public:
     static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& cation, chemical_entity::ring const& ring);
 
-    pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle);
+    pication(rin::parameters const& params, chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle);
 
     [[nodiscard]]
     chemical_entity::ring const& ring() const;
@@ -229,7 +227,7 @@ private:
 public:
     static bool test(network& net, rin::parameters const& params, chemical_entity::ring const& a, chemical_entity::ring const& b);
 
-    pipistack(chemical_entity::ring const& source_ring, chemical_entity::ring const& target_ring, double angle);
+    pipistack(rin::parameters const& params, chemical_entity::ring const& source_ring, chemical_entity::ring const& target_ring, double angle);
 
     [[nodiscard]]
     chemical_entity::ring const& source_ring() const;
@@ -279,7 +277,7 @@ public:
     { return rin::edge(*this); }
 
     [[nodiscard]]
-    std::string id() const;
+    std::string id() const override;
 
     [[nodiscard]]
     std::string get_type() const override;
@@ -296,7 +294,7 @@ private:
 public:
     static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
-    vdw(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
+    vdw(rin::parameters const& params, chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
 
     [[nodiscard]]
     chemical_entity::atom const& source_atom() const;

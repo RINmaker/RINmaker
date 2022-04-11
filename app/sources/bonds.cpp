@@ -23,8 +23,9 @@ bool bond::base::operator<(base const& rhs) const
 bool bond::base::operator>(base const& rhs) const
 { return rhs < *this; }
 
-bond::computed::computed(aminoacid const& source, aminoacid const& target, double distance, double energy) :
+bond::computed::computed(rin::parameters const& params, aminoacid const& source, aminoacid const& target, double distance, double energy) :
         base(distance, energy),
+        _params(params),
         _source(source),
         _target(target)
 {}
@@ -38,14 +39,14 @@ chemical_entity::aminoacid const& bond::computed::source() const
 chemical_entity::aminoacid const& bond::computed::target() const
 { return _target; }
 
-bond::generico::generico(aminoacid const& source, aminoacid const& target)
-        : computed(source, target, source.distance(target), 0) // TODO res horribilis
+bond::generico::generico(rin::parameters const& params, aminoacid const& source, aminoacid const& target)
+        : computed(params, source, target, source.distance(target), 0) // TODO res horribilis
 {}
 
 std::string bond::generico::get_interaction() const
 {
     std::string get_interaction = "GENERIC:";
-    switch (rin::parameters::global::instance().get().interaction_type())
+    switch (_params.interaction_type())
     {
     case rin::parameters::interaction_type_t::ALPHA_BACKBONE:
         get_interaction += "CA";
@@ -108,8 +109,8 @@ double bond::hydrogen::energy(
 }
 
 bond::hydrogen::hydrogen(
-        chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle) :
-        computed(acceptor.res(), donor.res(), acceptor.distance(donor), energy(donor, acceptor, hydrogen)),
+        rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle) :
+        computed(params, acceptor.res(), donor.res(), acceptor.distance(donor), energy(donor, acceptor, hydrogen)),
         _acceptor(acceptor),
         _donor(donor),
         _hydrogen(hydrogen),
@@ -145,9 +146,9 @@ std::string bond::hydrogen::get_interaction() const
 std::string bond::hydrogen::get_type() const
 { return "hydrogen"; } // TODO va in config
 
-bond::ionic::ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive) :
+bond::ionic::ionic(rin::parameters const& params, chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive) :
         computed(
-                negative.res(), positive.res(), negative.distance(positive), (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))),
+                params, negative.res(), positive.res(), negative.distance(positive), (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))),
         _negative(negative),
         _positive(positive)
 {}
@@ -164,8 +165,8 @@ std::string bond::ionic::get_interaction() const
 std::string bond::ionic::get_type() const
 { return "ionic"; }
 
-bond::pication::pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle) :
-        computed(ring.res(), cation.res(), ring.distance(cation), 9.6),// TODO va in config
+bond::pication::pication(rin::parameters const& params, chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle) :
+        computed(params, ring.res(), cation.res(), ring.distance(cation), 9.6),// TODO va in config
         _cation(cation),
         _ring(ring),
         _angle(angle)
@@ -187,8 +188,8 @@ std::string bond::pication::get_type() const
 { return "pication"; }
 
 
-bond::pipistack::pipistack(const chemical_entity::ring& source_ring, const chemical_entity::ring& target_ring, double angle) :
-        computed(source_ring.res(), target_ring.res(), source_ring.distance(target_ring), 9.6), // TODO va in config
+bond::pipistack::pipistack(rin::parameters const& params, chemical_entity::ring const& source_ring, chemical_entity::ring const& target_ring, double angle) :
+        computed(params, source_ring.res(), target_ring.res(), source_ring.distance(target_ring), 9.6), // TODO va in config
         _source_ring(source_ring),
         _target_ring(target_ring),
         _angle(angle)
@@ -257,9 +258,9 @@ double bond::vdw::energy(chemical_entity::atom const& source_atom, chemical_enti
     return 4 * epsilon * (sigma_distance_12 - sigma_distance_10);
 }
 
-bond::vdw::vdw(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom) :
+bond::vdw::vdw(rin::parameters const& params, chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom) :
         computed(
-                source_atom.res(), target_atom.res(), source_atom.distance(target_atom), energy(source_atom, target_atom)),  // TODO config
+                params, source_atom.res(), target_atom.res(), source_atom.distance(target_atom), energy(source_atom, target_atom)),  // TODO config
         _source_atom(source_atom),
         _target_atom(target_atom)
 {}
@@ -301,7 +302,7 @@ bool bond::hydrogen::test(network& net, rin::parameters const& params, chemical_
 
                 if (angle_adh <= cfg::params::hbond_angle) // 63
                 {
-                    net.find(acceptor.res(), donor.res()).push(*new bond::hydrogen(acceptor, donor, h, angle_ahd));
+                    net.find(acceptor.res(), donor.res()).push(*new bond::hydrogen(params, acceptor, donor, h, angle_ahd));
                     return true;
                 }
             }
@@ -319,7 +320,7 @@ bool bond::vdw::test(network& net, rin::parameters const& params, chemical_entit
         // FIXME qui ne prende il doppio!
         auto& pb = net.find(a.res(), b.res());
         if (!pb.has_vdw())
-            pb.push(*new bond::vdw(a, b));
+            pb.push(*new bond::vdw(params, a, b));
         return true;
     }
 
@@ -331,7 +332,7 @@ bool bond::ionic::test(network& net, rin::parameters const& params, chemical_ent
 {
     if (negative.res().satisfies_minimum_separation(positive.res()) && negative.charge() == -positive.charge())
     {
-        net.find(negative.res(), positive.res()).push(*new bond::ionic(negative, positive));
+        net.find(negative.res(), positive.res()).push(*new bond::ionic(params, negative, positive));
         return true;
     }
 
@@ -347,7 +348,7 @@ bool bond::pication::test(network& net, rin::parameters const& params, chemical_
 
         if (theta >= cfg::params::pication_angle) // 45
         {
-            net.find(ring.res(), cation.res()).push(*new bond::pication(ring, cation, theta));
+            net.find(ring.res(), cation.res()).push(*new bond::pication(params, ring, cation, theta));
             return true;
         }
     }
@@ -370,7 +371,7 @@ bool bond::pipistack::test(network& net, rin::parameters const& params, chemical
     {
         auto& pb = net.find(a.res(), b.res());
         if (!pb.has_pipi())
-            pb.push(*new pipistack(a, b, nn));
+            pb.push(*new pipistack(params, a, b, nn));
 
         return true;
     }
@@ -384,7 +385,7 @@ bool bond::generico::test(network& net, rin::parameters const& params, chemical_
     {
         auto& pb = net.find(a.res(), b.res());
         if (!pb.has_backbone())
-            pb.push(*new bond::generico(a.res(), b.res()));
+            pb.push(*new bond::generico(params, a.res(), b.res()));
 
         return true;
     }
