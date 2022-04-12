@@ -321,7 +321,7 @@ TEST_F(BlackBoxTest, vdw7) {
     EXPECT_TRUE(r.containEdge([](const edge& e) {
         return interactionName(e) == "VDW" && source(e) == "ASN" && target(e) == "GLN" &&
                source_atom(e) == "CB" && target_atom(e) == "NE2" &&
-               compareDistance(e, 3.85866) && compareEnergy(e, -0.03763);
+               compareDistance(e, 3.85866) && compareEnergy(e, -0.13357);
     }));
 }
 TEST_F(BlackBoxTest, vdw8) {
@@ -331,22 +331,22 @@ TEST_F(BlackBoxTest, vdw8) {
     EXPECT_TRUE(r.containEdge([](const edge& e) {
         return interactionName(e) == "VDW" && source(e) == "ASN" && target(e) == "ASN" &&
                source_atom(e) == "ND2" && target_atom(e) == "CB" &&
-               compareDistance(e, 3.74499) && compareEnergy(e, -0.03269);
+               compareDistance(e, 3.74499) && compareEnergy(e, -0.10873);
     }));
     EXPECT_TRUE(r.containEdge([](const edge& e) {
         return interactionName(e) == "VDW" && source(e) == "GLN" && target(e) == "ASN" &&
                source_atom(e) == "OE1" && target_atom(e) == "CB" &&
-               compareDistance(e, 1.73218) && compareEnergy(e, 1523.88608);
+               compareDistance(e, 1.73218) && compareEnergy(e, 2022.14052);
     }));
     EXPECT_TRUE(r.containEdge([](const edge& e) {
         return interactionName(e) == "VDW" && source(e) == "GLN" && target(e) == "GLN" &&
                source_atom(e) == "OE1" && target_atom(e) == "NE2" &&
-               compareDistance(e, 3.49130) && compareEnergy(e, -0.04878);
+               compareDistance(e, 3.49130) && compareEnergy(e, -0.18889);
     }));
     EXPECT_TRUE(r.containEdge([](const edge& e) {
         return interactionName(e) == "VDW" && source(e) == "ASN" && target(e) == "GLN" &&
                source_atom(e) == "CB" && target_atom(e) == "NE2" &&
-               compareDistance(e, 1.75928) && compareEnergy(e, 2036.21611);
+               compareDistance(e, 1.75928) && compareEnergy(e, 2653.90001);
     }));
 }
 

@@ -252,10 +252,9 @@ double bond::vdw::energy(chemical_entity::atom const& source_atom, chemical_enti
 
     double sigma_distance_12 = pow(sigma / distance, 12);
 
-    // double sigma_distance_6 = pow(sigma / distance, 6);
-    double sigma_distance_10 = pow(sigma / distance, 10);
+    double sigma_distance_6 = pow(sigma / distance, 6);
 
-    return 4 * epsilon * (sigma_distance_12 - sigma_distance_10);
+    return 4 * epsilon * (sigma_distance_12 - sigma_distance_6);
 }
 
 bond::vdw::vdw(rin::parameters const& params, chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom) :
