@@ -126,6 +126,21 @@ TEST_F(BlackBoxTest, IonIon3) {
     Result r = SetUp("ionion/3.pdb");
 
     EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "IONIC"; }), 3);
+    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+        return interaction_name(e) == "IONIC" && source(e) == "LYS" && target(e) == "GLU" &&
+               compare_distance(e, 3.22121) &&
+               source_atom(e) == "NZ" && target_atom(e) == "CD:OE1:OE2";
+    }));
+    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+        return interaction_name(e) == "IONIC" && source(e) == "HIS" && target(e) == "GLU" &&
+               compare_distance(e, 1.60990) &&
+               source_atom(e) == "CD2:CE1:CG:ND1:NE2" && target_atom(e) == "CD:OE1:OE2";
+    }));
+    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+        return interaction_name(e) == "IONIC" && source(e) == "LYS" && target(e) == "ASP" &&
+               compare_distance(e, 2.55251) &&
+               source_atom(e) == "NZ" && target_atom(e) == "CG:OD1:OD2";
+    }));
 }
 TEST_F(BlackBoxTest, IonIon4) {
     Result r = SetUp("ionion/4.pdb");
