@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <string>
+#include <utility>
 
 #include "bonds.h"
 #include "chemical_entity.h"
@@ -10,7 +11,7 @@
 using namespace rin;
 using chemical_entity::aminoacid;
 
-graph::graph(rin::parameters const& params, vector<aminoacid const*> const& aminoacids, list<bond::base const*> const& bonds) : _params(params)
+graph::graph(string name, rin::parameters const& params, vector<aminoacid const*> const& aminoacids, list<bond::base const*> const& bonds) : _name(std::move(name)), _params(params)
 {
     for (auto a: aminoacids)
     {
@@ -51,7 +52,7 @@ void graph::write_to_file(std::filesystem::path const& out_path) const
 
     // <graph>
     pugi::xml_node graph_node = graphml.append_child("graph");
-    graph_node.append_attribute("id") = "G";
+    graph_node.append_attribute("id") = name().c_str();
     graph_node.append_attribute("edgedefault") = "undirected";
 
     // graphml requires all key attributes to be listed before the actual node/edges

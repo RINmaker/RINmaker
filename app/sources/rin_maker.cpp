@@ -285,5 +285,8 @@ rin::graph rin::maker::operator()(parameters const& params) const
     for (auto* res: _aminoacids)
         aminoacids.push_back(res);
 
-    return {params, aminoacids, results};
+    string graph_name = "G";
+    if(!aminoacids.empty())
+        graph_name = aminoacids[0]->pdb_name();
+    return {graph_name, params, aminoacids, results};
 }

@@ -155,17 +155,19 @@ namespace fs = std::filesystem;
 class graph
 {
 private:
+    string _name;
     rin::parameters _params;
     unordered_map<string, node> _nodes;
     vector<edge> _edges;
 
 public:
-    graph(parameters const& params, vector<aminoacid const*> const& aminoacids, list<bond::base const*> const& bonds);
+    graph(string name, parameters const& params, vector<aminoacid const*> const& aminoacids, list<bond::base const*> const& bonds);
 
     void write_to_file(fs::path const& out_path) const;
 
-    std::vector<edge> get_edges() const
-    { return _edges; }
+    string name() const { return _name; }
+
+    std::vector<edge> get_edges() const { return _edges; }
 
     std::unordered_map<std::string, node> get_nodes() const
     {

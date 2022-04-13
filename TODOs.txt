@@ -8,7 +8,6 @@ TODO:
 - Testare i parametri da riga di comando
 - Rivedere costanti di energia (Jacopo)
 - TODO mancano unita di misura sulla ui
-- Dare un nome ai graphml uscenti perchè ora si chiamano tutti G
 - Mettere pication
 - Pipi stiamo aspettanto la formula da Cedrix e Achille
 - Aprire qualche issue
@@ -31,3 +30,4 @@ DONE:
 - Trasferire la ownership della repo di Francesco sotto l'organizzazione
 - Unificare palette di xrmol (xrmol diventerà simile a quello di Francesco) (Francesco)
 - Rimuovere qualunque tipo di stato globale
+- Dare un nome ai graphml uscenti perchè ora si chiamano tutti G
