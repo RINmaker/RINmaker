@@ -47,14 +47,6 @@ namespace prelude {
         return id_1 < id_2 ? id_1 + id_2 : id_2 + id_1;
     }
 
-    inline static bool match(std::string const &str, std::vector<std::string> const &patterns) {
-        for (auto const &p: patterns)
-            if (str.find(p) != std::string::npos)
-                return true;
-
-        return false;
-    }
-
     inline static bool match(std::string const &str, std::string const &pattern) {
         return str.find(pattern) != std::string::npos;
     }

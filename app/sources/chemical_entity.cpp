@@ -65,7 +65,7 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
     if (_name == "HIS")
     {
         // HIS has a 5-atoms ring
-        patterns_1 = {"CD", "CE", "CG", "ND", "NE"};
+        patterns_1 = {"CD2", "CE1", "CG", "ND1", "NE2"};
         n_of_rings = 1;
     }
     else if (_name == "PHE" || _name == "TYR")
@@ -77,8 +77,8 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
     else if (_name == "TRP")
     {
         // TRP has both a 6-atoms ring and a 5-atoms ring
-        patterns_1 = {"CD2", "CE2", "CE3", "CH", "CZ2", "CZ3"};
-        patterns_2 = {"CD2", "CE2", "CD1", "CG", "NE"};
+        patterns_1 = {"CD2", "CE2", "CE3", "CH2", "CZ2", "CZ3"};
+        patterns_2 = {"CD2", "CE2", "CD1", "CG", "NE1"};
 
         n_of_rings = 2;
     }
