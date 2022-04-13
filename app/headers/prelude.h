@@ -43,7 +43,7 @@ namespace prelude {
         return s;
     }
 
-    inline static std::string sort(std::string const &id_1, std::string const &id_2) {
+    inline static std::string concat_lexicographically(std::string const &id_1, std::string const &id_2) {
         return id_1 < id_2 ? id_1 + id_2 : id_2 + id_1;
     }
 

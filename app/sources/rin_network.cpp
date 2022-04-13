@@ -64,7 +64,7 @@ network::~network()
 
 pairbond& network::find(chemical_entity::aminoacid const& a, chemical_entity::aminoacid const& b)
 {
-    auto const key = prelude::sort(a.id(), b.id());
+    auto const key = prelude::concat_lexicographically(a.id(), b.id());
     if (pairbonds_map.find(key) == pairbonds_map.end())
     {
         auto* p = new pairbond();

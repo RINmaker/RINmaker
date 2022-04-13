@@ -31,7 +31,7 @@ bond::computed::computed(rin::parameters const& params, aminoacid const& source,
 {}
 
 std::string bond::computed::id() const
-{ return prelude::sort(_source.id(), _target.id()); }
+{ return prelude::concat_lexicographically(_source.id(), _target.id()); }
 
 chemical_entity::aminoacid const& bond::computed::source() const
 { return _source; }
@@ -230,7 +230,7 @@ std::string bond::ss::get_interaction() const
 { return "SSBOND:SC_SC"; } // TODO config
 
 std::string bond::ss::id() const
-{ return prelude::sort(source_id(), target_id()); }
+{ return prelude::concat_lexicographically(source_id(), target_id()); }
 
 std::string bond::ss::get_type() const
 { return "ss"; }
