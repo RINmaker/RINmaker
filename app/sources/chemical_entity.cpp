@@ -98,10 +98,10 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
         else if (a->name() == "CB")
             _beta_carbon = a;
 
-        if (n_of_rings >= 1 && prelude::match(a->name(), patterns_1))
+        if (n_of_rings >= 1 && std::find(patterns_1.begin(), patterns_1.end(), a->name()) != patterns_1.end())
             ring_1.push_back(a);
 
-        if (n_of_rings == 2 && prelude::match(a->name(), patterns_2))
+        if (n_of_rings == 2 && std::find(patterns_2.begin(), patterns_2.end(), a->name()) != patterns_2.end())
             ring_2.push_back(a);
 
         if (a->is_in_a_positive_ionic_group())
