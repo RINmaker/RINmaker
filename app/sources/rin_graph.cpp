@@ -81,8 +81,8 @@ edge::edge(bond::ss const& bond) :
         _distance(std::to_string(bond.get_length())),
         _energy(std::to_string(bond.get_energy())),
         _interaction(bond.get_interaction()),
-        _source_atom("SG"), // TODO va in config
-        _target_atom("SG"), // TODO va in config
+        _source_atom("SG"), // TODO config
+        _target_atom("SG"), // TODO config
         _donor(cfg::graphml::none),
         _cation(cfg::graphml::none),
         _positive(cfg::graphml::none),

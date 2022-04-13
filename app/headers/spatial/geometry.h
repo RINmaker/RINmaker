@@ -8,7 +8,7 @@ namespace geom
 {
 constexpr double PI_GRECO = 3.14159265358979323846;
 
-// centroide di punti
+// Centroid of points
 template <size_t K>
 std::array<double, K> centroid(std::vector<std::array<double, K> const> const& points)
 {
@@ -25,7 +25,7 @@ std::array<double, K> centroid(std::vector<std::array<double, K> const> const& p
     return sum;
 }
 
-// somma tra vettori: v+w
+// Vector sum: v+w
 template <size_t K>
 std::array<double, K> sum(std::array<double, K> const& v, std::array<double, K> const& w)
 {
@@ -36,7 +36,7 @@ std::array<double, K> sum(std::array<double, K> const& v, std::array<double, K> 
     return sum;
 }
 
-// differenza tra vettori: v-w
+// Vector difference: v-w
 template <size_t K>
 std::array<double, K> difference(std::array<double, K> const& v, std::array<double, K> const& w)
 {
@@ -47,7 +47,7 @@ std::array<double, K> difference(std::array<double, K> const& v, std::array<doub
     return diff;
 }
 
-// prodotto scalare tra vettori
+// Scalar product between vectors
 template <size_t K>
 double dot(std::array<double, K> const& v, std::array<double, K> const& w)
 {
@@ -58,14 +58,14 @@ double dot(std::array<double, K> const& v, std::array<double, K> const& w)
     return sum;
 }
 
-// modulo di un vettore
+// Modulus of a vector
 template <size_t K>
 double magnitude(std::array<double, K> const& v)
 {
     return sqrt(dot(v, v));
 }
 
-// normalizza un vettore
+// Normalize a vector
 template <size_t K>
 std::array<double, K> normalize(std::array<double, K> const& v)
 {
@@ -78,14 +78,14 @@ std::array<double, K> normalize(std::array<double, K> const& v)
     return u;
 }
 
-// distanza tra due punti
+// Distance between two points
 template <size_t K>
 double distance(std::array<double, K> const& a, std::array<double, K> const& b)
 {
     return magnitude(difference(a, b));
 }
 
-// angolo tra due vettori in gradi °
+// Angle between two vectors in degrees
 template <size_t K>
 double angle(std::array<double, K> const& v, std::array<double, K> const& w)
 {
@@ -93,7 +93,7 @@ double angle(std::array<double, K> const& v, std::array<double, K> const& w)
     return acos(dot(v, w) / (magnitude(v) * magnitude(w))) * (180.0 / PI_GRECO);
 }
 
-// angolo tra le direzioni di due vettori in gradi ° (dei due angoli possibili ritorna il minore)
+// Angle between the directions of two vectors in degrees ° (Returns the smaller angle)
 template <size_t K>
 double d_angle(std::array<double, K> const& v, std::array<double, K > const& w)
 {
@@ -101,7 +101,7 @@ double d_angle(std::array<double, K> const& v, std::array<double, K > const& w)
     return a > 90 ? 180 - a : a;
 }
 
-// il prodotto vettoriale è matematicamente definito solo tra vettori in R³
+// The vector product is mathematically defined only between vectors in R^3
 inline static std::array<double, 3> cross(std::array<double, 3> const& v, std::array<double, 3> const& w)
 {
     return std::array<double, 3>({

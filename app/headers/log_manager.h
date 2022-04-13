@@ -35,7 +35,7 @@ public:
 
     //static void insert(string const& id, string const& sink_name);
 
-    //static std::shared_ptr<spdlog::logger> get_default();   // TODO attualmente get_default() � cout: farei in modo che punti invece ad un logger UNICO che � quello di default
+    //static std::shared_ptr<spdlog::logger> get_default();
     //static std::shared_ptr<spdlog::logger> get(string const& key);
     //static std::vector<string> get_ids();
 

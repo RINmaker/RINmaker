@@ -26,46 +26,46 @@ std::array<std::pair<size_t, size_t>, 15> const atom::_limits = {
 // http://www.wwpdb.org/documentation/file-format-content/format33/sect5.html#HELIX
 std::array<std::pair<size_t, size_t>, 14> const helix::_limits = {
         std::make_pair<size_t, size_t>(0, 6),   // HELIX
-        std::make_pair<size_t, size_t>(7, 3),   // serial number comincia a 1 e si incrementa
+        std::make_pair<size_t, size_t>(7, 3),   // serial number (starts from 1)
         std::make_pair<size_t, size_t>(11, 3),  // helix ID
-        std::make_pair<size_t, size_t>(15, 3),  // res name del residuo iniziale
-        std::make_pair<size_t, size_t>(19, 1),  // chain id del resisuo inizialie
-        std::make_pair<size_t, size_t>(21, 4),  // seq number del residuo iniziale
-        std::make_pair<size_t, size_t>(25, 1),  // insertion code residuo iniziale
-        std::make_pair<size_t, size_t>(27, 3),  // res name del residuo finale
-        std::make_pair<size_t, size_t>(31, 1),  // chain id del residuo finale
-        std::make_pair<size_t, size_t>(33, 4),  // eq number del residuo finale
-        std::make_pair<size_t, size_t>(37, 1),  // insertion code residuo finale
+        std::make_pair<size_t, size_t>(15, 3),  // res name of initial residue
+        std::make_pair<size_t, size_t>(19, 1),  // chain id of initial residue
+        std::make_pair<size_t, size_t>(21, 4),  // seq number of initial residue
+        std::make_pair<size_t, size_t>(25, 1),  // insertion code of initial residue
+        std::make_pair<size_t, size_t>(27, 3),  // res name of final residue
+        std::make_pair<size_t, size_t>(31, 1),  // chain id of final residue
+        std::make_pair<size_t, size_t>(33, 4),  // eq number of final residue
+        std::make_pair<size_t, size_t>(37, 1),  // insertion code of final residue
         std::make_pair<size_t, size_t>(38, 1),  // helix class
         std::make_pair<size_t, size_t>(40, 30), // helix comment
-        std::make_pair<size_t, size_t>(71, 5)   // lunghezza dell'elica
+        std::make_pair<size_t, size_t>(71, 5)   // helix length
 };
 
 // http://www.wwpdb.org/documentation/file-format-content/format33/sect5.html#SHEET
 std::array<std::pair<size_t, size_t>, 23> const sheet_piece::_limits = {
         std::make_pair<size_t, size_t>(0, 6),    // SHEET
-        std::make_pair<size_t, size_t>(7, 3),    // strand number, comincia da 1 e si incrementa di 1
-        std::make_pair<size_t, size_t>(11, 3),   // sheed id
-        std::make_pair<size_t, size_t>(14, 2),   // numero degli strand nel sheet
-        std::make_pair<size_t, size_t>(17, 3),   // name del residuo iniziale
-        std::make_pair<size_t, size_t>(21, 1),   // chain id del residuo iniziale
-        std::make_pair<size_t, size_t>(22, 4),   // seq number del residuo iniziale
-        std::make_pair<size_t, size_t>(26, 1),   // insertion code del residuo iniziale
-        std::make_pair<size_t, size_t>(28, 3),   // nome del residuo finale
-        std::make_pair<size_t, size_t>(32, 1),   // chain id  del residuo finale
-        std::make_pair<size_t, size_t>(33, 4),   // seq number  del residuo finale
-        std::make_pair<size_t, size_t>(37, 1),   // insertion code del residuo finale
+        std::make_pair<size_t, size_t>(7, 3),    // strand number (starts with 0)
+        std::make_pair<size_t, size_t>(11, 3),   // sheet id
+        std::make_pair<size_t, size_t>(14, 2),   // number of strand in the sheet
+        std::make_pair<size_t, size_t>(17, 3),   // name of initial residue
+        std::make_pair<size_t, size_t>(21, 1),   // chain id of initial residue
+        std::make_pair<size_t, size_t>(22, 4),   // seq number of initial residue
+        std::make_pair<size_t, size_t>(26, 1),   // insertion code of initial residue
+        std::make_pair<size_t, size_t>(28, 3),   // nome of final residue
+        std::make_pair<size_t, size_t>(32, 1),   // chain id of final residue
+        std::make_pair<size_t, size_t>(33, 4),   // seq number of final residue
+        std::make_pair<size_t, size_t>(37, 1),   // insertion code of final residue
         std::make_pair<size_t, size_t>(38, 2),   // sense of strand
-        std::make_pair<size_t, size_t>(41, 4),   // atom name nello strand corrente
-        std::make_pair<size_t, size_t>(45, 3),   // res name dell' atomo nello strand corrente
-        std::make_pair<size_t, size_t>(49, 1),   // chain id dell' atomo nello strand corrente
-        std::make_pair<size_t, size_t>(50, 4),   // res seq dell' atomo nello strand corrente
-        std::make_pair<size_t, size_t>(54, 1),   // insertion code dell' atomo nello strand corrente
-        std::make_pair<size_t, size_t>(56, 4),   // atom name nello strand precedente
-        std::make_pair<size_t, size_t>(60, 3),   // res name dell' atomo nello strand precedente
-        std::make_pair<size_t, size_t>(64, 1),   // chain id dell' atomo nello strand precedente
-        std::make_pair<size_t, size_t>(65, 4),   // res seq dell' atomo nello strand precedente
-        std::make_pair<size_t, size_t>(69, 1)    // insertion code dell' atomo nello strand precedente
+        std::make_pair<size_t, size_t>(41, 4),   // atom name of current strand
+        std::make_pair<size_t, size_t>(45, 3),   // atom res name of current strand
+        std::make_pair<size_t, size_t>(49, 1),   // atom chain id of current strand
+        std::make_pair<size_t, size_t>(50, 4),   // atom res seq of current strand
+        std::make_pair<size_t, size_t>(54, 1),   // atom insertion code of current strand
+        std::make_pair<size_t, size_t>(56, 4),   // atom name of precedent strand
+        std::make_pair<size_t, size_t>(60, 3),   // atom res name of precedent strand
+        std::make_pair<size_t, size_t>(64, 1),   // atom chain id of precedent strand
+        std::make_pair<size_t, size_t>(65, 4),   // atom res seq of precedent strand
+        std::make_pair<size_t, size_t>(69, 1)    // atom insertion code of precedent strand
 };
 
 // https://www.wwpdb.org/documentation/file-format-content/format33/sect6.html#SSBOND

@@ -91,7 +91,7 @@ std::pair<double, double> bond::hydrogen::getSigmaEpsilon(
     if (compare("N", 1, "O", -1)) return std::make_pair(1.89, -7.00);
     if (compare("O", 0, "O", -1)) return std::make_pair(1.79, -6.375);
 
-    return std::make_pair(0, 0); //TODO log: non dovrebbe accadere
+    return std::make_pair(0, 0); //TODO log: it should not happen
 }
 
 double bond::hydrogen::energy(
@@ -144,7 +144,7 @@ std::string bond::hydrogen::get_interaction() const
 }
 
 std::string bond::hydrogen::get_type() const
-{ return "hydrogen"; } // TODO va in config
+{ return "hydrogen"; } // TODO config
 
 bond::ionic::ionic(rin::parameters const& params, chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive) :
         computed(
@@ -166,7 +166,7 @@ std::string bond::ionic::get_type() const
 { return "ionic"; }
 
 bond::pication::pication(rin::parameters const& params, chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle) :
-        computed(params, ring.res(), cation.res(), ring.distance(cation), 9.6),// TODO va in config
+        computed(params, ring.res(), cation.res(), ring.distance(cation), 9.6),// TODO add formula
         _cation(cation),
         _ring(ring),
         _angle(angle)
@@ -189,7 +189,7 @@ std::string bond::pication::get_type() const
 
 
 bond::pipistack::pipistack(rin::parameters const& params, chemical_entity::ring const& source_ring, chemical_entity::ring const& target_ring, double angle) :
-        computed(params, source_ring.res(), target_ring.res(), source_ring.distance(target_ring), 9.6), // TODO va in config
+        computed(params, source_ring.res(), target_ring.res(), source_ring.distance(target_ring), 9.6), // TODO add formula
         _source_ring(source_ring),
         _target_ring(target_ring),
         _angle(angle)
@@ -211,7 +211,7 @@ std::string bond::pipistack::get_type() const
 { return "pipistack"; }
 
 bond::ss::ss(records::ss const& record)
-        : base(record.length(), 167), // TODO va in config
+        : base(record.length(), 167), // TODO config
           _source_name(record.name_1()),
           _target_name(record.name_2()),
           _source_chain(record.chain_id_1()),
@@ -233,7 +233,7 @@ std::string bond::ss::id() const
 { return prelude::sort(source_id(), target_id()); }
 
 std::string bond::ss::get_type() const
-{ return "ss"; } // TODO va in config
+{ return "ss"; }
 
 
 double bond::vdw::energy(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom)
@@ -316,7 +316,7 @@ bool bond::vdw::test(network& net, rin::parameters const& params, chemical_entit
     if (a.res().satisfies_minimum_separation(b.res()) &&
         a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= params.surface_dist_vdw())
     {
-        // FIXME qui ne prende il doppio!
+        // FIXME we take the bonds two times
         auto& pb = net.find(a.res(), b.res());
         if (!pb.has_vdw())
             pb.push(*new bond::vdw(params, a, b));

@@ -409,7 +409,7 @@ double chemical_entity::ionic_group::ionion_energy_q() const
     if (_res.name() == "ARG") return 0.260; // * 77;
     if (_res.name() == "GLU") return 0.635; // * 69;
 
-    // TODO exception
+    // TODO exception it should not happen
     return 0;
 }
 

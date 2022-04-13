@@ -37,7 +37,7 @@ private:
 
     parameters() :
             _query_dist_hbond{cfg::params::query_dist_hbond},
-            _surface_dist_vdw{cfg::params::surface_dist_vdw}, // TODO
+            _surface_dist_vdw{cfg::params::surface_dist_vdw},
             _query_dist_ionic{cfg::params::query_dist_ionic},
             _query_dist_pipi{cfg::params::query_dist_pipi},
             _query_dist_pica{cfg::params::query_dist_pica},

@@ -143,7 +143,7 @@ public:
 
     [[nodiscard]]
     explicit operator rin::node() const
-    { return rin::node(*this); } // TODO può diventare un operatore di conversione
+    { return rin::node(*this); } // TODO can become a conversion operator
 
 public:
     void make_secondary_structure();

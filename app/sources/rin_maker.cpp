@@ -260,8 +260,8 @@ rin::graph rin::maker::operator()(parameters const& params) const
         }
 
         // TODO
-        // pensare a un modo per mettere il filtro prima di get_multiple/get_all...
-        // (può essere che tocchi creare una nuova net travasando solo risultati filtrati?)
+        // think of a way to place the filter before get_multiple/get_all...
+        // (maybe it is necessary to create a new net copying only filtered results).
         if (params.hbond_realistic())
             results = _network.filter_hbond_realistic(results);
         break;

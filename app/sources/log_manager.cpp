@@ -57,7 +57,6 @@ void log_manager::insert(string const& id, string const& sink_name)
 
     catch (spdlog::spdlog_ex const& e)
     {
-        // TODO valutare una funzione generale di exception throwing che formatti i messaggi sempre allo stesso modo
         lm.cerr_logger->error("a spdlog exception occurred while inserting \"" + id + "\" using sink \"" + sink_name + "\"\n" + e.what());
     }
 }*/
@@ -82,5 +81,5 @@ void log_manager::initialize(filesystem::path const& log_directory)
 #   else
     lm.main_logger->set_level(spdlog::level::info);
 #   endif
-    // TODO chiamare set_pattern opportunamente
+    // TODO call set_pattern correctly
 }
