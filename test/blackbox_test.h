@@ -7,4 +7,4 @@
 #include "rin_maker.h"
 #include "utils.h"
 
-void setRunningPath(std::filesystem::path exePath);
+void set_running_path(std::filesystem::path exe_path);

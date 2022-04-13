@@ -38,8 +38,8 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
             {
                 if (expected_atoms.size() != found_atoms.size())
                 {
-                    string expected_atoms_str = joinStrings(expected_atoms, ", ");
-                    string found_atoms_str = getNameFromAtoms(found_atoms, ", ");
+                    string expected_atoms_str = joinStrings(expected_atoms, ",");
+                    string found_atoms_str = getNameFromAtoms(found_atoms, ",");
                     string exception_description = "line number: " + std::to_string(line_number) + ", aminoacid: " + name + " - expected aromatic ring: " + expected_atoms_str + ", found: " + found_atoms_str;
                     throw std::invalid_argument(exception_description);
                 }

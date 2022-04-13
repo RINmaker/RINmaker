@@ -262,7 +262,7 @@ std::list<bond::base const*> network::filter_hbond_realistic(std::list<bond::bas
             add_bond(i);
     }
 
-    //Let's make_instance the output list
+    //Let's build the output list
     std::list<bond::base const*> output;
     for (auto i: input)
     {
