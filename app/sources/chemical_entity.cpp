@@ -65,7 +65,7 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
     if (_name == "HIS")
     {
         // HIS has a 5-atoms ring
-        patterns_1 = {"CD", "CE", "CG", "ND", "NE"};
+        patterns_1 = {"CD2", "CE1", "CG", "ND1", "NE2"};
         n_of_rings = 1;
     }
     else if (_name == "PHE" || _name == "TYR")
@@ -77,8 +77,8 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
     else if (_name == "TRP")
     {
         // TRP has both a 6-atoms ring and a 5-atoms ring
-        patterns_1 = {"CD2", "CE2", "CE3", "CH", "CZ2", "CZ3"};
-        patterns_2 = {"CD2", "CE2", "CD1", "CG", "NE"};
+        patterns_1 = {"CD2", "CE2", "CE3", "CH2", "CZ2", "CZ3"};
+        patterns_2 = {"CD2", "CE2", "CD1", "CG", "NE1"};
 
         n_of_rings = 2;
     }
@@ -86,6 +86,13 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
     // note: are they mutually exclusive? should be addressed
     std::vector<atom const*> positive, negative;
     std::vector<atom const*> ring_1, ring_2;
+
+    auto matches = [](std::string const& str, std::vector<std::string> const& alternatives)
+    {
+        return std::any_of(
+                alternatives.begin(), alternatives.end(), [&](std::string const& alt)
+                { return str == alt; });
+    };
 
     for (auto const& record: records)
     {
@@ -98,10 +105,10 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
         else if (a->name() == "CB")
             _beta_carbon = a;
 
-        if (n_of_rings >= 1 && prelude::match(a->name(), patterns_1))
+        if (n_of_rings >= 1 && matches(a->name(), patterns_1))
             ring_1.push_back(a);
 
-        if (n_of_rings == 2 && prelude::match(a->name(), patterns_2))
+        if (n_of_rings == 2 && matches(a->name(), patterns_2))
             ring_2.push_back(a);
 
         if (a->is_in_a_positive_ionic_group())
