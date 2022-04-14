@@ -176,10 +176,12 @@ public:
     ionic(rin::parameters const& params, chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive);
 
     [[nodiscard]]
-    chemical_entity::ionic_group const& positive() const;
+    chemical_entity::ionic_group const& source_positive() const
+    { return _positive; }
 
     [[nodiscard]]
-    chemical_entity::ionic_group const& negative() const;
+    chemical_entity::ionic_group const& target_negative() const
+    { return _negative; }
 
     [[nodiscard]]
     std::string get_interaction() const override;

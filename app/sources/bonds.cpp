@@ -148,16 +148,10 @@ std::string bond::hydrogen::get_type() const
 
 bond::ionic::ionic(rin::parameters const& params, chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive) :
         computed(
-                params, negative.res(), positive.res(), negative.distance(positive), (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))),
+                params, positive.res(), negative.res(), negative.distance(positive), (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))),
         _negative(negative),
         _positive(positive)
 {}
-
-chemical_entity::ionic_group const& bond::ionic::positive() const
-{ return _positive; }
-
-chemical_entity::ionic_group const& bond::ionic::negative() const
-{ return _negative; }
 
 std::string bond::ionic::get_interaction() const
 { return "IONIC:SC_SC"; }

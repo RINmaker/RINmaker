@@ -107,14 +107,14 @@ edge::edge(bond::vdw const& bond) :
 {}
 
 edge::edge(bond::ionic const& bond) :
-        _source(bond.positive().res().id()),
-        _target(bond.negative().res().id()),
+        _source(bond.source().id()),
+        _target(bond.target().id()),
         _distance(std::to_string(bond.get_length())),
         _energy(std::to_string(bond.get_energy())),
         _interaction(bond.get_interaction()),
-        _source_atom(bond.positive().name()),
-        _target_atom(bond.negative().name()),
-        _positive(bond.positive().res().id()),
+        _source_atom(bond.source_positive().name()),
+        _target_atom(bond.target_negative().name()),
+        _positive(bond.source_positive().res().id()),
         _angle(cfg::graphml::null),
         _donor(cfg::graphml::none),
         _cation(cfg::graphml::none),
