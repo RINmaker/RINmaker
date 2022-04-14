@@ -68,6 +68,7 @@ rin::maker::maker(std::string const& pdb_name, std::vector<numbered_line_t>::ite
     auto helix_records = secondary_structure_helper<records::helix>();
 
     vector<records::atom> tmp_atoms;
+    std::vector<chemical_entity::aminoacid*> tmp_aminoacids;
 
     lm::main()->info("parsing pdb lines...");
 
@@ -83,7 +84,7 @@ rin::maker::maker(std::string const& pdb_name, std::vector<numbered_line_t>::ite
             records::atom record(line, line_number);
             if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back()))
             {
-                _aminoacids.push_back(new aminoacid(tmp_atoms, pdb_name));
+                tmp_aminoacids.emplace_back(new aminoacid(tmp_atoms, pdb_name));
                 tmp_atoms.clear();
             }
 
@@ -101,13 +102,13 @@ rin::maker::maker(std::string const& pdb_name, std::vector<numbered_line_t>::ite
     }
 
     if (!tmp_atoms.empty())
-        _aminoacids.push_back(new aminoacid(tmp_atoms, pdb_name));
+        tmp_aminoacids.emplace_back(new aminoacid(tmp_atoms, pdb_name));
 
     lm::main()->info("finding the appropriate secondary structure for each aminoacid...");
 
     if (sheet_records.size() != 0 || helix_records.size() != 0)
     {
-        for (auto& res: _aminoacids)
+        for (auto res: tmp_aminoacids)
         {
             res->make_secondary_structure();
 
@@ -120,6 +121,10 @@ rin::maker::maker(std::string const& pdb_name, std::vector<numbered_line_t>::ite
                 res->make_secondary_structure(helix.value());
         }
     }
+
+    _aminoacids.reserve(tmp_aminoacids.size());
+    for (auto res: tmp_aminoacids)
+        _aminoacids.emplace_back(res);
 
     lm::main()->info("retrieving components from aminoacids...");
 
@@ -284,9 +289,5 @@ rin::graph rin::maker::operator()(parameters const& params) const
 
     lm::main()->info("there are {} valid bonds after filtering", results.size());
 
-    std::vector<chemical_entity::aminoacid const*> aminoacids;
-    for (auto* res: _aminoacids)
-        aminoacids.push_back(res);
-
-    return {_pdb_name, params, aminoacids, results};
+    return {_pdb_name, params, _aminoacids, results};
 }

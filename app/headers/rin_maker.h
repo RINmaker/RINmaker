@@ -29,7 +29,7 @@ typedef std::pair<uint32_t, std::string> numbered_line_t;
 struct maker final
 {
 private:
-    vector<aminoacid*> _aminoacids;
+    vector<aminoacid const*> _aminoacids;
 
     kdtree<atom, 3> _hdonor_tree, _vdw_tree;
     vector<atom const*> _hacceptor_vector, _vdw_vector, _cation_vector;
