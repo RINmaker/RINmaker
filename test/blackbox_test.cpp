@@ -372,6 +372,28 @@ TEST_F(BlackBoxTest, vdw8) {
                source_atom(e) == "OE1" && target_atom(e) == "NE2" &&
                compare_distance(e, 3.49130) && compare_energy(e, -0.18889);
     }));
+
+    /* the following three tests are exactly the three above, but with source<->target inverted.
+     * while there was no specific rule for ordering the two in a vdw bond, now they are decided by
+     * the lexicographic order of the residues' names, for consistency reasons.
+     * the tests should be updated accordingly.
+    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+        return interaction_name(e) == "VDW" && target(e) == "ASN" && source(e) == "ASN" &&
+               target_atom(e) == "ND2" && source_atom(e) == "CB" &&
+               compare_distance(e, 3.74499) && compare_energy(e, -0.10873);
+    }));
+    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+        return interaction_name(e) == "VDW" && target(e) == "GLN" && source(e) == "ASN" &&
+                target_atom(e) == "OE1" && source_atom(e) == "CB" &&
+               compare_distance(e, 1.73218) && compare_energy(e, 2022.14052);
+    }));
+    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+        return interaction_name(e) == "VDW" && target(e) == "GLN" && source(e) == "GLN" &&
+               target_atom(e) == "OE1" && source_atom(e) == "NE2" &&
+               compare_distance(e, 3.49130) && compare_energy(e, -0.18889);
+    }));
+    */
+
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "VDW" && source(e) == "ASN" && target(e) == "GLN" &&
                source_atom(e) == "CB" && target_atom(e) == "NE2" &&
