@@ -242,10 +242,12 @@ public:
     pipistack(rin::parameters const& params, chemical_entity::ring const& source_ring, chemical_entity::ring const& target_ring, double angle);
 
     [[nodiscard]]
-    chemical_entity::ring const& source_ring() const;
+    chemical_entity::ring const& source_ring() const
+    { return _source_ring; }
 
     [[nodiscard]]
-    chemical_entity::ring const& target_ring() const;
+    chemical_entity::ring const& target_ring() const
+    { return _target_ring; }
 
     [[nodiscard]]
     double angle() const;

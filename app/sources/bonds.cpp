@@ -23,6 +23,13 @@ bool bond::base::operator<(base const& rhs) const
 bool bond::base::operator>(base const& rhs) const
 { return rhs < *this; }
 
+using std::pair, std::make_pair;
+
+// TODO memoize?
+template <typename Entity>
+pair<Entity const*, Entity const*> sort_by_res_name(Entity const& a, Entity const& b)
+{ return a.res().name() < b.res().name() ? make_pair(&a, &b) : make_pair(&b, &a); }
+
 bond::computed::computed(rin::parameters const& params, aminoacid const& source, aminoacid const& target, double distance, double energy) :
         base(distance, energy),
         _params(params),
@@ -175,19 +182,22 @@ std::string bond::pication::get_interaction() const
 std::string bond::pication::get_type() const
 { return "pication"; }
 
+bond::pipistack::pipistack(rin::parameters const& params, chemical_entity::ring const& a, chemical_entity::ring const& b, double angle) :
+        computed(
+                params,
 
-bond::pipistack::pipistack(rin::parameters const& params, chemical_entity::ring const& source_ring, chemical_entity::ring const& target_ring, double angle) :
-        computed(params, source_ring.res(), target_ring.res(), source_ring.distance(target_ring), 9.6), // TODO add formula
-        _source_ring(source_ring),
-        _target_ring(target_ring),
+                sort_by_res_name(a, b).first->res(),
+
+                sort_by_res_name(a, b).second->res(),
+
+                a.distance(b),
+                9.6), // TODO add formula
+
+        _source_ring(*sort_by_res_name(a, b).first),
+        _target_ring(*sort_by_res_name(a, b).second),
+
         _angle(angle)
 {}
-
-chemical_entity::ring const& bond::pipistack::source_ring() const
-{ return _source_ring; }
-
-chemical_entity::ring const& bond::pipistack::target_ring() const
-{ return _target_ring; }
 
 double bond::pipistack::angle() const
 { return _angle; }
@@ -246,11 +256,6 @@ double bond::vdw::energy(chemical_entity::atom const& source_atom, chemical_enti
 }
 
 using chemical_entity::atom;
-using std::pair;
-
-// TODO memoize?
-inline pair<atom const*, atom const*> sort_by_res_name(atom const& a, atom const& b)
-{ return a.res().name() < b.res().name() ? std::make_pair(&a, &b) : std::make_pair(&b, &a); }
 
 bond::vdw::vdw(rin::parameters const& params, atom const& a, atom const& b) :
         computed(
