@@ -219,7 +219,7 @@ static void find_bonds(
     static_assert(
             std::is_base_of<component, Entity2>::value, "template typename Entity2 must inherit from type entity::component");
     static_assert(
-            std::is_base_of<bond::computed, Bond>::value, "template typename BondFunc must inherit from type bond::computed");
+            std::is_base_of<bond::base, Bond>::value, "template typename BondFunc must inherit from type bond::base");
 
     for (auto* e1: vec)
     {

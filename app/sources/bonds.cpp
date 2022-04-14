@@ -30,6 +30,7 @@ template <typename Entity>
 pair<Entity const*, Entity const*> sort_by_res_name(Entity const& a, Entity const& b)
 { return a.res().name() < b.res().name() ? make_pair(&a, &b) : make_pair(&b, &a); }
 
+/*
 bond::computed::computed(rin::parameters const& params, aminoacid const& source, aminoacid const& target, double distance, double energy) :
         base(distance, energy),
         _params(params),
@@ -45,14 +46,13 @@ chemical_entity::aminoacid const& bond::computed::source() const
 
 chemical_entity::aminoacid const& bond::computed::target() const
 { return _target; }
+*/
 
-bond::generico::generico(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b)
-        : computed(
-                params,
-                sort_by_res_name(a, b).first->res(),
-                sort_by_res_name(a, b).second->res(),
-                a.res().distance(b.res()),
-                0) // TODO res horribilis
+bond::generico::generico(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b) :
+    base(a.res().distance(b.res()), 0), // TODO
+    _source(sort_by_res_name(a, b).first->res()),
+    _target(sort_by_res_name(a, b).second->res()),
+    _params(params)
 {}
 
 std::string bond::generico::get_interaction() const
@@ -122,7 +122,7 @@ double bond::hydrogen::energy(
 
 bond::hydrogen::hydrogen(
         rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle) :
-        computed(params, acceptor.res(), donor.res(), acceptor.distance(donor), energy(donor, acceptor, hydrogen)),
+        base(acceptor.distance(donor), energy(donor, acceptor, hydrogen)),
         _acceptor(acceptor),
         _donor(donor),
         _hydrogen(hydrogen),
@@ -159,8 +159,9 @@ std::string bond::hydrogen::get_type() const
 { return "hydrogen"; } // TODO config
 
 bond::ionic::ionic(rin::parameters const& params, chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive) :
-        computed(
-                params, positive.res(), negative.res(), negative.distance(positive), (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))),
+        base(
+                negative.distance(positive),
+                (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))),
         _negative(negative),
         _positive(positive)
 {}
@@ -172,7 +173,7 @@ std::string bond::ionic::get_type() const
 { return "ionic"; }
 
 bond::pication::pication(rin::parameters const& params, chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle) :
-        computed(params, ring.res(), cation.res(), ring.distance(cation), 9.6),// TODO add formula
+        base(ring.distance(cation), 9.6),// TODO add formula
         _cation(cation),
         _ring(ring),
         _angle(angle)
@@ -188,15 +189,7 @@ std::string bond::pication::get_type() const
 { return "pication"; }
 
 bond::pipistack::pipistack(rin::parameters const& params, chemical_entity::ring const& a, chemical_entity::ring const& b, double angle) :
-        computed(
-                params,
-
-                sort_by_res_name(a, b).first->res(),
-
-                sort_by_res_name(a, b).second->res(),
-
-                a.distance(b),
-                9.6), // TODO add formula
+        base(a.distance(b), 9.6), // TODO add formula
 
         _source_ring(*sort_by_res_name(a, b).first),
         _target_ring(*sort_by_res_name(a, b).second),
@@ -263,18 +256,11 @@ double bond::vdw::energy(chemical_entity::atom const& source_atom, chemical_enti
 using chemical_entity::atom;
 
 bond::vdw::vdw(rin::parameters const& params, atom const& a, atom const& b) :
-        computed(
-                params,
-
-                sort_by_res_name(a, b).first->res(),
-                sort_by_res_name(a, b).second->res(),
-
+        base(
                 a.distance(b),
-
                 energy(
                         *sort_by_res_name(a, b).first,
                         *sort_by_res_name(a, b).second)),
-
         _source_atom(*sort_by_res_name(a, b).first),
         _target_atom(*sort_by_res_name(a, b).second)
 {}

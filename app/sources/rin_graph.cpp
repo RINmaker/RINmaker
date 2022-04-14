@@ -92,8 +92,8 @@ edge::edge(bond::ss const& bond) :
 {}
 
 edge::edge(bond::vdw const& bond) :
-        _source(bond.source().id()),
-        _target(bond.target().id()),
+        _source(bond.source_atom().res().id()),
+        _target(bond.target_atom().res().id()),
         _distance(std::to_string(bond.get_length())),
         _energy(std::to_string(bond.get_energy())),
         _interaction(bond.get_interaction()),
@@ -107,8 +107,8 @@ edge::edge(bond::vdw const& bond) :
 {}
 
 edge::edge(bond::ionic const& bond) :
-        _source(bond.source().id()),
-        _target(bond.target().id()),
+        _source(bond.source_positive().res().id()),
+        _target(bond.target_negative().res().id()),
         _distance(std::to_string(bond.get_length())),
         _energy(std::to_string(bond.get_energy())),
         _interaction(bond.get_interaction()),
@@ -122,8 +122,8 @@ edge::edge(bond::ionic const& bond) :
 {}
 
 edge::edge(bond::hydrogen const& bond) :
-        _source(bond.source().id()),
-        _target(bond.target().id()),
+        _source(bond.source_atom().res().id()),
+        _target(bond.target_atom().res().id()),
         _distance(std::to_string(bond.get_length())),
         _energy(std::to_string(bond.get_energy())),
         _interaction(bond.get_interaction()),
@@ -152,8 +152,8 @@ edge::edge(bond::pipistack const& bond) :
 {}
 
 edge::edge(bond::pication const& bond) :
-        _source(bond.source().id()),
-        _target(bond.target().id()),
+        _source(bond.source_ring().res().id()),
+        _target(bond.target_cation().res().id()),
         _distance(std::to_string(bond.get_length())),
         _energy(std::to_string(bond.get_energy())),
         _interaction(bond.get_interaction()),
@@ -166,8 +166,7 @@ edge::edge(bond::pication const& bond) :
         _orientation(cfg::graphml::none)
 {}
 
-edge::edge(bond::generico const& bond)
-        :
+edge::edge(bond::generico const& bond) :
         _source(bond.source().id()),
         _target(bond.target().id()),
         _distance(std::to_string(bond.get_length())),

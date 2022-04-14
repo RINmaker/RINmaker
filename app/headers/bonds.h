@@ -54,47 +54,35 @@ public:
     [[nodiscard]]
     virtual std::string get_type() const = 0;
 
+    /*
     [[nodiscard]]
     virtual std::string id() const = 0;
+    */
 
     [[nodiscard]]
     virtual explicit operator rin::edge() const = 0;
 };
 
-class computed : public base
+class generico final : public base
 {
 private:
     chemical_entity::aminoacid const& _source;
     chemical_entity::aminoacid const& _target;
 
-protected:
-    // computed bonds need to store the parameters that generated them
     rin::parameters const _params;
 
-    computed(rin::parameters const& params, chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target, double distance, double energy);
-
-public:
-    ~computed() override = default;
-
-    [[nodiscard]]
-    std::string get_type() const override = 0;
-
-    [[nodiscard]]
-    chemical_entity::aminoacid const& source() const;
-
-    [[nodiscard]]
-    chemical_entity::aminoacid const& target() const;
-
-    [[nodiscard]]
-    std::string id() const override;
-};
-
-class generico final : public computed
-{
 public:
     static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     generico(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
+
+    [[nodiscard]]
+    chemical_entity::aminoacid const& source() const
+    { return _source; }
+
+    [[nodiscard]]
+    chemical_entity::aminoacid const& target() const
+    { return _target; }
 
     [[nodiscard]]
     std::string get_interaction() const override;
@@ -107,7 +95,7 @@ public:
     { return rin::edge(*this); }
 };
 
-class hydrogen final : public computed
+class hydrogen final : public base
 {
 private:
     chemical_entity::atom const& _acceptor;
@@ -164,7 +152,7 @@ public:
     std::string get_type() const override;
 };
 
-class ionic final : public computed
+class ionic final : public base
 {
 private:
     chemical_entity::ionic_group const& _negative;
@@ -194,7 +182,7 @@ public:
     std::string get_type() const override;
 };
 
-class pication : public computed
+class pication : public base
 {
 private:
     chemical_entity::atom const& _cation;
@@ -229,7 +217,7 @@ public:
     std::string get_type() const override;
 };
 
-class pipistack final : public computed
+class pipistack final : public base
 {
 private:
     chemical_entity::ring const& _source_ring;
@@ -291,13 +279,13 @@ public:
     { return rin::edge(*this); }
 
     [[nodiscard]]
-    std::string id() const override;
+    std::string id() const;
 
     [[nodiscard]]
     std::string get_type() const override;
 };
 
-class vdw final : public computed
+class vdw final : public base
 {
 private:
     chemical_entity::atom const& _source_atom;
