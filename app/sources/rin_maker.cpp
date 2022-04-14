@@ -62,7 +62,7 @@ public:
     }
 };
 
-rin::maker::maker(std::string const& pdb_name, std::vector<numbered_line_t>::iterator const begin, std::vector<numbered_line_t>::iterator const end)
+rin::maker::maker(std::string const& pdb_name, std::vector<numbered_line_t>::iterator const begin, std::vector<numbered_line_t>::iterator const end) : _pdb_name(pdb_name)
 {
     auto sheet_records = secondary_structure_helper<records::sheet_piece>();
     auto helix_records = secondary_structure_helper<records::helix>();
@@ -288,8 +288,5 @@ rin::graph rin::maker::operator()(parameters const& params) const
     for (auto* res: _aminoacids)
         aminoacids.push_back(res);
 
-    string graph_name = "G";
-    if(!aminoacids.empty())
-        graph_name = aminoacids[0]->pdb_name();
-    return {graph_name, params, aminoacids, results};
+    return {_pdb_name, params, aminoacids, results};
 }

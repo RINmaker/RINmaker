@@ -46,6 +46,8 @@ private:
     // ss bonds are directly parsed, not computed by us
     std::list<bond::ss const*> _ss_bonds;
 
+    std::string _pdb_name;
+
 public:
     explicit maker(std::string const& pdb_name, std::vector<numbered_line_t>::iterator begin, std::vector<numbered_line_t>::iterator end);
     ~maker();
