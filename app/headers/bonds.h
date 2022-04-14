@@ -206,10 +206,12 @@ public:
     pication(rin::parameters const& params, chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle);
 
     [[nodiscard]]
-    chemical_entity::ring const& ring() const;
+    chemical_entity::ring const& source_ring() const
+    { return _ring; }
 
     [[nodiscard]]
-    chemical_entity::atom const& cation() const;
+    chemical_entity::atom const& target_cation() const
+    { return _cation; }
 
     [[nodiscard]]
     double angle() const;

@@ -172,12 +172,6 @@ bond::pication::pication(rin::parameters const& params, chemical_entity::ring co
         _angle(angle)
 {}
 
-chemical_entity::ring const& bond::pication::ring() const
-{ return _ring; }
-
-chemical_entity::atom const& bond::pication::cation() const
-{ return _cation; }
-
 double bond::pication::angle() const
 { return _angle; }
 
