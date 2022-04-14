@@ -7,6 +7,8 @@
 #include <string>
 #include <list>
 
+#include <optional>
+
 #include <map>
 #include <unordered_map>
 
@@ -46,19 +48,17 @@ public:
     int size() const
     { return _map.size(); }
 
-    // updates the secondary structure of res if res is present
-    void update_if_contains(chemical_entity::aminoacid& res) const
+    std::optional<Record> find(chemical_entity::aminoacid& res) const
     {
         auto chain = _map.find(res.chain_id());
         if (chain != _map.end())
         {
-            auto kv = chain->second.find(
-                    interval<int>(res.sequence_number(), res.sequence_number()));
+            auto kv = chain->second.find(interval<int>(res.sequence_number(), res.sequence_number()));
             if (kv != chain->second.end())
-            {
-                res.make_secondary_structure(kv->second);
-            }
+                return kv->second;
         }
+
+        return std::nullopt;
     }
 };
 
@@ -110,8 +110,14 @@ rin::maker::maker(std::string const& pdb_name, std::vector<numbered_line_t>::ite
         for (auto& res: _aminoacids)
         {
             res->make_secondary_structure();
-            sheet_records.update_if_contains(*res);
-            helix_records.update_if_contains(*res);
+
+            auto sheet = sheet_records.find(*res);
+            if (sheet.has_value())
+                res->make_secondary_structure(sheet.value());
+
+            auto helix = helix_records.find(*res);
+            if(helix.has_value())
+                res->make_secondary_structure(helix.value());
         }
     }
 
