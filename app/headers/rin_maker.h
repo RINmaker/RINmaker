@@ -43,6 +43,9 @@ private:
     kdtree<atom, 3> _alpha_carbon_tree, _beta_carbon_tree;
     vector<atom const*> _alpha_carbon_vector, _beta_carbon_vector;
 
+    // ss bonds are directly parsed, not computed by us
+    std::list<bond::ss const*> _ss_bonds;
+
 public:
     explicit maker(std::string const& pdb_name, std::vector<numbered_line_t>::iterator begin, std::vector<numbered_line_t>::iterator end);
     ~maker();

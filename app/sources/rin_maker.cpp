@@ -96,11 +96,8 @@ rin::maker::maker(std::string const& pdb_name, std::vector<numbered_line_t>::ite
         else if (record_type == "SHEET")
             sheet_records.insert(records::sheet_piece(line, line_number));
 
-        /*
-        else if (record_type == "SSBOND") {
-            _rin_network.new_bond<bonds::ss>(records::ss(line));
-        }
-        */
+        else if (record_type == "SSBOND")
+            _ss_bonds.emplace_back(new bond::ss(records::ss(line, line_number)));
     }
 
     if (!tmp_atoms.empty())
