@@ -46,8 +46,13 @@ chemical_entity::aminoacid const& bond::computed::source() const
 chemical_entity::aminoacid const& bond::computed::target() const
 { return _target; }
 
-bond::generico::generico(rin::parameters const& params, aminoacid const& source, aminoacid const& target)
-        : computed(params, source, target, source.distance(target), 0) // TODO res horribilis
+bond::generico::generico(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b)
+        : computed(
+                params,
+                sort_by_res_name(a, b).first->res(),
+                sort_by_res_name(a, b).second->res(),
+                a.res().distance(b.res()),
+                0) // TODO res horribilis
 {}
 
 std::string bond::generico::get_interaction() const
@@ -388,7 +393,7 @@ bool bond::generico::test(network& net, rin::parameters const& params, chemical_
     {
         auto& pb = net.find(a.res(), b.res());
         if (!pb.has_backbone())
-            pb.push(*new bond::generico(params, a.res(), b.res()));
+            pb.push(*new bond::generico(params, a, b));
 
         return true;
     }

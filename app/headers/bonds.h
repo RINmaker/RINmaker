@@ -94,7 +94,7 @@ class generico final : public computed
 public:
     static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
-    generico(rin::parameters const& params, chemical_entity::aminoacid const& source, chemical_entity::aminoacid const& target);
+    generico(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     [[nodiscard]]
     std::string get_interaction() const override;
