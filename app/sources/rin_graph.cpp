@@ -152,14 +152,14 @@ edge::edge(bond::pipistack const& bond) :
 {}
 
 edge::edge(bond::pication const& bond) :
-        _source(bond.ring().res().id()),
-        _target(bond.cation().res().id()),
+        _source(bond.source().id()),
+        _target(bond.target().id()),
         _distance(std::to_string(bond.get_length())),
         _energy(std::to_string(bond.get_energy())),
         _interaction(bond.get_interaction()),
-        _source_atom(bond.ring().name()),
-        _target_atom(bond.cation().name()),
-        _cation(bond.cation().res().id()),
+        _source_atom(bond.source_ring().name()),
+        _target_atom(bond.target_cation().name()),
+        _cation(bond.target_cation().res().id()),
         _angle(std::to_string(bond.angle())),
         _donor(cfg::graphml::none),
         _positive(cfg::graphml::none),
