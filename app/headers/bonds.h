@@ -302,13 +302,15 @@ private:
 public:
     static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
-    vdw(rin::parameters const& params, chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
+    vdw(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     [[nodiscard]]
-    chemical_entity::atom const& source_atom() const;
+    chemical_entity::atom const& source_atom() const
+    { return _source_atom; }
 
     [[nodiscard]]
-    chemical_entity::atom const& target_atom() const;
+    chemical_entity::atom const& target_atom() const
+    { return _target_atom; }
 
     [[nodiscard]]
     std::string get_interaction() const override;

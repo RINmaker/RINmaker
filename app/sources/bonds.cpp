@@ -257,18 +257,29 @@ double bond::vdw::energy(chemical_entity::atom const& source_atom, chemical_enti
     return 4 * epsilon * (sigma_distance_12 - sigma_distance_6);
 }
 
-bond::vdw::vdw(rin::parameters const& params, chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom) :
+using chemical_entity::atom;
+using std::pair;
+
+// TODO memoize?
+inline pair<atom const*, atom const*> sort_by_res_name(atom const& a, atom const& b)
+{ return a.res().name() < b.res().name() ? std::make_pair(&a, &b) : std::make_pair(&b, &a); }
+
+bond::vdw::vdw(rin::parameters const& params, atom const& a, atom const& b) :
         computed(
-                params, source_atom.res(), target_atom.res(), source_atom.distance(target_atom), energy(source_atom, target_atom)),  // TODO config
-        _source_atom(source_atom),
-        _target_atom(target_atom)
+                params,
+
+                sort_by_res_name(a, b).first->res(),
+                sort_by_res_name(a, b).second->res(),
+
+                a.distance(b),
+
+                energy(
+                        *sort_by_res_name(a, b).first,
+                        *sort_by_res_name(a, b).second)),
+
+        _source_atom(*sort_by_res_name(a, b).first),
+        _target_atom(*sort_by_res_name(a, b).second)
 {}
-
-chemical_entity::atom const& bond::vdw::source_atom() const
-{ return _source_atom; }
-
-chemical_entity::atom const& bond::vdw::target_atom() const
-{ return _target_atom; }
 
 std::string bond::vdw::get_interaction() const
 {

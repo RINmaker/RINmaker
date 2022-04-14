@@ -92,8 +92,8 @@ edge::edge(bond::ss const& bond) :
 {}
 
 edge::edge(bond::vdw const& bond) :
-        _source(bond.source_atom().res().id()),
-        _target(bond.target_atom().res().id()),
+        _source(bond.source().id()),
+        _target(bond.target().id()),
         _distance(std::to_string(bond.get_length())),
         _energy(std::to_string(bond.get_energy())),
         _interaction(bond.get_interaction()),
