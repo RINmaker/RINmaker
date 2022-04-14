@@ -121,15 +121,14 @@ edge::edge(bond::ionic const& bond) :
         _orientation(cfg::graphml::none)
 {}
 
-edge::edge(bond::hydrogen const& bond)
-        :
-        _source(bond.acceptor().res().id()),
-        _target(bond.donor().res().id()),
+edge::edge(bond::hydrogen const& bond) :
+        _source(bond.source().id()),
+        _target(bond.target().id()),
         _distance(std::to_string(bond.get_length())),
         _energy(std::to_string(bond.get_energy())),
         _interaction(bond.get_interaction()),
-        _source_atom(bond.acceptor().name()),
-        _target_atom(bond.donor().name()),
+        _source_atom(bond.source_atom().name()),
+        _target_atom(bond.target_atom().name()),
         _angle(std::to_string(bond.get_angle())),
         _donor(bond.donor().res().id()),
         _cation(cfg::graphml::none),

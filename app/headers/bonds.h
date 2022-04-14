@@ -134,6 +134,14 @@ public:
     chemical_entity::atom const& donor() const;
 
     [[nodiscard]]
+    chemical_entity::atom const& source_atom() const
+    { return acceptor(); }
+
+    [[nodiscard]]
+    chemical_entity::atom const& target_atom() const
+    { return donor(); }
+
+    [[nodiscard]]
     chemical_entity::atom const* acceptor_ptr() const;
 
     [[nodiscard]]
