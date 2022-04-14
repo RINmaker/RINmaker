@@ -114,7 +114,7 @@ private:
 public:
     static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor);
 
-    hydrogen(rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle);
+    hydrogen(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle);
 
     [[nodiscard]]
     chemical_entity::atom const& acceptor() const;
@@ -165,7 +165,7 @@ private:
 public:
     static bool test(network& net, rin::parameters const& params, chemical_entity::ionic_group const& a, chemical_entity::ionic_group const& b);
 
-    ionic(rin::parameters const& params, chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive);
+    ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive);
 
     [[nodiscard]]
     chemical_entity::ionic_group const& source_positive() const
@@ -200,7 +200,7 @@ private:
 public:
     static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& cation, chemical_entity::ring const& ring);
 
-    pication(rin::parameters const& params, chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle);
+    pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle);
 
     [[nodiscard]]
     chemical_entity::ring const& source_ring() const
@@ -237,7 +237,7 @@ private:
 public:
     static bool test(network& net, rin::parameters const& params, chemical_entity::ring const& a, chemical_entity::ring const& b);
 
-    pipistack(rin::parameters const& params, chemical_entity::ring const& source_ring, chemical_entity::ring const& target_ring, double angle);
+    pipistack(chemical_entity::ring const& a, chemical_entity::ring const& b, double angle);
 
     [[nodiscard]]
     chemical_entity::ring const& source_ring() const
@@ -309,7 +309,7 @@ private:
 public:
     static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
-    vdw(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
+    vdw(chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     [[nodiscard]]
     chemical_entity::atom const& source_atom() const

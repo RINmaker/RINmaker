@@ -120,8 +120,7 @@ double bond::hydrogen::energy(
     return 4 * epsilon * (sigma_distance_12 - sigma_distance_10);
 }
 
-bond::hydrogen::hydrogen(
-        rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle) :
+bond::hydrogen::hydrogen(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle) :
         base(acceptor.distance(donor), energy(donor, acceptor, hydrogen)),
         _acceptor(acceptor),
         _donor(donor),
@@ -158,7 +157,7 @@ std::string bond::hydrogen::get_interaction() const
 std::string bond::hydrogen::get_type() const
 { return "hydrogen"; } // TODO config
 
-bond::ionic::ionic(rin::parameters const& params, chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive) :
+bond::ionic::ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive) :
         base(
                 negative.distance(positive),
                 (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))),
@@ -172,7 +171,7 @@ std::string bond::ionic::get_interaction() const
 std::string bond::ionic::get_type() const
 { return "ionic"; }
 
-bond::pication::pication(rin::parameters const& params, chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle) :
+bond::pication::pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle) :
         base(ring.distance(cation), 9.6),// TODO add formula
         _cation(cation),
         _ring(ring),
@@ -188,7 +187,7 @@ std::string bond::pication::get_interaction() const
 std::string bond::pication::get_type() const
 { return "pication"; }
 
-bond::pipistack::pipistack(rin::parameters const& params, chemical_entity::ring const& a, chemical_entity::ring const& b, double angle) :
+bond::pipistack::pipistack(chemical_entity::ring const& a, chemical_entity::ring const& b, double angle) :
         base(a.distance(b), 9.6), // TODO add formula
 
         _source_ring(*sort_by_res_name(a, b).first),
@@ -255,7 +254,7 @@ double bond::vdw::energy(chemical_entity::atom const& source_atom, chemical_enti
 
 using chemical_entity::atom;
 
-bond::vdw::vdw(rin::parameters const& params, atom const& a, atom const& b) :
+bond::vdw::vdw(atom const& a, atom const& b) :
         base(
                 a.distance(b),
                 energy(
@@ -296,7 +295,7 @@ bool bond::hydrogen::test(network& net, rin::parameters const& params, chemical_
 
                 if (angle_adh <= cfg::params::hbond_angle) // 63
                 {
-                    net.find(acceptor.res(), donor.res()).push(*new bond::hydrogen(params, acceptor, donor, h, angle_ahd));
+                    net.find(acceptor.res(), donor.res()).push(*new bond::hydrogen(acceptor, donor, h, angle_ahd));
                     return true;
                 }
             }
@@ -326,7 +325,7 @@ bool bond::vdw::test(network& net, rin::parameters const& params, chemical_entit
         // FIXME we take the bonds two times
         auto& pb = net.find(a.res(), b.res());
         if (!pb.has_vdw())
-            pb.push(*new bond::vdw(params, a, b));
+            pb.push(*new bond::vdw(a, b));
         return true;
     }
 
@@ -350,7 +349,7 @@ bool bond::ionic::test(network& net, rin::parameters const& params, chemical_ent
 {
     if (negative.res().satisfies_minimum_separation(positive.res()) && negative.charge() == -positive.charge())
     {
-        net.find(negative.res(), positive.res()).push(*new bond::ionic(params, negative, positive));
+        net.find(negative.res(), positive.res()).push(*new bond::ionic(negative, positive));
         return true;
     }
 
@@ -378,7 +377,7 @@ bool bond::pication::test(network& net, rin::parameters const& params, chemical_
 
         if (theta >= cfg::params::pication_angle) // 45
         {
-            net.find(ring.res(), cation.res()).push(*new bond::pication(params, ring, cation, theta));
+            net.find(ring.res(), cation.res()).push(*new bond::pication(ring, cation, theta));
             return true;
         }
     }
@@ -413,7 +412,7 @@ bool bond::pipistack::test(network& net, rin::parameters const& params, chemical
     {
         auto& pb = net.find(a.res(), b.res());
         if (!pb.has_pipi())
-            pb.push(*new pipistack(params, a, b, nn));
+            pb.push(*new pipistack(a, b, nn));
 
         return true;
     }
