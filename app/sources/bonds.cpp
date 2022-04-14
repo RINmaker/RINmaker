@@ -225,7 +225,7 @@ std::string bond::ss::target_id() const
 std::string bond::ss::get_interaction() const
 { return "SSBOND:SC_SC"; } // TODO config
 
-std::string bond::ss::id() const
+std::string bond::ss::get_id() const
 { return prelude::concat_lexicographically(source_id(), target_id()); }
 
 std::string bond::ss::get_type() const
@@ -306,6 +306,18 @@ bool bond::hydrogen::test(network& net, rin::parameters const& params, chemical_
     return false;
 }
 
+std::string bond::hydrogen::get_id() const
+{
+    return "HYDROGEN:" +
+           source_atom().res().name() +
+           ":" +
+           source_atom().name() +
+           ":" +
+           target_atom().res().name() +
+           ":" +
+           target_atom().name();
+}
+
 bool bond::vdw::test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b)
 {
     if (a.res().satisfies_minimum_separation(b.res()) &&
@@ -321,6 +333,18 @@ bool bond::vdw::test(network& net, rin::parameters const& params, chemical_entit
     return false;
 }
 
+std::string bond::vdw::get_id() const
+{
+    return "VDW:" +
+        source_atom().res().name() +
+        ":" +
+        source_atom().name() +
+        ":" +
+        target_atom().res().name() +
+        ":" +
+        target_atom().name();
+}
+
 
 bool bond::ionic::test(network& net, rin::parameters const& params, chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive)
 {
@@ -331,6 +355,18 @@ bool bond::ionic::test(network& net, rin::parameters const& params, chemical_ent
     }
 
     return false;
+}
+
+std::string bond::ionic::get_id() const
+{
+    return "IONIC:" +
+           source_positive().res().name() +
+           ":" +
+           source_positive().name() +
+           ":" +
+           target_negative().res().name() +
+           ":" +
+           target_negative().name();
 }
 
 
@@ -348,6 +384,18 @@ bool bond::pication::test(network& net, rin::parameters const& params, chemical_
     }
 
     return false;
+}
+
+std::string bond::pication::get_id() const
+{
+    return "PICATION:" +
+           source_ring().res().name() +
+           ":" +
+           source_ring().name() +
+           ":" +
+           target_cation().res().name() +
+           ":" +
+           target_cation().name();
 }
 
 bool bond::pipistack::test(network& net, rin::parameters const& params, chemical_entity::ring const& a, chemical_entity::ring const& b)
@@ -373,6 +421,18 @@ bool bond::pipistack::test(network& net, rin::parameters const& params, chemical
     return false;
 }
 
+std::string bond::pipistack::get_id() const
+{
+    return "PIPISTACK:" +
+        source_ring().res().name() +
+        ":" +
+        source_ring().name() +
+        ":" +
+        target_ring().res().name() +
+        ":" +
+        target_ring().name();
+}
+
 bool bond::generico::test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b)
 {
     if (a.res().satisfies_minimum_separation(b.res()))
@@ -385,4 +445,12 @@ bool bond::generico::test(network& net, rin::parameters const& params, chemical_
     }
 
     return false;
+}
+
+std::string bond::generico::get_id() const
+{
+    return "GENERICO:" +
+           source().name() +
+           ":" +
+           target().name();
 }
