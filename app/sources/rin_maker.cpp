@@ -16,11 +16,11 @@
 #include "rin_params.h"
 #include "bonds.h"
 
-using std::list;
-using std::string;
-using std::unordered_map;
-using std::map;
-using std::function;
+using std::string, std::function, std::optional, std::shared_ptr;
+using std::list, std::vector, std::map, std::unordered_map;
+using std::is_base_of;
+
+using rin::parameters;
 
 template<typename Record>
 class secondary_structure_helper final
@@ -211,46 +211,69 @@ rin::maker::~maker()
 using chemical_entity::component;
 
 template<typename Bond, typename Entity1, typename Entity2>
-static void find_bonds(
-        network& net, std::vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double dist, rin::parameters const& params)
+list<shared_ptr<Bond const>> find_bonds(vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double dist, parameters const& params)
 {
     static_assert(
-            std::is_base_of<component, Entity1>::value, "template typename Entity1 must inherit from type entity::component");
+            is_base_of<component, Entity1>::value, "template typename Entity1 must inherit from type chemical_entity::component");
     static_assert(
-            std::is_base_of<component, Entity2>::value, "template typename Entity2 must inherit from type entity::component");
+            is_base_of<component, Entity2>::value, "template typename Entity2 must inherit from type chemical_entity::component");
     static_assert(
-            std::is_base_of<bond::base, Bond>::value, "template typename BondFunc must inherit from type bond::base");
+            is_base_of<bond::base, Bond>::value, "template typename BondFunc must inherit from type bond::base");
 
-    for (auto* e1: vec)
+    list<shared_ptr<Bond const>> bonds;
+    for (auto e1 : vec)
     {
         auto neighbors = tree.range_search(*e1, dist);
-        for (auto* e2: neighbors)
-            Bond::test(net, params, *e1, *e2);
+        for (auto e2 : neighbors)
+        {
+            auto bond = Bond::test(params, *e1, *e2);
+            if(bond != nullptr)
+                bonds.emplace_back(bond);
+        }
     }
+    return bonds;
 }
 
 rin::graph rin::maker::operator()(parameters const& params) const
 {
     network _network;
 
-    list<bond::base const*> results;
+    list<shared_ptr<bond::base const>> results;
     switch (params.interaction_type())
     {
     case parameters::interaction_type_t::NONCOVALENT_BONDS:
-        find_bonds<bond::hydrogen>(
-                _network, _hacceptor_vector, _hdonor_tree, params.query_dist_hbond(), params);
+    {
+        auto hydrogen_bonds= find_bonds<bond::hydrogen>(_hacceptor_vector, _hdonor_tree, params.query_dist_hbond(), params);
+        for (auto const& b : hydrogen_bonds)
+            _network.find(b->acceptor().res(), b->donor().res()).push(b);
 
-        find_bonds<bond::vdw>(
-                _network, _vdw_vector, _vdw_tree, params.query_dist_vdw(), params);
+        auto vdw_bonds = find_bonds<bond::vdw>(_vdw_vector, _vdw_tree, params.query_dist_vdw(), params);
+        for (auto const& b : vdw_bonds)
+        {
+            // FIXME this is a long-standing bug arising from rin::network
+            // it will be kept just for testing, until we will replace the former with appropriate filters
+            auto& pb = _network.find(b->source_atom().res(), b->target_atom().res());
+            if (!pb.has_vdw())
+                pb.push(b);
+        }
 
-        find_bonds<bond::ionic>(
-                _network, _negative_ion_vector, _positive_ion_tree, params.query_dist_ionic(), params);
+        auto ionic_bonds= find_bonds<bond::ionic>(_negative_ion_vector, _positive_ion_tree, params.query_dist_ionic(), params);
+        for (auto const& b : ionic_bonds)
+            _network.find(b->target_negative().res(), b->source_positive().res()).push(b);
 
-        find_bonds<bond::pication>(
-                _network, _cation_vector, _pication_ring_tree, params.query_dist_pica(), params);
+        auto cationpi_bonds= find_bonds<bond::pication>(_cation_vector, _pication_ring_tree, params.query_dist_pica(), params);
+        for (auto const& b : cationpi_bonds)
+            _network.find(b->source_ring().res(), b->target_cation().res()).push(b);
 
-        find_bonds<bond::pipistack>(
-                _network, _ring_vector, _ring_tree, params.query_dist_pipi(), params);
+        auto pipistack_bonds= find_bonds<bond::pipistack>(_ring_vector, _ring_tree, params.query_dist_pipi(), params);
+        for (auto const& b : pipistack_bonds)
+        {
+            // FIXME this is a long-standing bug arising from rin::network
+            // it will be kept just for testing, until we will replace the former with appropriate filters
+            auto& pb = _network.find(b->source_ring().res(), b->target_ring().res());
+            if (!pb.has_pipi())
+                pb.push(b);
+        }
 
         switch (params.network_policy())
         {
@@ -272,19 +295,39 @@ rin::graph rin::maker::operator()(parameters const& params) const
         // (maybe it is necessary to create a new net copying only filtered results).
         if (params.hbond_realistic())
             results = _network.filter_hbond_realistic(results);
+
         break;
+    }
 
     case parameters::interaction_type_t::ALPHA_BACKBONE:
-        find_bonds<bond::generico>(
-                _network, _alpha_carbon_vector, _alpha_carbon_tree, params.query_dist_alpha(), params);
+    {
+        auto alpha_bonds= find_bonds<bond::generico>(_alpha_carbon_vector, _alpha_carbon_tree, params.query_dist_alpha(), params);
+        for (auto const& b : alpha_bonds)
+        {
+            // FIXME this is a long-standing bug arising from rin::network
+            // it will be kept just for testing, until we will replace the former with appropriate filters
+            auto& pb = _network.find(b->source(), b->target());
+            if (!pb.has_backbone())
+                pb.push(b);
+        }
         results = _network.get_one();
         break;
+    }
 
     case parameters::interaction_type_t::BETA_BACKBONE:
-        find_bonds<bond::generico>(
-                _network, _beta_carbon_vector, _beta_carbon_tree, params.query_dist_beta(), params);
+    {
+        auto beta_bonds= find_bonds<bond::generico>(_beta_carbon_vector, _beta_carbon_tree, params.query_dist_beta(), params);
+        for (auto const& b : beta_bonds)
+        {
+            // FIXME this is a long-standing bug arising from rin::network
+            // it will be kept just for testing, until we will replace the former with appropriate filters
+            auto& pb = _network.find(b->source(), b->target());
+            if (!pb.has_backbone())
+                pb.push(b);
+        }
         results = _network.get_one();
         break;
+    }
     }
 
     lm::main()->info("there are {} valid bonds after filtering", results.size());

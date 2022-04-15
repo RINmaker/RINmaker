@@ -256,7 +256,7 @@ string vdw::get_interaction() const
 string vdw::get_type() const
 { return "vdw"; }
 
-bool hydrogen::test(network& net, parameters const& params, atom const& acceptor, atom const& donor)
+std::shared_ptr<hydrogen const> hydrogen::test(parameters const& params, atom const& acceptor, atom const& donor)
 {
     if (acceptor.res().satisfies_minimum_separation(donor.res()))
     {
@@ -274,15 +274,12 @@ bool hydrogen::test(network& net, parameters const& params, atom const& acceptor
                 double angle_ahd = geom::angle<3>(ha, hd);
 
                 if (angle_adh <= cfg::params::hbond_angle) // 63
-                {
-                    net.find(acceptor.res(), donor.res()).push(*new bond::hydrogen(acceptor, donor, h, angle_ahd));
-                    return true;
-                }
+                    return std::make_shared<hydrogen const>(acceptor, donor, h, angle_ahd);
             }
         }
     }
 
-    return false;
+    return nullptr;
 }
 
 string hydrogen::get_id() const
@@ -297,19 +294,11 @@ string hydrogen::get_id() const
            target_atom().name();
 }
 
-bool vdw::test(network& net, parameters const& params, atom const& a, atom const& b)
+std::shared_ptr<vdw const> vdw::test(parameters const& params, atom const& a, atom const& b)
 {
-    if (a.res().satisfies_minimum_separation(b.res()) &&
-        a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= params.surface_dist_vdw())
-    {
-        // FIXME we take the bonds two times
-        auto& pb = net.find(a.res(), b.res());
-        if (!pb.has_vdw())
-            pb.push(*new bond::vdw(a, b));
-        return true;
-    }
-
-    return false;
+    if (a.res().satisfies_minimum_separation(b.res()) && a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= params.surface_dist_vdw())
+        return std::make_shared<vdw const>(a, b);
+    return nullptr;
 }
 
 string vdw::get_id() const
@@ -325,15 +314,12 @@ string vdw::get_id() const
 }
 
 
-bool ionic::test(network& net, parameters const& params, ionic_group const& negative, ionic_group const& positive)
+std::shared_ptr<ionic const> ionic::test(parameters const& params, ionic_group const& negative, ionic_group const& positive)
 {
     if (negative.res().satisfies_minimum_separation(positive.res()) && negative.charge() == -positive.charge())
-    {
-        net.find(negative.res(), positive.res()).push(*new bond::ionic(negative, positive));
-        return true;
-    }
+        return std::make_shared<ionic const>(negative, positive);
 
-    return false;
+    return nullptr;
 }
 
 string ionic::get_id() const
@@ -349,20 +335,16 @@ string ionic::get_id() const
 }
 
 
-bool pication::test(network& net, parameters const& params, atom const& cation, ring const& ring)
+std::shared_ptr<pication const> pication::test(parameters const& params, atom const& cation, ring const& ring)
 {
     if (ring.res().satisfies_minimum_separation(cation.res(), params.sequence_separation()))
     {
         double theta = 90 - geom::d_angle<3>(ring.normal(), (array<double, 3>) (ring - cation));
-
         if (theta >= cfg::params::pication_angle) // 45
-        {
-            net.find(ring.res(), cation.res()).push(*new bond::pication(ring, cation, theta));
-            return true;
-        }
+            return std::make_shared<pication const>(ring, cation, theta);
     }
 
-    return false;
+    return nullptr;
 }
 
 string pication::get_id() const
@@ -377,7 +359,7 @@ string pication::get_id() const
            target_cation().name();
 }
 
-bool pipistack::test(network& net, parameters const& params, ring const& a, ring const& b)
+std::shared_ptr<pipistack const> pipistack::test(parameters const& params, ring const& a, ring const& b)
 {
     double nc1 = a.angle_between_normal_and_centres_joining(b);
     double nc2 = b.angle_between_normal_and_centres_joining(a);
@@ -389,15 +371,9 @@ bool pipistack::test(network& net, parameters const& params, ring const& a, ring
         ((0 <= nc1 && nc1 <= cfg::params::pipistack_normal_centre_angle_range) ||
          (0 <= nc2 && nc2 <= cfg::params::pipistack_normal_centre_angle_range)) &&
         mn <= cfg::params::max_pipi_atom_atom_distance)
-    {
-        auto& pb = net.find(a.res(), b.res());
-        if (!pb.has_pipi())
-            pb.push(*new pipistack(a, b, nn));
+    { return std::make_shared<pipistack const>(a, b, nn); }
 
-        return true;
-    }
-
-    return false;
+    return nullptr;
 }
 
 string pipistack::get_id() const
@@ -412,18 +388,11 @@ string pipistack::get_id() const
         target_ring().name();
 }
 
-bool generico::test(network& net, parameters const& params, atom const& a, atom const& b)
+std::shared_ptr<generico const> generico::test(parameters const& params, atom const& a, atom const& b)
 {
     if (a.res().satisfies_minimum_separation(b.res()))
-    {
-        auto& pb = net.find(a.res(), b.res());
-        if (!pb.has_backbone())
-            pb.push(*new bond::generico(params, a, b));
-
-        return true;
-    }
-
-    return false;
+        return  std::make_shared<generico const>(params, a, b);;
+    return nullptr;
 }
 
 string generico::get_id() const

@@ -161,7 +161,7 @@ private:
     vector<edge> _edges;
 
 public:
-    graph(string name, parameters const& params, vector<aminoacid const*> const& aminoacids, list<bond::base const*> const& bonds);
+    graph(string name, parameters const& params, vector<aminoacid const*> const& aminoacids, list<std::shared_ptr<bond::base const>> const& bonds);
 
     void write_to_file(fs::path const& out_path) const;
 

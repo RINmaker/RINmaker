@@ -70,7 +70,7 @@ private:
     rin::parameters const _params;
 
 public:
-    static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
+    static std::shared_ptr<generico const> test(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     generico(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
@@ -112,7 +112,7 @@ private:
     double energy(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor, chemical_entity::atom const* hydrogen);
 
 public:
-    static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor);
+    static std::shared_ptr<hydrogen const> test(rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor);
 
     hydrogen(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle);
 
@@ -163,7 +163,7 @@ private:
     chemical_entity::ionic_group const& _positive;
 
 public:
-    static bool test(network& net, rin::parameters const& params, chemical_entity::ionic_group const& a, chemical_entity::ionic_group const& b);
+    static std::shared_ptr<ionic const> test(rin::parameters const& params, chemical_entity::ionic_group const& a, chemical_entity::ionic_group const& b);
 
     ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive);
 
@@ -198,7 +198,7 @@ private:
     double _angle;
 
 public:
-    static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& cation, chemical_entity::ring const& ring);
+    static std::shared_ptr<pication const> test(rin::parameters const& params, chemical_entity::atom const& cation, chemical_entity::ring const& ring);
 
     pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle);
 
@@ -235,7 +235,7 @@ private:
     double const _angle;
 
 public:
-    static bool test(network& net, rin::parameters const& params, chemical_entity::ring const& a, chemical_entity::ring const& b);
+    static std::shared_ptr<pipistack const> test(rin::parameters const& params, chemical_entity::ring const& a, chemical_entity::ring const& b);
 
     pipistack(chemical_entity::ring const& a, chemical_entity::ring const& b, double angle);
 
@@ -307,7 +307,7 @@ private:
     double energy(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
 
 public:
-    static bool test(network& net, rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
+    static std::shared_ptr<vdw const> test(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     vdw(chemical_entity::atom const& a, chemical_entity::atom const& b);
 
