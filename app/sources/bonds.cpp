@@ -3,7 +3,6 @@
 #include <utility>
 
 #include "chemical_entity.h"
-#include "rin_network.h"
 
 using chemical_entity::aminoacid, chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group;
 using rin::parameters;
@@ -29,13 +28,13 @@ bool base::operator>(base const& rhs) const
 
 // TODO memoize?
 template <typename Entity>
-pair<Entity const*, Entity const*> sort_by_res_name(Entity const& a, Entity const& b)
-{ return a.res().name() < b.res().name() ? make_pair(&a, &b) : make_pair(&b, &a); }
+pair<Entity const*, Entity const*> sort_by_res_id(Entity const& a, Entity const& b)
+{ return a.res().id() < b.res().id() ? make_pair(&a, &b) : make_pair(&b, &a); }
 
 generico::generico(parameters const& params, atom const& a, atom const& b) :
     base(a.res().distance(b.res()), 0), // TODO
-    _source(sort_by_res_name(a, b).first->res()),
-    _target(sort_by_res_name(a, b).second->res()),
+    _source(sort_by_res_id(a, b).first->res()),
+    _target(sort_by_res_id(a, b).second->res()),
     _params(params)
 {}
 
@@ -172,8 +171,8 @@ string pication::get_type() const
 pipistack::pipistack(ring const& a, ring const& b, double angle) :
         base(a.distance(b), 9.6), // TODO add formula
 
-        _source_ring(*sort_by_res_name(a, b).first),
-        _target_ring(*sort_by_res_name(a, b).second),
+        _source_ring(*sort_by_res_id(a, b).first),
+        _target_ring(*sort_by_res_id(a, b).second),
 
         _angle(angle)
 {}
@@ -207,7 +206,7 @@ string ss::get_interaction() const
 { return "SSBOND:SC_SC"; } // TODO config
 
 string ss::get_id() const
-{ return prelude::concat_lexicographically(source_id(), target_id()); }
+{ return source_id() + ":" + target_id(); }
 
 string ss::get_type() const
 { return "ss"; }
@@ -238,11 +237,11 @@ vdw::vdw(atom const& a, atom const& b) :
         base(
                 a.distance(b),
                 energy(
-                        *sort_by_res_name(a, b).first,
-                        *sort_by_res_name(a, b).second)),
+                        *sort_by_res_id(a, b).first,
+                        *sort_by_res_id(a, b).second)),
 
-        _source_atom(*sort_by_res_name(a, b).first),
-        _target_atom(*sort_by_res_name(a, b).second)
+        _source_atom(*sort_by_res_id(a, b).first),
+        _target_atom(*sort_by_res_id(a, b).second)
 {}
 
 string vdw::get_interaction() const
@@ -285,11 +284,11 @@ std::shared_ptr<hydrogen const> hydrogen::test(parameters const& params, atom co
 string hydrogen::get_id() const
 {
     return "HYDROGEN:" +
-           source_atom().res().name() +
+           source_atom().res().id() +
            ":" +
            source_atom().name() +
            ":" +
-           target_atom().res().name() +
+           target_atom().res().id() +
            ":" +
            target_atom().name();
 }
@@ -304,11 +303,11 @@ std::shared_ptr<vdw const> vdw::test(parameters const& params, atom const& a, at
 string vdw::get_id() const
 {
     return "VDW:" +
-        source_atom().res().name() +
+        source_atom().res().id() +
         ":" +
         source_atom().name() +
         ":" +
-        target_atom().res().name() +
+        target_atom().res().id() +
         ":" +
         target_atom().name();
 }
@@ -325,11 +324,11 @@ std::shared_ptr<ionic const> ionic::test(parameters const& params, ionic_group c
 string ionic::get_id() const
 {
     return "IONIC:" +
-           source_positive().res().name() +
+           source_positive().res().id() +
            ":" +
            source_positive().name() +
            ":" +
-           target_negative().res().name() +
+           target_negative().res().id() +
            ":" +
            target_negative().name();
 }
@@ -350,11 +349,11 @@ std::shared_ptr<pication const> pication::test(parameters const& params, atom co
 string pication::get_id() const
 {
     return "PICATION:" +
-           source_ring().res().name() +
+           source_ring().res().id() +
            ":" +
            source_ring().name() +
            ":" +
-           target_cation().res().name() +
+           target_cation().res().id() +
            ":" +
            target_cation().name();
 }
@@ -379,11 +378,11 @@ std::shared_ptr<pipistack const> pipistack::test(parameters const& params, ring 
 string pipistack::get_id() const
 {
     return "PIPISTACK:" +
-        source_ring().res().name() +
+        source_ring().res().id() +
         ":" +
         source_ring().name() +
         ":" +
-        target_ring().res().name() +
+        target_ring().res().id() +
         ":" +
         target_ring().name();
 }
@@ -398,7 +397,7 @@ std::shared_ptr<generico const> generico::test(parameters const& params, atom co
 string generico::get_id() const
 {
     return "GENERICO:" +
-           source().name() +
+           source().id() +
            ":" +
-           target().name();
+           target().id();
 }
