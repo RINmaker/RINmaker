@@ -206,7 +206,7 @@ string ss::get_interaction() const
 { return "SSBOND:SC_SC"; } // TODO config
 
 string ss::get_id() const
-{ return source_id() + ":" + target_id(); }
+{ return get_id_simple(); }
 
 string ss::get_type() const
 { return "ss"; }
@@ -283,12 +283,9 @@ std::shared_ptr<hydrogen const> hydrogen::test(parameters const& params, atom co
 
 string hydrogen::get_id() const
 {
-    return "HYDROGEN:" +
-           source_atom().res().id() +
+    return get_id_simple() +
            ":" +
            source_atom().name() +
-           ":" +
-           target_atom().res().id() +
            ":" +
            target_atom().name();
 }
@@ -302,12 +299,9 @@ std::shared_ptr<vdw const> vdw::test(parameters const& params, atom const& a, at
 
 string vdw::get_id() const
 {
-    return "VDW:" +
-        source_atom().res().id() +
+    return get_id_simple() +
         ":" +
         source_atom().name() +
-        ":" +
-        target_atom().res().id() +
         ":" +
         target_atom().name();
 }
@@ -323,12 +317,9 @@ std::shared_ptr<ionic const> ionic::test(parameters const& params, ionic_group c
 
 string ionic::get_id() const
 {
-    return "IONIC:" +
-           source_positive().res().id() +
+    return get_id_simple() +
            ":" +
            source_positive().name() +
-           ":" +
-           target_negative().res().id() +
            ":" +
            target_negative().name();
 }
@@ -348,12 +339,9 @@ std::shared_ptr<pication const> pication::test(parameters const& params, atom co
 
 string pication::get_id() const
 {
-    return "PICATION:" +
-           source_ring().res().id() +
+    return get_id_simple() +
            ":" +
            source_ring().name() +
-           ":" +
-           target_cation().res().id() +
            ":" +
            target_cation().name();
 }
@@ -377,12 +365,9 @@ std::shared_ptr<pipistack const> pipistack::test(parameters const& params, ring 
 
 string pipistack::get_id() const
 {
-    return "PIPISTACK:" +
-        source_ring().res().id() +
+    return get_id_simple() +
         ":" +
         source_ring().name() +
-        ":" +
-        target_ring().res().id() +
         ":" +
         target_ring().name();
 }
@@ -396,8 +381,58 @@ std::shared_ptr<generico const> generico::test(parameters const& params, atom co
 
 string generico::get_id() const
 {
+    return get_id_simple();
+}
+
+string generico::get_id_simple() const
+{
     return "GENERICO:" +
            source().id() +
            ":" +
            target().id();
+}
+
+string pipistack::get_id_simple() const
+{
+    return "PIPISTACK:" +
+           source_ring().res().id() +
+           ":" +
+           target_ring().res().id();
+}
+
+string pication::get_id_simple() const
+{
+    return "PICATION:" +
+           source_ring().res().id() +
+           ":" +
+           target_cation().res().id();
+}
+
+string hydrogen::get_id_simple() const
+{
+    return "HYDROGEN:" +
+           source_atom().res().id() +
+           ":" +
+           target_atom().res().id();
+}
+
+string vdw::get_id_simple() const
+{
+    return "VDW:" +
+           source_atom().res().id() +
+           ":" +
+           target_atom().res().id();
+}
+
+string ionic::get_id_simple() const
+{
+    return "IONIC:" +
+           source_positive().res().id() +
+           ":" +
+           target_negative().res().id();
+}
+
+string ss::get_id_simple() const
+{
+    return "SS:" + source_id() + ":" + target_id();
 }

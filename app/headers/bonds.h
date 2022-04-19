@@ -58,6 +58,9 @@ public:
     virtual std::string get_id() const = 0;
 
     [[nodiscard]]
+    virtual std::string get_id_simple() const = 0;
+
+    [[nodiscard]]
     virtual explicit operator rin::edge() const = 0;
 };
 
@@ -90,6 +93,9 @@ public:
 
     [[nodiscard]]
     std::string get_id() const override;
+
+    [[nodiscard]]
+    virtual std::string get_id_simple() const override;
 
     [[nodiscard]]
     explicit operator rin::edge() const override
@@ -149,6 +155,9 @@ public:
     std::string get_id() const override;
 
     [[nodiscard]]
+    virtual std::string get_id_simple() const override;
+
+    [[nodiscard]]
     explicit operator rin::edge() const override
     { return rin::edge(*this); }
 
@@ -187,6 +196,9 @@ public:
 
     [[nodiscard]]
     std::string get_id() const override;
+
+    [[nodiscard]]
+    virtual std::string get_id_simple() const override;
 };
 
 class pication : public base
@@ -225,6 +237,9 @@ public:
 
     [[nodiscard]]
     std::string get_id() const override;
+
+    [[nodiscard]]
+    virtual std::string get_id_simple() const override;
 };
 
 class pipistack final : public base
@@ -262,6 +277,9 @@ public:
 
     [[nodiscard]]
     std::string get_id() const override;
+
+    [[nodiscard]]
+    virtual std::string get_id_simple() const override;
 };
 
 class ss final : public base
@@ -293,6 +311,9 @@ public:
 
     [[nodiscard]]
     std::string get_id() const override;
+
+    [[nodiscard]]
+    virtual std::string get_id_simple() const override;
 
     [[nodiscard]]
     std::string get_type() const override;
@@ -331,5 +352,8 @@ public:
 
     [[nodiscard]]
     std::string get_id() const override;
+
+    [[nodiscard]]
+    virtual std::string get_id_simple() const override;
 };
 }
