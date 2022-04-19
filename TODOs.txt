@@ -16,8 +16,6 @@ TODO:
 
 WIP:
 - cambiare estensione di output e mettere output di default se non viene specificato
-- rimuovere rin_network in favore di filtri dentro a rin_maker::operator ()(rin::parameters const&)
-    status: rin::network non ha più un ruolo fondamentale, sarà sufficiente implementare i filtri necessari
 - tag multipli => multiple run su multiple proteine (lore)
     status: la lettura del file adesso avviene fuori da rin_maker, aspetto le indicazioni da jacopo per sapere dove "spezzare" le righe
 - Documento contenete la lista e il risultato atteso dei test (Jacopo)
@@ -32,3 +30,4 @@ DONE:
 - Unificare palette di xrmol (xrmol diventerà simile a quello di Francesco) (Francesco)
 - Rimuovere qualunque tipo di stato globale
 - Dare un nome ai graphml uscenti perchè ora si chiamano tutti G
+- rimuovere rin_network in favore di filtri dentro a rin_maker::operator ()(rin::parameters const&)
