@@ -12,7 +12,6 @@
 #include <map>
 #include <unordered_map>
 
-#include "rin_network.h"
 #include "rin_params.h"
 #include "bonds.h"
 
@@ -98,7 +97,7 @@ rin::maker::maker(std::string const& pdb_name, std::vector<numbered_line_t>::ite
             sheet_records.insert(records::sheet_piece(line, line_number));
 
         else if (record_type == "SSBOND")
-            _ss_bonds.emplace_back(new bond::ss(records::ss(line, line_number)));
+            _ss_bonds.emplace_back(std::make_shared<bond::ss>(records::ss(line, line_number)));
     }
 
     if (!tmp_atoms.empty())
@@ -236,7 +235,7 @@ vector<shared_ptr<Bond const>> find_bonds(vector<Entity1 const*> const& vec, kdt
 }
 
 
-std::list<shared_ptr<bond::base const>> filter_hbond_realistic(std::list<shared_ptr<bond::base const>> const& input)
+vector<shared_ptr<bond::base const>> filter_hbond_realistic(vector<shared_ptr<bond::base const>> const& input)
 {
     std::set<shared_ptr<bond::hydrogen const>> hydrogen_bonds_output;
     std::vector<shared_ptr<bond::hydrogen const>> hydrogen_bonds_input;
@@ -299,7 +298,7 @@ std::list<shared_ptr<bond::base const>> filter_hbond_realistic(std::list<shared_
     }
 
     //Let's build the output list
-    std::list<shared_ptr<bond::base const>> output;
+    vector<shared_ptr<bond::base const>> output;
     for (auto i: input)
     {
         //Insert i into the output if it is not an hydrogen or if it is in the filtered list
@@ -309,68 +308,126 @@ std::list<shared_ptr<bond::base const>> filter_hbond_realistic(std::list<shared_
             output.push_back(i);
         }
     }
+
     return output;
 }
 
+using std::set, std::unordered_map;
+
+template <typename Bond>
+vector<shared_ptr<Bond const>> remove_duplicates(vector<shared_ptr<Bond const>> const& unfiltered)
+{
+    vector<shared_ptr<Bond const>> results;
+    results.reserve(unfiltered.size());
+
+    set<string> unique_ids;
+    for (auto const& b : unfiltered)
+    {
+        auto const bond_id = b->get_id();
+        if (unique_ids.find(bond_id) == unique_ids.end())
+        {
+            unique_ids.insert(bond_id);
+            results.push_back(b);
+        }
+    }
+
+    return results;
+}
+
+template <typename Bond>
+vector<shared_ptr<Bond const>> filter_best(vector<shared_ptr<Bond const>> const& unfiltered)
+{
+    vector<shared_ptr<Bond const>> results;
+    results.reserve(unfiltered.size());
+
+    unordered_map<string, shared_ptr<Bond const>> res_pairs;
+    for (auto const& b : unfiltered)
+    {
+        auto const pair_id = b->get_id_simple();
+        auto const pair = res_pairs.find(pair_id);
+        if (pair == res_pairs.end() || *b < *pair->second)
+            res_pairs.insert_or_assign(pair_id, b);
+    }
+
+    for (auto const& pair : res_pairs)
+        results.push_back(pair.second);
+
+    return results;
+}
+
+template <typename Bond>
+void append(vector<shared_ptr<bond::base const>>& dst, vector<shared_ptr<Bond const>> const& src)
+{ dst.insert(dst.end(), src.begin(), src.end()); }
+
 rin::graph rin::maker::operator()(parameters const& params) const
 {
-    network _network;
-
-    list<shared_ptr<bond::base const>> results;
+    vector<shared_ptr<bond::base const>> results;
     switch (params.interaction_type())
     {
     case parameters::interaction_type_t::NONCOVALENT_BONDS:
     {
-        auto hydrogen_bonds= find_bonds<bond::hydrogen>(_hacceptor_vector, _hdonor_tree, params.query_dist_hbond(), params);
-        for (auto const& b : hydrogen_bonds)
-            _network.find(b->acceptor().res(), b->donor().res()).push(b);
+        auto const hydrogen_bonds= find_bonds<bond::hydrogen>(
+                _hacceptor_vector,
+                _hdonor_tree,
+                params.query_dist_hbond(),
+                params);
 
-        auto vdw_bonds = find_bonds<bond::vdw>(_vdw_vector, _vdw_tree, params.query_dist_vdw(), params);
-        for (auto const& b : vdw_bonds)
-        {
-            // FIXME this is a long-standing bug arising from rin::network
-            // it will be kept just for testing, until we will replace the former with appropriate filters
-            auto& pb = _network.find(b->source_atom().res(), b->target_atom().res());
-            if (!pb.has_vdw())
-                pb.push(b);
-        }
+        auto const vdw_bonds = find_bonds<bond::vdw>(
+                _vdw_vector,
+                _vdw_tree,
+                params.query_dist_vdw(),
+                params);
 
-        auto ionic_bonds= find_bonds<bond::ionic>(_negative_ion_vector, _positive_ion_tree, params.query_dist_ionic(), params);
-        for (auto const& b : ionic_bonds)
-            _network.find(b->target_negative().res(), b->source_positive().res()).push(b);
+        auto const ionic_bonds= find_bonds<bond::ionic>(
+                _negative_ion_vector,
+                _positive_ion_tree,
+                params.query_dist_ionic(),
+                params);
 
-        auto cationpi_bonds= find_bonds<bond::pication>(_cation_vector, _pication_ring_tree, params.query_dist_pica(), params);
-        for (auto const& b : cationpi_bonds)
-            _network.find(b->source_ring().res(), b->target_cation().res()).push(b);
+        auto const cationpi_bonds= find_bonds<bond::pication>(
+                _cation_vector,
+                _pication_ring_tree,
+                params.query_dist_pica(),
+                params);
 
-        auto pipistack_bonds= find_bonds<bond::pipistack>(_ring_vector, _ring_tree, params.query_dist_pipi(), params);
-        for (auto const& b : pipistack_bonds)
-        {
-            // FIXME this is a long-standing bug arising from rin::network
-            // it will be kept just for testing, until we will replace the former with appropriate filters
-            auto& pb = _network.find(b->source_ring().res(), b->target_ring().res());
-            if (!pb.has_pipi())
-                pb.push(b);
-        }
+        auto const pipistack_bonds= find_bonds<bond::pipistack>(
+                _ring_vector,
+                _ring_tree,
+                params.query_dist_pipi(),
+                params);
 
         switch (params.network_policy())
         {
         case parameters::network_policy_t::ALL:
-            results = _network.get_all();
-            break;
-
-        case parameters::network_policy_t::BEST_PER_TYPE:
-            results = _network.get_multiple();
+            append(results,hydrogen_bonds);
+            append(results,vdw_bonds);
+            append(results,ionic_bonds);
+            append(results,cationpi_bonds);
+            append(results,pipistack_bonds);
+            append(results,_ss_bonds);
             break;
 
         case parameters::network_policy_t::BEST_ONE:
-            results = _network.get_one();
+            append(results,hydrogen_bonds);
+            append(results,vdw_bonds);
+            append(results,ionic_bonds);
+            append(results,cationpi_bonds);
+            append(results,pipistack_bonds);
+            append(results,_ss_bonds);
+
+            results = filter_best(results);
+            break;
+
+        case parameters::network_policy_t::BEST_PER_TYPE:
+            append(results, filter_best(hydrogen_bonds));
+            append(results, filter_best(vdw_bonds));
+            append(results, filter_best(ionic_bonds));
+            append(results, filter_best(cationpi_bonds));
+            append(results, filter_best(pipistack_bonds));
+            append(results, filter_best(_ss_bonds));
             break;
         }
 
-        // TODO
-        // think of a way to place the filter before get_multiple/get_all...
-        // (maybe it is necessary to create a new net copying only filtered results).
         if (params.hbond_realistic())
             results = filter_hbond_realistic(results);
 
@@ -379,35 +436,30 @@ rin::graph rin::maker::operator()(parameters const& params) const
 
     case parameters::interaction_type_t::ALPHA_BACKBONE:
     {
-        auto alpha_bonds= find_bonds<bond::generico>(_alpha_carbon_vector, _alpha_carbon_tree, params.query_dist_alpha(), params);
-        for (auto const& b : alpha_bonds)
-        {
-            // FIXME this is a long-standing bug arising from rin::network
-            // it will be kept just for testing, until we will replace the former with appropriate filters
-            auto& pb = _network.find(b->source(), b->target());
-            if (!pb.has_backbone())
-                pb.push(b);
-        }
-        results = _network.get_one();
+        auto alpha_bonds= find_bonds<bond::generico>(
+                _alpha_carbon_vector,
+                _alpha_carbon_tree,
+                params.query_dist_alpha(),
+                params);
+
+        append(results, filter_best(filter_best(alpha_bonds)));
         break;
     }
 
     case parameters::interaction_type_t::BETA_BACKBONE:
     {
-        auto beta_bonds= find_bonds<bond::generico>(_beta_carbon_vector, _beta_carbon_tree, params.query_dist_beta(), params);
-        for (auto const& b : beta_bonds)
-        {
-            // FIXME this is a long-standing bug arising from rin::network
-            // it will be kept just for testing, until we will replace the former with appropriate filters
-            auto& pb = _network.find(b->source(), b->target());
-            if (!pb.has_backbone())
-                pb.push(b);
-        }
-        results = _network.get_one();
+        auto beta_bonds= find_bonds<bond::generico>(
+                _beta_carbon_vector,
+                _beta_carbon_tree,
+                params.query_dist_beta(),
+                params);
+
+        append(results, filter_best(filter_best(beta_bonds)));
         break;
     }
     }
 
+    results = remove_duplicates(results);
     lm::main()->info("there are {} valid bonds after filtering", results.size());
 
     return {_pdb_name, params, _aminoacids, results};

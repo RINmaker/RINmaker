@@ -11,7 +11,7 @@
 using namespace rin;
 using chemical_entity::aminoacid;
 
-graph::graph(string name, rin::parameters const& params, vector<aminoacid const*> const& aminoacids, list<std::shared_ptr<bond::base const>> const& bonds) : _name(std::move(name)), _params(params)
+graph::graph(string name, rin::parameters const& params, vector<aminoacid const*> const& aminoacids, vector<std::shared_ptr<bond::base const>> const& bonds) : _name(std::move(name)), _params(params)
 {
     for (auto a: aminoacids)
     {

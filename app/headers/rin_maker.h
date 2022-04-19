@@ -44,7 +44,7 @@ private:
     vector<atom const*> _alpha_carbon_vector, _beta_carbon_vector;
 
     // ss bonds are directly parsed, not computed by us
-    std::list<bond::ss const*> _ss_bonds;
+    vector<std::shared_ptr<bond::ss const>> _ss_bonds;
 
     std::string _pdb_name;
 
