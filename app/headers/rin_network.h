@@ -98,5 +98,4 @@ public:
 
     std::list<std::shared_ptr<bond::base const>> get_multiple() const;
 
-    std::list<std::shared_ptr<bond::base const>> filter_hbond_realistic(std::list<std::shared_ptr<bond::base const>> const& input) const;
 };
