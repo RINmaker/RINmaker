@@ -413,7 +413,9 @@ string hydrogen::get_id_simple() const
     return "HYDROGEN:" +
            source_atom().res().id() +
            ":" +
-           target_atom().res().id();
+           target_atom().res().id() +
+           ":" +
+           hydrogen_ptr()->name();
 }
 
 string vdw::get_id_simple() const
