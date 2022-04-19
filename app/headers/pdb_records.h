@@ -4,7 +4,6 @@
 #include <array>
 
 #include "prelude.h"
-#include "utils/interval.h"
 
 namespace records {
     template<size_t N, typename Derived>
@@ -122,7 +121,7 @@ namespace records {
         }
 
         [[nodiscard]]
-        interval<int> range() const { return {init_seq_number(), end_seq_number()}; }
+        prelude::interval<int> range() const { return {init_seq_number(), end_seq_number()}; }
 
         [[nodiscard]]
         int serial() const { return std::stoi(_fields[1]); }
@@ -169,7 +168,7 @@ namespace records {
         }
 
         [[nodiscard]]
-        interval<int> range() const { return {init_seq_number(), end_seq_number()}; }
+        prelude::interval<int> range() const { return {init_seq_number(), end_seq_number()}; }
 
         [[nodiscard]]
         int incremental_strand_number() const { return std::stoi(_fields[1]); }

@@ -1,7 +1,6 @@
 #include "rin_maker.h"
 
 #include <functional>
-#include <fstream>
 #include <exception>
 
 #include <string>
@@ -20,6 +19,8 @@ using std::list, std::vector, std::map, std::unordered_map;
 using std::is_base_of;
 
 using rin::parameters;
+
+using prelude::interval;
 
 template<typename Record>
 class secondary_structure_helper final
