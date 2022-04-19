@@ -211,7 +211,7 @@ rin::maker::~maker()
 using chemical_entity::component;
 
 template<typename Bond, typename Entity1, typename Entity2>
-list<shared_ptr<Bond const>> find_bonds(vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double dist, parameters const& params)
+vector<shared_ptr<Bond const>> find_bonds(vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double dist, parameters const& params)
 {
     static_assert(
             is_base_of<component, Entity1>::value, "template typename Entity1 must inherit from type chemical_entity::component");
@@ -220,7 +220,7 @@ list<shared_ptr<Bond const>> find_bonds(vector<Entity1 const*> const& vec, kdtre
     static_assert(
             is_base_of<bond::base, Bond>::value, "template typename BondFunc must inherit from type bond::base");
 
-    list<shared_ptr<Bond const>> bonds;
+    vector<shared_ptr<Bond const>> bonds;
     for (auto e1 : vec)
     {
         auto neighbors = tree.range_search(*e1, dist);
@@ -231,6 +231,7 @@ list<shared_ptr<Bond const>> find_bonds(vector<Entity1 const*> const& vec, kdtre
                 bonds.emplace_back(bond);
         }
     }
+
     return bonds;
 }
 
