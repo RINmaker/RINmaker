@@ -33,30 +33,19 @@ pair<Entity const*, Entity const*> sort_by_res_id(Entity const& a, Entity const&
 
 generic_bond::generic_bond(parameters const& params, atom const& a, atom const& b) :
         base(a.res().distance(b.res()), 0), // TODO
-        _source(sort_by_res_id(a, b).first->res()),
-        _target(sort_by_res_id(a, b).second->res()),
-        _params(params)
+        _source(*sort_by_res_id(a, b).first),
+        _target(*sort_by_res_id(a, b).second)
 {}
+
+chemical_entity::aminoacid const& generic_bond::source() const
+{ return _source.res(); }
+
+chemical_entity::aminoacid const& generic_bond::target() const
+{ return _target.res(); }
 
 string generic_bond::get_interaction() const
 {
-    string get_interaction = "GENERIC:";
-    switch (_params.interaction_type())
-    {
-    case parameters::interaction_type_t::ALPHA_BACKBONE:
-        get_interaction += "CA";
-        break;
-
-    case parameters::interaction_type_t::BETA_BACKBONE:
-        get_interaction += "CB";
-        break;
-
-    case parameters::interaction_type_t::NONCOVALENT_BONDS:
-        get_interaction += "CLOSEST";
-        break;
-    }
-
-    return get_interaction;
+    return "GENERIC:" + _source.name();
 }
 
 string generic_bond::get_type() const

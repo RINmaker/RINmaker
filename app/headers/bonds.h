@@ -66,10 +66,8 @@ public:
 class generic_bond final : public base
 {
 private:
-    chemical_entity::aminoacid const& _source;
-    chemical_entity::aminoacid const& _target;
-
-    rin::parameters const _params;
+    chemical_entity::atom const& _source;
+    chemical_entity::atom const& _target;
 
 public:
     static std::shared_ptr<generic_bond const> test(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
@@ -77,12 +75,10 @@ public:
     generic_bond(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     [[nodiscard]]
-    chemical_entity::aminoacid const& source() const
-    { return _source; }
+    chemical_entity::aminoacid const& source() const;
 
     [[nodiscard]]
-    chemical_entity::aminoacid const& target() const
-    { return _target; }
+    chemical_entity::aminoacid const& target() const;
 
     [[nodiscard]]
     std::string get_interaction() const override;
