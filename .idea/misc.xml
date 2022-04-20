@@ -11,7 +11,11 @@
     <excludeRoots>
       <file path="$PROJECT_DIR$/build" />
       <file path="$PROJECT_DIR$/cmake-build-debug" />
+      <file path="$PROJECT_DIR$/cmake-build-debug-mingw" />
+      <file path="$PROJECT_DIR$/cmake-build-debug-visual-studio" />
       <file path="$PROJECT_DIR$/cmake-build-release" />
+      <file path="$PROJECT_DIR$/cmake-build-release-mingw" />
+      <file path="$PROJECT_DIR$/cmake-build-release-visual-studio" />
     </excludeRoots>
   </component>
 </project>
