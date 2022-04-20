@@ -45,7 +45,7 @@ public:
     }
 
     [[nodiscard]]
-    int size() const
+    size_t size() const
     { return _map.size(); }
 
     std::optional<Record> find(chemical_entity::aminoacid& res) const
