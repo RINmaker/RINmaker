@@ -7,14 +7,13 @@ TODO:
 - Documentare la modalità test nel readme principale, e specificare i due target di cmake
 - Testare i parametri da riga di comando
 - Rivedere costanti di energia (Jacopo)
-- TODO mancano unita di misura sulla ui
-- Mettere pication
-- Pipi stiamo aspettanto la formula da Cedrix e Achille
+- mancano unita di misura sulla ui (Francesco)
 - Aprire qualche issue
 - Controllare che le formule dell'energia diano i risultati tutti nella stessa U.M. (kj o kcal)
 - UI avere la conversione tra kj e kcal
 
 WIP:
+- implementare il nuovo calcolo dell'energia per Pication e Pipi (lore)
 - cambiare estensione di output e mettere output di default se non viene specificato
 - tag multipli => multiple run su multiple proteine (lore)
     status: la lettura del file adesso avviene fuori da rin_maker, aspetto le indicazioni da jacopo per sapere dove "spezzare" le righe
@@ -31,3 +30,4 @@ DONE:
 - Rimuovere qualunque tipo di stato globale
 - Dare un nome ai graphml uscenti perchè ora si chiamano tutti G
 - rimuovere rin_network in favore di filtri dentro a rin_maker::operator ()(rin::parameters const&)
+- Pipi stiamo aspettanto la formula da Cedrix e Achille
