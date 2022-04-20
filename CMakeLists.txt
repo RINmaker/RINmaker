@@ -40,10 +40,5 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(spdlog)
 
-option(USE_DEBUG "enter debug mode" OFF)
-if (USE_DEBUG)
-    add_definitions(-DDEBUG)
-endif()
-
 add_subdirectory(app)
 add_subdirectory(test)

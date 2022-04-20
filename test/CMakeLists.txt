@@ -6,6 +6,7 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/RINmaker/googletest.git
         GIT_TAG release-1.11.0
 )
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 file(GLOB SRCS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
