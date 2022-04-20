@@ -188,7 +188,7 @@ bool chemical_entity::atom::is_a_cation() const
     std::string res_name = res().name();
 
     return (res_name == "LYS" && name() == "NZ") ||
-           (res_name == "ARG" && name() == "NH") ||
+           (res_name == "ARG" && name() == "NH2") ||
            (res_name == "HIS" && name() == "ND1");
 }
 
