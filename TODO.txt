@@ -15,8 +15,6 @@ TODO:
 
 WIP:
 - implementare il nuovo calcolo dell'energia per Pication e Pipi (lore)
-- cambiare estensione di output e mettere output di default se non viene specificato
-- consolidare e verificare la cli (lore)
 - "model" multipli => multiple run (lore)
 - Documento contenete la lista e il risultato atteso dei test (Jacopo)
 - Lanciare eccezione in casi unexpected (Ad esempio nei ring accediamo con [0] [1])
@@ -31,3 +29,5 @@ DONE:
 - Rimuovere qualunque tipo di stato globale
 - Dare un nome ai graphml uscenti perchè ora si chiamano tutti G
 - rimuovere rin_network in favore di filtri dentro a rin_maker::operator ()(rin::parameters const&)
+- consolidare e verificare la cli (lore)
+- cambiare estensione di output e mettere output di default se non viene specificato
