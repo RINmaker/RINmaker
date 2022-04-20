@@ -2,6 +2,8 @@
 
 using namespace std;
 
+namespace fs = std::filesystem;
+
 string app_full_name()
 {
     using namespace cfg::ver;
@@ -50,34 +52,35 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
     app.get_formatter()->column_width(48);
 
     filesystem::path pdb_path;
-    app.add_option("path-to-pdb", pdb_path, "path to PDB (.pdb) input")
+    app.add_option("pdb", pdb_path, "Path to PDB file (.pdb)")
        ->required()
        ->check(CLI::ExistingFile);
 
     filesystem::path log_dir = cfg::log::default_dirname;
-    app.add_option("-l,--log", log_dir, "log directory")
+    app.add_option("-l,--log-dir", log_dir, "Log directory")
        ->default_str(cfg::log::default_dirname);
 
-    filesystem::path out_name;
-    app.add_option("-o,--output", out_name, "path to graphml (.xml) output");
+    filesystem::path out_dir = cfg::graphml::default_dirname;
+    app.add_option("-o,--out-dir", out_dir, "Output directory")
+        ->default_str(cfg::graphml::default_dirname);
 
     int sequence_separation;
-    app.add_option("--seq-sep", sequence_separation, "sequence separation")
+    app.add_option("--seq-sep", sequence_separation, "Minimum sequence separation")
        ->default_val(cfg::params::seq_sep);
 
     string network_policy;
-    app.add_option("--network-policy", network_policy, "all, multiple, one")
+    app.add_option("--network-policy", network_policy, "Available options: all, multiple, one")
        ->default_val("all")
        ->check(
                [](string const& str)->string
                {
                    return str != "all" && str != "multiple" && str != "one"
-                          ? string(R"(must be "all", "multiple", "one" but you entered ")" + str + "\"")
+                          ? string(R"(must be "all", "multiple" or "one" but you entered ")" + str + "\"")
                           : "";
                });
 
     string interaction_type;
-    app.add_option("--interaction-type", interaction_type, "closest, ca or cb")
+    app.add_option("--interaction-type", interaction_type, "Available options: closest, ca, cb")
        ->default_val("closest")
        ->check(
                [](string const& str)->string
@@ -94,32 +97,32 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
     };
 
     double h_distance;
-    app.add_option("--h-bond", h_distance, "maximum distance for h bonds")
+    app.add_option("--hydrogen-bond", h_distance, "Query distance for hydrogen bonds")
        ->default_val(cfg::params::query_dist_hbond)
        ->check(positive_check);
 
     double vdw_distance;
-    app.add_option("--vdw-bond", vdw_distance, "maximum distance for vdw bonds")
+    app.add_option("--vdw-bond", vdw_distance, "Surface distance for vdw bonds")
        ->default_val(cfg::params::surface_dist_vdw)
        ->check(positive_check);
 
     double ionic_distance;
-    app.add_option("--ionic-bond", ionic_distance, "maximum distance for ionic bonds")
+    app.add_option("--ionic-bond", ionic_distance, "Query distance for ionic bonds")
        ->default_val(cfg::params::query_dist_ionic)
        ->check(positive_check);
 
     double generic_distance;
-    app.add_option("--generic-bond", generic_distance, "maximum distance for generic bonds")
+    app.add_option("--generic-bond", generic_distance, "Query distance for generic bonds")
        ->default_val(cfg::params::query_dist_alpha)
        ->check(positive_check);
 
     double pication_distance;
-    app.add_option("--pication-bond", pication_distance, "maximum distance for pication bonds")
+    app.add_option("--pication-bond", pication_distance, "Query distance for cation-pi bonds")
        ->default_val(cfg::params::query_dist_pica)
        ->check(positive_check);
 
     double pipistack_distance;
-    app.add_option("--pipistack-bond", pipistack_distance, "maximum distance for pipistack bonds")
+    app.add_option("--pipistack-bond", pipistack_distance, "Query distance for pi-pi stackings")
        ->default_val(cfg::params::query_dist_pipi)
        ->check(positive_check);
 
@@ -128,22 +131,22 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
 
     // advanced params
     double hbond_angle;
-    app.add_option("--h-bond-angle", hbond_angle, "angle for h bonds")
+    app.add_option("--h-bond-angle", hbond_angle, "Angle for hydrogen bonds")
        ->default_val(cfg::params::hbond_angle)
        ->check(positive_check);
 
     double pication_angle;
-    app.add_option("--pication-angle", pication_angle, "angle for pication bonds")
+    app.add_option("--pication-angle", pication_angle, "Angle for cation-pi bonds")
        ->default_val(cfg::params::pication_angle)
        ->check(positive_check);
 
     double pipistack_normal_normal_angle_range;
-    app.add_option("--pipistack-normal-normal", pipistack_normal_normal_angle_range, "angle range from normal to normal for pipistack bonds")
+    app.add_option("--pipistack-normal-normal", pipistack_normal_normal_angle_range, "Angle range from normal to normal for pi-pi stackings")
        ->default_val(cfg::params::pipistack_normal_normal_angle_range)
        ->check(positive_check);
 
     double pipistack_normal_centre_angle_range;
-    app.add_option("--pipistack-normal-centre", pipistack_normal_centre_angle_range, "angle range from normal to centre for pipistack bonds")
+    app.add_option("--pipistack-normal-centre", pipistack_normal_centre_angle_range, "Angle range from normal to centre for pi-pi stackings")
        ->default_val(cfg::params::pipistack_normal_centre_angle_range)
        ->check(positive_check);
 
@@ -178,15 +181,15 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
     else if (interaction_type == "closest")
         pcfg.set_interaction_type(rin::parameters::interaction_type_t::NONCOVALENT_BONDS);
     else
-        throw std::runtime_error("incorrect interaction type argument: \"" + interaction_type + "\"");
+        throw runtime_error("incorrect interaction type argument: \"" + interaction_type + "\"");
 
-    std::filesystem::create_directory(log_dir);
+    fs::create_directory(log_dir);
     log_manager::initialize(log_dir);
 
     auto params = pcfg.build();
 
-    std::filesystem::create_directory(cfg::graphml::default_dirname);
-    auto out_path = std::filesystem::path(cfg::graphml::default_dirname) / out_name;
+    fs::create_directory(out_dir);
+    auto out_path = out_dir / pdb_path.filename().replace_extension(".graphml");
 
     result = arguments{params, pdb_path, out_path, log_dir};
     return true;
