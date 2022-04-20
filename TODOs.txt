@@ -5,7 +5,6 @@ TODO:
 - SHEET Specificare che usiamo il calcolo di giacometti e non le info nel pdb (Nella documentazione)
 - Scrivere un readme documentativo con la descrizione di cosa fa il programma
 - Documentare la modalità test nel readme principale, e specificare i due target di cmake
-- Testare i parametri da riga di comando
 - Rivedere costanti di energia (Jacopo)
 - TODO mancano unita di misura sulla ui
 - Mettere pication
@@ -16,6 +15,7 @@ TODO:
 
 WIP:
 - cambiare estensione di output e mettere output di default se non viene specificato
+- Testare i parametri da riga di comando
 - tag multipli => multiple run su multiple proteine (lore)
     status: la lettura del file adesso avviene fuori da rin_maker, aspetto le indicazioni da jacopo per sapere dove "spezzare" le righe
 - Documento contenete la lista e il risultato atteso dei test (Jacopo)
