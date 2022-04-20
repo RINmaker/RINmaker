@@ -62,7 +62,8 @@ public:
     }
 };
 
-rin::maker::maker(std::string const& pdb_name, std::vector<numbered_line_t>::iterator const begin, std::vector<numbered_line_t>::iterator const end) : _pdb_name(pdb_name)
+rin::maker::maker(std::string const& pdb_name, std::vector<numbered_line_t>::iterator const begin,
+                  std::vector<numbered_line_t>::iterator const end) : _pdb_name(pdb_name)
 {
     auto sheet_records = secondary_structure_helper<records::sheet_piece>();
     auto helix_records = secondary_structure_helper<records::helix>();
@@ -117,7 +118,7 @@ rin::maker::maker(std::string const& pdb_name, std::vector<numbered_line_t>::ite
                 res->make_secondary_structure(sheet.value());
 
             auto helix = helix_records.find(*res);
-            if(helix.has_value())
+            if (helix.has_value())
                 res->make_secondary_structure(helix.value());
         }
     }
@@ -211,23 +212,26 @@ rin::maker::~maker()
 using chemical_entity::component;
 
 template<typename Bond, typename Entity1, typename Entity2>
-vector<shared_ptr<Bond const>> find_bonds(vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double dist, parameters const& params)
+vector<shared_ptr<Bond const>>
+find_bonds(vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double dist, parameters const& params)
 {
     static_assert(
-            is_base_of<component, Entity1>::value, "template typename Entity1 must inherit from type chemical_entity::component");
+            is_base_of<component, Entity1>::value,
+            "template typename Entity1 must inherit from type chemical_entity::component");
     static_assert(
-            is_base_of<component, Entity2>::value, "template typename Entity2 must inherit from type chemical_entity::component");
+            is_base_of<component, Entity2>::value,
+            "template typename Entity2 must inherit from type chemical_entity::component");
     static_assert(
             is_base_of<bond::base, Bond>::value, "template typename BondFunc must inherit from type bond::base");
 
     vector<shared_ptr<Bond const>> bonds;
-    for (auto e1 : vec)
+    for (auto e1: vec)
     {
         auto neighbors = tree.range_search(*e1, dist);
-        for (auto e2 : neighbors)
+        for (auto e2: neighbors)
         {
             auto bond = Bond::test(params, *e1, *e2);
-            if(bond != nullptr)
+            if (bond != nullptr)
                 bonds.emplace_back(bond);
         }
     }
@@ -246,7 +250,7 @@ vector<shared_ptr<bond::base const>> filter_hbond_realistic(vector<shared_ptr<bo
 
     //Get the bonds count of an atom
     auto get_bond_count = [](
-            std::unordered_map<chemical_entity::atom const*, int>& container, chemical_entity::atom const* atom)->int
+            std::unordered_map<chemical_entity::atom const*, int>& container, chemical_entity::atom const* atom) -> int
     {
         if (container.find(atom) == container.end())
             return 0;
@@ -256,13 +260,14 @@ vector<shared_ptr<bond::base const>> filter_hbond_realistic(vector<shared_ptr<bo
 
     //Increase the bonds count of an atom
     auto inc_bond_count = [](
-            std::unordered_map<chemical_entity::atom const*, int>& container, chemical_entity::atom const* atom)->void
+            std::unordered_map<chemical_entity::atom const*, int>& container,
+            chemical_entity::atom const* atom) -> void
     {
         if (container.find(atom) == container.end())
             container[atom] = 0;
         container[atom]++;
     };
-    auto can_be_added = [&](shared_ptr<bond::hydrogen const> bond)->bool
+    auto can_be_added = [&](shared_ptr<bond::hydrogen const> bond) -> bool
     {
         return (get_bond_count(donors_bond_count, bond->donor_ptr()) <
                 bond->donor().how_many_hydrogen_can_donate() &&
@@ -271,7 +276,7 @@ vector<shared_ptr<bond::base const>> filter_hbond_realistic(vector<shared_ptr<bo
                 get_bond_count(acceptors_bond_count, bond->acceptor_ptr()) <
                 bond->acceptor().how_many_hydrogen_can_accept());
     };
-    auto add_bond = [&](shared_ptr<bond::hydrogen const> bond)->void
+    auto add_bond = [&](shared_ptr<bond::hydrogen const> bond) -> void
     {
         inc_bond_count(donors_bond_count, bond->donor_ptr());
         inc_bond_count(hydrogen_bond_count, bond->hydrogen_ptr());
@@ -288,7 +293,8 @@ vector<shared_ptr<bond::base const>> filter_hbond_realistic(vector<shared_ptr<bo
 
     //Order from smallest to largest energy
     sort(
-            hydrogen_bonds_input.begin(), hydrogen_bonds_input.end(), [](shared_ptr<bond::hydrogen const> a, shared_ptr<bond::hydrogen const> b)
+            hydrogen_bonds_input.begin(), hydrogen_bonds_input.end(),
+            [](shared_ptr<bond::hydrogen const> a, shared_ptr<bond::hydrogen const> b)
             { return a->get_energy() < b->get_energy(); });
 
     //Add as many hydrogen bonds as possible
@@ -304,7 +310,8 @@ vector<shared_ptr<bond::base const>> filter_hbond_realistic(vector<shared_ptr<bo
     {
         //Insert i into the output if it is not an hydrogen or if it is in the filtered list
         if (i->get_type() != "hydrogen" ||
-            hydrogen_bonds_output.find(std::dynamic_pointer_cast<bond::hydrogen const>(i)) != hydrogen_bonds_output.end())
+            hydrogen_bonds_output.find(std::dynamic_pointer_cast<bond::hydrogen const>(i)) !=
+            hydrogen_bonds_output.end())
         {
             output.push_back(i);
         }
@@ -315,14 +322,14 @@ vector<shared_ptr<bond::base const>> filter_hbond_realistic(vector<shared_ptr<bo
 
 using std::set, std::unordered_map;
 
-template <typename Bond>
+template<typename Bond>
 vector<shared_ptr<Bond const>> remove_duplicates(vector<shared_ptr<Bond const>> const& unfiltered)
 {
     vector<shared_ptr<Bond const>> results;
     results.reserve(unfiltered.size());
 
     set<string> unique_ids;
-    for (auto const& b : unfiltered)
+    for (auto const& b: unfiltered)
     {
         auto const bond_id = b->get_id();
         if (unique_ids.find(bond_id) == unique_ids.end())
@@ -367,7 +374,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
     {
     case parameters::interaction_type_t::NONCOVALENT_BONDS:
     {
-        auto const hydrogen_bonds= find_bonds<bond::hydrogen>(
+        auto const hydrogen_bonds = find_bonds<bond::hydrogen>(
                 _hacceptor_vector,
                 _hdonor_tree,
                 params.query_dist_hbond(),
@@ -379,19 +386,19 @@ rin::graph rin::maker::operator()(parameters const& params) const
                 params.query_dist_vdw(),
                 params);
 
-        auto const ionic_bonds= find_bonds<bond::ionic>(
+        auto const ionic_bonds = find_bonds<bond::ionic>(
                 _negative_ion_vector,
                 _positive_ion_tree,
                 params.query_dist_ionic(),
                 params);
 
-        auto const cationpi_bonds= find_bonds<bond::pication>(
+        auto const cationpi_bonds = find_bonds<bond::pication>(
                 _cation_vector,
                 _pication_ring_tree,
                 params.query_dist_pica(),
                 params);
 
-        auto const pipistack_bonds= find_bonds<bond::pipistack>(
+        auto const pipistack_bonds = find_bonds<bond::pipistack>(
                 _ring_vector,
                 _ring_tree,
                 params.query_dist_pipi(),
@@ -400,21 +407,21 @@ rin::graph rin::maker::operator()(parameters const& params) const
         switch (params.network_policy())
         {
         case parameters::network_policy_t::ALL:
-            append(results,hydrogen_bonds);
-            append(results,vdw_bonds);
-            append(results,ionic_bonds);
-            append(results,cationpi_bonds);
-            append(results,pipistack_bonds);
-            append(results,_ss_bonds);
+            append(results, hydrogen_bonds);
+            append(results, vdw_bonds);
+            append(results, ionic_bonds);
+            append(results, cationpi_bonds);
+            append(results, pipistack_bonds);
+            append(results, _ss_bonds);
             break;
 
         case parameters::network_policy_t::BEST_ONE:
-            append(results,hydrogen_bonds);
-            append(results,vdw_bonds);
-            append(results,ionic_bonds);
-            append(results,cationpi_bonds);
-            append(results,pipistack_bonds);
-            append(results,_ss_bonds);
+            append(results, hydrogen_bonds);
+            append(results, vdw_bonds);
+            append(results, ionic_bonds);
+            append(results, cationpi_bonds);
+            append(results, pipistack_bonds);
+            append(results, _ss_bonds);
 
             results = filter_best(results);
             break;
@@ -437,7 +444,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
 
     case parameters::interaction_type_t::ALPHA_BACKBONE:
     {
-        auto alpha_bonds= find_bonds<bond::generico>(
+        auto alpha_bonds = find_bonds<bond::generic_bond>(
                 _alpha_carbon_vector,
                 _alpha_carbon_tree,
                 params.query_dist_alpha(),
@@ -449,7 +456,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
 
     case parameters::interaction_type_t::BETA_BACKBONE:
     {
-        auto beta_bonds= find_bonds<bond::generico>(
+        auto beta_bonds = find_bonds<bond::generic_bond>(
                 _beta_carbon_vector,
                 _beta_carbon_tree,
                 params.query_dist_beta(),

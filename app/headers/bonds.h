@@ -2,6 +2,7 @@
 
 #include <string>
 #include <memory>
+
 #include "prelude.h"
 
 #include "rin_graph.h"
@@ -20,8 +21,6 @@ class ring;
 
 class ionic_group;
 }
-
-class network;
 
 namespace bond
 {
@@ -64,7 +63,7 @@ public:
     virtual explicit operator rin::edge() const = 0;
 };
 
-class generico final : public base
+class generic_bond final : public base
 {
 private:
     chemical_entity::aminoacid const& _source;
@@ -73,9 +72,9 @@ private:
     rin::parameters const _params;
 
 public:
-    static std::shared_ptr<generico const> test(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
+    static std::shared_ptr<generic_bond const> test(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
-    generico(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
+    generic_bond(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     [[nodiscard]]
     chemical_entity::aminoacid const& source() const
@@ -95,7 +94,7 @@ public:
     std::string get_id() const override;
 
     [[nodiscard]]
-    virtual std::string get_id_simple() const override;
+    std::string get_id_simple() const override;
 
     [[nodiscard]]
     explicit operator rin::edge() const override
@@ -112,8 +111,7 @@ private:
     double const _angle;
 
     // returns a pair sigma_ij,epsilon_ij
-    std::pair<double, double> getSigmaEpsilon(
-            chemical_entity::atom const& donor, chemical_entity::atom const& acceptor);
+    std::pair<double, double> getSigmaEpsilon(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor);
 
     double energy(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor, chemical_entity::atom const* hydrogen);
 
@@ -155,7 +153,7 @@ public:
     std::string get_id() const override;
 
     [[nodiscard]]
-    virtual std::string get_id_simple() const override;
+    std::string get_id_simple() const override;
 
     [[nodiscard]]
     explicit operator rin::edge() const override
@@ -198,7 +196,7 @@ public:
     std::string get_id() const override;
 
     [[nodiscard]]
-    virtual std::string get_id_simple() const override;
+    std::string get_id_simple() const override;
 };
 
 class pication : public base
@@ -239,7 +237,7 @@ public:
     std::string get_id() const override;
 
     [[nodiscard]]
-    virtual std::string get_id_simple() const override;
+    std::string get_id_simple() const override;
 };
 
 class pipistack final : public base
@@ -279,7 +277,7 @@ public:
     std::string get_id() const override;
 
     [[nodiscard]]
-    virtual std::string get_id_simple() const override;
+    std::string get_id_simple() const override;
 };
 
 class ss final : public base
@@ -313,7 +311,7 @@ public:
     std::string get_id() const override;
 
     [[nodiscard]]
-    virtual std::string get_id_simple() const override;
+    std::string get_id_simple() const override;
 
     [[nodiscard]]
     std::string get_type() const override;
@@ -354,6 +352,6 @@ public:
     std::string get_id() const override;
 
     [[nodiscard]]
-    virtual std::string get_id_simple() const override;
+    std::string get_id_simple() const override;
 };
 }

@@ -32,7 +32,7 @@ class pipistack;
 
 class ionic;
 
-class generico;
+class generic_bond;
 }
 
 namespace rin
@@ -60,7 +60,7 @@ public:
 
     explicit edge(bond::pipistack const& bond);
 
-    explicit edge(bond::generico const& bond);
+    explicit edge(bond::generic_bond const& bond);
 
 public:
     [[nodiscard]]

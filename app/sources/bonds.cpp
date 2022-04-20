@@ -31,14 +31,14 @@ template<typename Entity>
 pair<Entity const*, Entity const*> sort_by_res_id(Entity const& a, Entity const& b)
 { return a.res().id() < b.res().id() ? make_pair(&a, &b) : make_pair(&b, &a); }
 
-generico::generico(parameters const& params, atom const& a, atom const& b) :
+generic_bond::generic_bond(parameters const& params, atom const& a, atom const& b) :
         base(a.res().distance(b.res()), 0), // TODO
         _source(sort_by_res_id(a, b).first->res()),
         _target(sort_by_res_id(a, b).second->res()),
         _params(params)
 {}
 
-string generico::get_interaction() const
+string generic_bond::get_interaction() const
 {
     string get_interaction = "GENERIC:";
     switch (_params.interaction_type())
@@ -59,7 +59,7 @@ string generico::get_interaction() const
     return get_interaction;
 }
 
-string generico::get_type() const
+string generic_bond::get_type() const
 { return "generic"; } // TODO config
 
 //Returns a pair of Sigmaij Epsilonij
@@ -139,8 +139,7 @@ string hydrogen::get_type() const
 { return "hydrogen"; } // TODO config
 
 ionic::ionic(ionic_group const& negative, ionic_group const& positive) :
-        base(
-                negative.distance(positive), (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))),
+        base(negative.distance(positive), (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))),
         _negative(negative),
         _positive(positive)
 {}
@@ -185,14 +184,14 @@ string pipistack::get_interaction() const
 string pipistack::get_type() const
 { return "pipistack"; }
 
-ss::ss(records::ss const& record)
-        : base(record.length(), 167), // TODO config
-          _source_name(record.name_1()),
-          _target_name(record.name_2()),
-          _source_chain(record.chain_id_1()),
-          _target_chain(record.chain_id_2()),
-          _source_seq(record.seq_num_1()),
-          _target_seq(record.seq_num_2())
+ss::ss(records::ss const& record) :
+        base(record.length(), 167), // TODO config
+        _source_name(record.name_1()),
+        _target_name(record.name_2()),
+        _source_chain(record.chain_id_1()),
+        _target_chain(record.chain_id_2()),
+        _source_seq(record.seq_num_1()),
+        _target_seq(record.seq_num_2())
 {}
 
 string ss::source_id() const
@@ -319,7 +318,6 @@ string ionic::get_id() const
            target_negative().name();
 }
 
-
 std::shared_ptr<pication const> pication::test(parameters const& params, atom const& cation, ring const& ring)
 {
     if (ring.res().satisfies_minimum_separation(cation.res(), params.sequence_separation()))
@@ -367,19 +365,19 @@ string pipistack::get_id() const
            target_ring().name();
 }
 
-std::shared_ptr<generico const> generico::test(parameters const& params, atom const& a, atom const& b)
+std::shared_ptr<generic_bond const> generic_bond::test(parameters const& params, atom const& a, atom const& b)
 {
     if (a.res().satisfies_minimum_separation(b.res()))
-        return std::make_shared<generico const>(params, a, b);;
+        return std::make_shared<generic_bond const>(params, a, b);;
     return nullptr;
 }
 
-string generico::get_id() const
+string generic_bond::get_id() const
 {
     return get_id_simple();
 }
 
-string generico::get_id_simple() const
+string generic_bond::get_id_simple() const
 {
     return "GENERICO:" +
            source().id() +

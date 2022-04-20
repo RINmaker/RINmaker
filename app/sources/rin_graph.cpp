@@ -166,7 +166,7 @@ edge::edge(bond::pication const& bond) :
         _orientation(cfg::graphml::none)
 {}
 
-edge::edge(bond::generico const& bond) :
+edge::edge(bond::generic_bond const& bond) :
         _source(bond.source().id()),
         _target(bond.target().id()),
         _distance(std::to_string(bond.get_length())),
