@@ -27,15 +27,15 @@ bool base::operator>(base const& rhs) const
 { return rhs < *this; }
 
 // TODO memoize?
-template <typename Entity>
+template<typename Entity>
 pair<Entity const*, Entity const*> sort_by_res_id(Entity const& a, Entity const& b)
 { return a.res().id() < b.res().id() ? make_pair(&a, &b) : make_pair(&b, &a); }
 
 generico::generico(parameters const& params, atom const& a, atom const& b) :
-    base(a.res().distance(b.res()), 0), // TODO
-    _source(sort_by_res_id(a, b).first->res()),
-    _target(sort_by_res_id(a, b).second->res()),
-    _params(params)
+        base(a.res().distance(b.res()), 0), // TODO
+        _source(sort_by_res_id(a, b).first->res()),
+        _target(sort_by_res_id(a, b).second->res()),
+        _params(params)
 {}
 
 string generico::get_interaction() const
@@ -140,8 +140,7 @@ string hydrogen::get_type() const
 
 ionic::ionic(ionic_group const& negative, ionic_group const& positive) :
         base(
-                negative.distance(positive),
-                (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))),
+                negative.distance(positive), (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))),
         _negative(negative),
         _positive(positive)
 {}
@@ -234,11 +233,7 @@ double vdw::energy(atom const& source_atom, atom const& target_atom)
 }
 
 vdw::vdw(atom const& a, atom const& b) :
-        base(
-                a.distance(b),
-                energy(
-                        *sort_by_res_id(a, b).first,
-                        *sort_by_res_id(a, b).second)),
+        base(a.distance(b), energy(*sort_by_res_id(a, b).first, *sort_by_res_id(a, b).second)),
 
         _source_atom(*sort_by_res_id(a, b).first),
         _target_atom(*sort_by_res_id(a, b).second)
@@ -300,10 +295,10 @@ std::shared_ptr<vdw const> vdw::test(parameters const& params, atom const& a, at
 string vdw::get_id() const
 {
     return get_id_simple() +
-        ":" +
-        source_atom().name() +
-        ":" +
-        target_atom().name();
+           ":" +
+           source_atom().name() +
+           ":" +
+           target_atom().name();
 }
 
 
@@ -366,16 +361,16 @@ std::shared_ptr<pipistack const> pipistack::test(parameters const& params, ring 
 string pipistack::get_id() const
 {
     return get_id_simple() +
-        ":" +
-        source_ring().name() +
-        ":" +
-        target_ring().name();
+           ":" +
+           source_ring().name() +
+           ":" +
+           target_ring().name();
 }
 
 std::shared_ptr<generico const> generico::test(parameters const& params, atom const& a, atom const& b)
 {
     if (a.res().satisfies_minimum_separation(b.res()))
-        return  std::make_shared<generico const>(params, a, b);;
+        return std::make_shared<generico const>(params, a, b);;
     return nullptr;
 }
 
