@@ -380,11 +380,12 @@ rin::graph rin::maker::operator()(parameters const& params) const
                 params.query_dist_hbond(),
                 params);
 
-        auto const vdw_bonds = find_bonds<bond::vdw>(
-                _vdw_vector,
-                _vdw_tree,
-                params.query_dist_vdw(),
-                params);
+        auto const vdw_bonds = remove_duplicates(
+                find_bonds<bond::vdw>(
+                        _vdw_vector,
+                        _vdw_tree,
+                        params.query_dist_vdw(),
+                        params));
 
         auto const ionic_bonds = find_bonds<bond::ionic>(
                 _negative_ion_vector,
@@ -398,11 +399,12 @@ rin::graph rin::maker::operator()(parameters const& params) const
                 params.query_dist_pica(),
                 params);
 
-        auto const pipistack_bonds = find_bonds<bond::pipistack>(
-                _ring_vector,
-                _ring_tree,
-                params.query_dist_pipi(),
-                params);
+        auto const pipistack_bonds = remove_duplicates(
+                find_bonds<bond::pipistack>(
+                        _ring_vector,
+                        _ring_tree,
+                        params.query_dist_pipi(),
+                        params));
 
         switch (params.network_policy())
         {
@@ -450,7 +452,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
                 params.query_dist_alpha(),
                 params);
 
-        append(results, filter_best(filter_best(alpha_bonds)));
+        append(results, filter_best(alpha_bonds));
         break;
     }
 
@@ -462,12 +464,12 @@ rin::graph rin::maker::operator()(parameters const& params) const
                 params.query_dist_beta(),
                 params);
 
-        append(results, filter_best(filter_best(beta_bonds)));
+        append(results, filter_best(beta_bonds));
         break;
     }
     }
 
-    results = remove_duplicates(results);
+    // results = remove_duplicates(results);
     lm::main()->info("there are {} valid bonds after filtering", results.size());
 
     return {_pdb_name, params, _aminoacids, results};
