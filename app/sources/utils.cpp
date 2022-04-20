@@ -172,9 +172,9 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
         throw std::runtime_error("incorret network policy argument: \"" + network_policy + "\"");
 
     if (interaction_type == "ca")
-        pcfg.set_interaction_type(rin::parameters::interaction_type_t::ALPHA_BACKBONE);
+        pcfg.set_interaction_type(rin::parameters::interaction_type_t::GENERIC_ALPHA);
     else if (interaction_type == "cb")
-        pcfg.set_interaction_type(rin::parameters::interaction_type_t::BETA_BACKBONE);
+        pcfg.set_interaction_type(rin::parameters::interaction_type_t::GENERIC_BETA);
     else if (interaction_type == "closest")
         pcfg.set_interaction_type(rin::parameters::interaction_type_t::NONCOVALENT_BONDS);
     else

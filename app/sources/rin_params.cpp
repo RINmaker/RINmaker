@@ -32,11 +32,11 @@ string rin::parameters::to_string(intt it)
     case intt::NONCOVALENT_BONDS:
         return "non_covalent";
 
-    case intt::ALPHA_BACKBONE:
-        return "alpha_backbone";
+    case intt::GENERIC_ALPHA:
+        return "generic_alpha";
 
-    case intt::BETA_BACKBONE:
-        return "beta_backbone";
+    case intt::GENERIC_BETA:
+        return "generic_beta";
 
     default:
         return "unknown";
@@ -62,11 +62,11 @@ string rin::parameters::pretty() const
                 << "pipistack:" << query_dist_pipi() << ", ";
         break;
 
-    case intt::ALPHA_BACKBONE:
+    case intt::GENERIC_ALPHA:
         strs << "generic_bond:" << query_dist_alpha() << ", ";
         break;
 
-    case intt::BETA_BACKBONE:
+    case intt::GENERIC_BETA:
         strs << "generic_bond:" << query_dist_beta() << ", ";
         break;
     }

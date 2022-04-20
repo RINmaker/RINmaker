@@ -11,7 +11,7 @@ struct parameters final
 public:
     enum class interaction_type_t
     {
-        NONCOVALENT_BONDS, ALPHA_BACKBONE, BETA_BACKBONE
+        NONCOVALENT_BONDS, GENERIC_ALPHA, GENERIC_BETA
     };
 
     enum class network_policy_t

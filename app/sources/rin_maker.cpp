@@ -442,7 +442,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
         break;
     }
 
-    case parameters::interaction_type_t::ALPHA_BACKBONE:
+    case parameters::interaction_type_t::GENERIC_ALPHA:
     {
         auto alpha_bonds = find_bonds<bond::generic_bond>(
                 _alpha_carbon_vector,
@@ -454,7 +454,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
         break;
     }
 
-    case parameters::interaction_type_t::BETA_BACKBONE:
+    case parameters::interaction_type_t::GENERIC_BETA:
     {
         auto beta_bonds = find_bonds<bond::generic_bond>(
                 _beta_carbon_vector,
