@@ -1,23 +1,35 @@
 # RINmaker
 
-### How to build
-
-Configure project:
+## Configure project:
 
 ```bash
-cmake -S . -B cmake-build-debug
+cmake -S . -B your-build-dir
 ```
 
-#### App
+## App
+
+#### Build
 
 ```bash
-cmake --build cmake-build-debug --target RINmaker
+cmake --build your-build-dir --target RINmaker
 ```
 
-#### Test
+#### Run
 
 ```bash
-cmake --build cmake-build-debug --target RINmaker_test
+./your-build-dir/app/RINmaker -h
 ```
 
-Executable will be in `cmake-build-debug/app/RINmaker`.
+## Test
+
+#### Build
+
+```bash
+cmake --build your-build-dir --target RINmaker_test
+```
+
+#### Run
+
+```bash
+./your-build-dir/test/RINmaker_test
+```
