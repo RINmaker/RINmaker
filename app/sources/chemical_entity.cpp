@@ -476,34 +476,86 @@ std::vector<chemical_entity::atom const*> chemical_entity::atom::attached_hydrog
     return hydrogens;
 }
 
+struct ring::impl final
+{
+public:
+    vector<atom const*> _atoms;
+
+    array<double, 3> _normal{};
+    double _mean_radius;
+
+};
+
 chemical_entity::ring::ring(std::vector<atom const*> const& atoms, aminoacid const& res) :
-        kdpoint<3>({0, 0, 0}),
-        component(res),
-        _atoms(atoms)
+        kdpoint<3>({0, 0, 0}),        component(res),        pimpl{new impl()}
 {
     if (atoms.size() < 3)
         throw std::invalid_argument("rings should have at least 3 atoms");
 
+    pimpl->_atoms = atoms;
+
     double sum_radii = 0;
     for (auto* a: atoms)
         sum_radii += distance(*a);
-    _mean_radius = sum_radii / (double) atoms.size();
+    pimpl->_mean_radius = sum_radii / (double) atoms.size();
 
     _position = centre_of_mass(atoms);
 
     // kudos to Giulio Marcolin for the following shortcut
     // it only deviates from a SVD best-fit method no more than 1-2°, on average
-    std::array<double, 3> const v = (std::array<double, 3>) ((*atoms[0]) - (*atoms[1]));
-    std::array<double, 3> const w = (std::array<double, 3>) ((*atoms[2]) - (*atoms[1]));
-    _normal = geom::cross(v, w);
+    array<double, 3> const v = (array<double, 3>) ((*atoms[0]) - (*atoms[1]));
+    array<double, 3> const w = (array<double, 3>) ((*atoms[2]) - (*atoms[1]));
+    pimpl->_normal = geom::cross(v, w);
+}
+
+ring::~ring()
+{ delete pimpl; }
+
+array<double, 3> const& ring::normal() const
+{ return pimpl->_normal; }
+
+double ring::radius() const
+{ return pimpl->_mean_radius; }
+
+bool ring::is_a_pication_candidate() const
+{
+    string name = res().name();
+    return name == "PHE" || name == "TYR" || (name == "TRP" && pimpl->_atoms.size() == 6);
+}
+
+double ring::closest_distance_between_atoms(ring const& other) const
+{
+    double minimum = pimpl->_atoms[0]->distance(*other.pimpl->_atoms[0]);
+    for (auto* atom_1: pimpl->_atoms)
+    {
+        for (auto* atom_2: other.pimpl->_atoms)
+        {
+            double current = atom_1->distance(*atom_2);
+            if (current < minimum)
+            {
+                minimum = current;
+            }
+        }
+    }
+
+    return minimum;
+}
+
+double ring::angle_between_normals(ring const& other) const
+{ return geom::d_angle<3>(pimpl->_normal, other.pimpl->_normal); }
+
+double ring::angle_between_normal_and_centres_joining(ring const& other) const
+{
+    std::array<double, 3> const centres_joining((std::array<double, 3>) (*this - other));
+    return geom::d_angle<3>(pimpl->_normal, centres_joining);
 }
 
 chemical_entity::atom const& chemical_entity::ring::atom_closest_to(atom const& atom) const
 {
-    auto* closest_atom = _atoms[0];
+    auto* closest_atom = pimpl->_atoms[0];
     double min_distance = closest_atom->distance(atom);
 
-    for (auto* a: _atoms)
+    for (auto* a:pimpl-> _atoms)
     {
         const double distance = a->distance(atom);
         if (distance < min_distance)
@@ -529,7 +581,7 @@ string getNameFromAtoms(std::vector<const chemical_entity::atom*> const& atoms, 
 
 string chemical_entity::ring::name() const
 {
-    return getNameFromAtoms(_atoms);
+    return getNameFromAtoms(pimpl->_atoms);
 }
 
 struct ionic_group::impl

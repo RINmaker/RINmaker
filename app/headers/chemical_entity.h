@@ -174,58 +174,31 @@ public:
 class ring final : public kdpoint<3>, public aminoacid::component
 {
 private:
-    std::vector<atom const*> _atoms;
-
-    std::array<double, 3> _normal{};
-    double _mean_radius;
+    struct impl;
+    impl* pimpl;
 
 public:
     ring(std::vector<atom const*> const& atoms, aminoacid const& res);
 
-    [[nodiscard]]
-    std::array<double, 3> const& normal() const
-    { return _normal; }
+    ~ring();
 
     [[nodiscard]]
-    double radius() const
-    { return _mean_radius; }
+    std::array<double, 3> const& normal() const;
 
     [[nodiscard]]
-    bool is_a_pication_candidate() const
-    {
-        string name = res().name();
-        return name == "PHE" || name == "TYR" || (name == "TRP" && _atoms.size() == 6);
-    }
+    double radius() const;
 
     [[nodiscard]]
-    double closest_distance_between_atoms(ring const& other) const
-    {
-        double minimum = _atoms[0]->distance(*other._atoms[0]);
-        for (auto* atom_1: _atoms)
-        {
-            for (auto* atom_2: other._atoms)
-            {
-                double current = atom_1->distance(*atom_2);
-                if (current < minimum)
-                {
-                    minimum = current;
-                }
-            }
-        }
-
-        return minimum;
-    }
+    bool is_a_pication_candidate() const;
 
     [[nodiscard]]
-    double angle_between_normals(ring const& other) const
-    { return geom::d_angle<3>(_normal, other._normal); }
+    double closest_distance_between_atoms(ring const& other) const;
 
     [[nodiscard]]
-    double angle_between_normal_and_centres_joining(ring const& other) const
-    {
-        std::array<double, 3> const centres_joining((std::array<double, 3>) (*this - other));
-        return geom::d_angle<3>(_normal, centres_joining);
-    }
+    double angle_between_normals(ring const& other) const;
+
+    [[nodiscard]]
+    double angle_between_normal_and_centres_joining(ring const& other) const;
 
     [[nodiscard]]
     atom const& atom_closest_to(atom const& atom) const;
