@@ -65,13 +65,31 @@ string const& edge::positive() const
 string const& edge::orientation() const
 { return pimpl->_orientation; }
 
-graph::graph(string name, rin::parameters const& params, vector<aminoacid const*> const& aminoacids,
-             vector<std::shared_ptr<bond::base const>> const& bonds) : _name(std::move(name)), _params(params)
+struct graph::impl final
 {
+public:
+    string _name;
+    parameters _params;
+    unordered_map<string, node> _nodes;
+    vector<edge> _edges;
+
+    impl(rin::parameters const& params) : _params{params}
+    {}
+
+};
+
+graph::graph(
+        string name,
+        parameters const& params,
+        vector<aminoacid const*> const& aminoacids,
+        vector<std::shared_ptr<bond::base const>> const& bonds) :
+        pimpl{new impl{params}}
+{
+    pimpl->_name = name;
     for (auto a: aminoacids)
     {
         auto n = (rin::node) *a;
-        _nodes.insert({n.get_id(), n});
+        pimpl->_nodes.insert({n.get_id(), n});
     }
 
     // adjust _nodes degree at edge insertion
@@ -79,16 +97,37 @@ graph::graph(string name, rin::parameters const& params, vector<aminoacid const*
     {
         auto edge = (rin::edge) *b;
 
-        auto it = _nodes.find(edge.source_id());
-        if (it != _nodes.end())
+        auto it = pimpl->_nodes.find(edge.source_id());
+        if (it != pimpl->_nodes.end())
             it->second.inc_degree();
 
-        it = _nodes.find(edge.target_id());
-        if (it != _nodes.end())
+        it = pimpl->_nodes.find(edge.target_id());
+        if (it != pimpl->_nodes.end())
             it->second.inc_degree();
 
-        _edges.push_back(edge);
+        pimpl->_edges.push_back(edge);
     }
+}
+
+graph::graph(graph const& other) : pimpl{new impl(*other.pimpl)}
+{}
+
+graph::~graph()
+{ delete pimpl; }
+
+
+string graph::name() const
+{ return pimpl->_name; }
+
+std::vector<edge> graph::get_edges() const
+{ return pimpl->_edges; }
+
+std::unordered_map<std::string, node> graph::get_nodes() const
+{
+    std::unordered_map<std::string, node> out;
+    for (const auto& i: pimpl->_nodes)
+        out.insert_or_assign(i.first, i.second);
+    return out;
 }
 
 void graph::write_to_file(std::filesystem::path const& out_path) const
@@ -104,7 +143,7 @@ void graph::write_to_file(std::filesystem::path const& out_path) const
 
     // parameters summary
     auto comment = graphml.parent().insert_child_before(pugi::node_comment, graphml);
-    comment.set_value(_params.pretty().c_str());
+    comment.set_value(pimpl->_params.pretty().c_str());
 
     // <graph>
     pugi::xml_node graph_node = graphml.append_child("graph");
@@ -113,14 +152,14 @@ void graph::write_to_file(std::filesystem::path const& out_path) const
 
     // graphml requires all key attributes to be listed before the actual node/edges
     bool with_metadata = true;
-    for (auto e: _edges)
+    for (auto e: pimpl->_edges)
     {
         e.append_to(graph_node, with_metadata);
         if (with_metadata) with_metadata = false;
     }
 
     with_metadata = true;
-    for (auto kv: _nodes)
+    for (auto kv: pimpl->_nodes)
     {
         if (kv.second.degree() > 0)
         {

@@ -123,7 +123,7 @@ public:
     int degree() const;
 
     [[nodiscard]]
-    string const& get_id() const;
+    std::string const& get_id() const;
 
     void append_to(pugi::xml_node& graphml, bool with_metadata) const;
 };
@@ -138,29 +138,23 @@ namespace fs = std::filesystem;
 class graph
 {
 private:
-    string _name;
-    rin::parameters _params;
-    unordered_map<string, node> _nodes;
-    vector<edge> _edges;
+    struct impl;
+    impl* pimpl;
 
 public:
     graph(string name, parameters const& params, vector<aminoacid const*> const& aminoacids,
           vector<std::shared_ptr<bond::base const>> const& bonds);
 
+    graph(graph const& other);
+
+    ~graph();
+
     void write_to_file(fs::path const& out_path) const;
 
-    string name() const
-    { return _name; }
+    std::string name() const;
 
-    std::vector<edge> get_edges() const
-    { return _edges; }
+    std::vector<edge> get_edges() const;
 
-    std::unordered_map<std::string, node> get_nodes() const
-    {
-        std::unordered_map<std::string, node> out;
-        for (const auto& i: _nodes)
-            out.insert_or_assign(i.first, i.second);
-        return out;
-    }
+    std::unordered_map<std::string, node> get_nodes() const;
 };
 }
