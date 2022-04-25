@@ -313,7 +313,7 @@ find_bonds(vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, do
             is_base_of<component, Entity2>::value,
             "template typename Entity2 must inherit from type chemical_entity::component");
     static_assert(
-            is_base_of<bond::base, Bond>::value, "template typename BondFunc must inherit from type bond::base");
+            is_base_of<bond::base, Bond>::value, "template typename Bond must inherit from type bond::base");
 
     vector<shared_ptr<Bond const>> bonds;
     for (auto e1: vec)
