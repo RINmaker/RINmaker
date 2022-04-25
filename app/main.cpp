@@ -12,23 +12,30 @@ int main(int argc, const char* argv[])
         optional<arguments> maybe_args;
         if (read_args(argc, argv, maybe_args) && maybe_args.has_value())
         {
-            arguments parsed = maybe_args.value();
+            auto const parsed_args = maybe_args.value();
 
-            lm::main()->debug("path to PDB input file: " + parsed.pdb_path.string());
-            lm::main()->debug("path to output xml file: " + parsed.out_path.string());
+            lm::main()->debug("path to PDB input file: " + parsed_args.pdb_path.string());
+            lm::main()->debug("path to output xml file: " + parsed_args.out_path.string());
 
             // TODO write to cout and also log
             // does this hold? --lore
-            lm::main()->info("params summary: " + parsed.params.pretty());
+            lm::main()->info("params summary: " + parsed_args.params.pretty());
 
-            auto file_contents = read_lines(parsed.pdb_path);
+            auto const models = rin::maker::parse_models(parsed_args.pdb_path);
 
-            // parse file and build acceleration structures
-            auto rm = rin::maker(parsed.pdb_path.stem().string(), file_contents.begin(), file_contents.end());
+            int i = 0;
+            for (auto const& rm : models)
+            {
+                // create rin and write to graphml
+                auto const view = (*rm)(parsed_args.params);
 
-            // create rin and write to graphml
-            auto view = rm(parsed.params);
-            view.write_to_file(parsed.out_path);
+                auto const out_path = parsed_args.out_path.parent_path() / (
+                        parsed_args.pdb_path.stem().string() +
+                        "_" +
+                        to_string(i++) +
+                        parsed_args.out_path.extension().string());
+                view.write_to_file(out_path);
+            }
 
 #           if _MSC_VER
             spdlog::drop_all();

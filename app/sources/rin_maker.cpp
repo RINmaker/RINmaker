@@ -1,5 +1,6 @@
 #include "rin_maker.h"
 
+#include <fstream>
 #include <functional>
 #include <exception>
 
@@ -21,6 +22,73 @@ using std::is_base_of;
 using rin::parameters;
 
 using prelude::interval;
+
+vector<shared_ptr<rin::maker>> rin::maker::parse_models(fs::path const& pdb_path)
+{
+    std::ifstream pdb_file;
+    pdb_file.open(pdb_path);
+
+    // might throw
+    if (!pdb_file.is_open())
+        throw std::runtime_error("could not open " + pdb_path.string() + "\n");
+
+    string ls;
+    uint32_t ln = 0;
+    std::vector<std::pair<uint32_t, std::string>> numbered_lines;
+    while (getline(pdb_file, ls))
+        numbered_lines.emplace_back(ln++, ls);
+    pdb_file.close();
+
+    // atom records are split in MODEL sections
+    vector<vector<records::atom>> models;
+
+    // other records are in global sections
+    vector<records::ss> ssbond_records;
+    vector<records::helix> helix_records;
+    vector<records::sheet_piece> sheet_records;
+
+    vector<records::atom> tmp_model;
+    for (auto const& line: numbered_lines)
+    {
+        auto const& line_str = line.second;
+        auto const& line_num = line.first;
+
+        auto const record_type = prelude::trim(line_str.substr(0, 6));
+
+        // TODO exception
+        // MODEL should always balance ENDMDL
+        // and there cannot be 2 consecutive MODEL or 2 consecutive ENDMDL
+        // but there can be 0 MODEL and 0 ENDMDL
+
+        if (record_type == "ATOM")
+            tmp_model.emplace_back(line_str, line_num);
+
+        else if (record_type == "HELIX")
+            helix_records.emplace_back(line_str, line_num);
+
+        else if (record_type == "SHEET")
+            sheet_records.emplace_back(line_str, line_num);
+
+        else if (record_type == "SSBOND")
+            ssbond_records.emplace_back(line_str, line_num);
+
+        else if (record_type == "ENDMDL")
+            models.push_back(tmp_model);
+
+        // else if (record_type == "MODEL");
+    }
+
+    // TODO this can only happen when no MODEL/ENDMDL is specified
+    if (!tmp_model.empty())
+        models.push_back(tmp_model);
+
+    auto const pdb_name = pdb_path.stem().string();
+    vector<std::shared_ptr<rin::maker>> rin_makers;
+    for (auto const& model: models)
+        rin_makers.emplace_back(std::make_shared<rin::maker>(pdb_name, model, ssbond_records, helix_records, sheet_records));
+
+    return rin_makers;
+}
 
 template<typename Record>
 class secondary_structure_helper final
@@ -62,62 +130,56 @@ public:
     }
 };
 
-rin::maker::maker(std::string const& pdb_name, std::vector<numbered_line_t>::iterator const begin,
-                  std::vector<numbered_line_t>::iterator const end) : _pdb_name(pdb_name)
+rin::maker::maker(string const& pdb_name,
+                  vector<records::atom> const& atom_records,
+                  vector<records::ss> const& ssbond_records,
+                  vector<records::helix> const& helix_records,
+                  vector<records::sheet_piece> const& sheet_records)
 {
-    auto sheet_records = secondary_structure_helper<records::sheet_piece>();
-    auto helix_records = secondary_structure_helper<records::helix>();
 
     vector<records::atom> tmp_atoms;
     std::vector<chemical_entity::aminoacid*> tmp_aminoacids;
 
     lm::main()->info("parsing pdb lines...");
 
-    for (auto it = begin; it != end; ++it)
+    for (auto const& record: atom_records)
     {
-        auto line = it->second;
-        auto line_number = it->first;
-
-        auto const record_type = prelude::trim(line.substr(0, 6));
-        if (record_type == "ATOM")
+        if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back()))
         {
-            // atoms are grouped by aminoacid: we can simply fill a collection until we change residue
-            records::atom record(line, line_number);
-            if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back()))
-            {
-                tmp_aminoacids.emplace_back(new aminoacid(tmp_atoms, pdb_name));
-                tmp_atoms.clear();
-            }
-
-            tmp_atoms.push_back(record);
+            tmp_aminoacids.emplace_back(new aminoacid(tmp_atoms, pdb_name));
+            tmp_atoms.clear();
         }
 
-        else if (record_type == "HELIX")
-            helix_records.insert(records::helix(line, line_number));
-
-        else if (record_type == "SHEET")
-            sheet_records.insert(records::sheet_piece(line, line_number));
-
-        else if (record_type == "SSBOND")
-            _ss_bonds.emplace_back(std::make_shared<bond::ss>(records::ss(line, line_number)));
+        tmp_atoms.push_back(record);
     }
 
     if (!tmp_atoms.empty())
         tmp_aminoacids.emplace_back(new aminoacid(tmp_atoms, pdb_name));
 
+    for (auto const& record: ssbond_records)
+        _ss_bonds.emplace_back(std::make_shared<bond::ss>(record));
+
+    auto sheet_helper = secondary_structure_helper<records::sheet_piece>();
+    for (auto const& record: sheet_records)
+        sheet_helper.insert(record);
+
+    auto helix_helper = secondary_structure_helper<records::helix>();
+    for (auto const& record: helix_records)
+        helix_helper.insert(record);
+
     lm::main()->info("finding the appropriate secondary structure for each aminoacid...");
 
-    if (sheet_records.size() != 0 || helix_records.size() != 0)
+    if (sheet_helper.size() != 0 || helix_helper.size() != 0)
     {
         for (auto res: tmp_aminoacids)
         {
             res->make_secondary_structure();
 
-            auto sheet = sheet_records.find(*res);
+            auto sheet = sheet_helper.find(*res);
             if (sheet.has_value())
                 res->make_secondary_structure(sheet.value());
 
-            auto helix = helix_records.find(*res);
+            auto helix = helix_helper.find(*res);
             if (helix.has_value())
                 res->make_secondary_structure(helix.value());
         }
@@ -357,7 +419,7 @@ vector<shared_ptr<Bond const>> filter_best(vector<shared_ptr<Bond const>> const&
             res_pairs.insert_or_assign(pair_id, b);
     }
 
-    for (auto const& pair : res_pairs)
+    for (auto const& pair: res_pairs)
         results.push_back(pair.second);
 
     return results;

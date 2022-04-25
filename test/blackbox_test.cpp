@@ -89,11 +89,10 @@ protected:
         std::optional<arguments> maybe_args;
         read_args(2, args, maybe_args);
         // won't throw std::bad_optional because args are hand crafted above
-        arguments parsed = maybe_args.value();
-
-        auto file_contents = read_lines(parsed.pdb_path);
-        auto pdb_name = parsed.pdb_path.stem().string();
-        return Result(rin::maker(pdb_name, file_contents.begin(), file_contents.end()), parsed.params);
+        auto const parsed_args = maybe_args.value();
+        auto const models = rin::maker::parse_models(parsed_args.pdb_path);
+        // again, won't throw because tests are hand crafted to have 1 model each
+        return Result(*models.at(0), parsed_args.params);
     }
 
     void TearDown() override { }

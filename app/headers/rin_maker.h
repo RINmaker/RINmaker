@@ -25,7 +25,6 @@ using chemical_entity::ionic_group;
 
 struct parameters;
 
-typedef std::pair<uint32_t, std::string> numbered_line_t;
 struct maker final
 {
 private:
@@ -49,7 +48,14 @@ private:
     std::string _pdb_name;
 
 public:
-    explicit maker(std::string const& pdb_name, std::vector<numbered_line_t>::iterator begin, std::vector<numbered_line_t>::iterator end);
+    static vector<std::shared_ptr<rin::maker>> parse_models(fs::path const& pdb_path);
+
+    maker(string const& pdb_name,
+          vector<records::atom> const& atom_records,
+          vector<records::ss> const& ssbond_records,
+          vector<records::helix> const& helix_records,
+          vector<records::sheet_piece> const& sheet_records);
+
     ~maker();
 
     rin::graph operator()(parameters const& params) const;
