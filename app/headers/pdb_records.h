@@ -14,7 +14,7 @@ protected:
     uint32_t _line_number;
     std::array<std::string, N> _fields;
 
-    explicit base(std::string &line, uint32_t line_number) : _line_number(line_number)
+    explicit base(std::string const& line, uint32_t line_number) : _line_number(line_number)
     {
         size_t line_size = line.size();
         for (size_t i = 0; i < N; ++i)
@@ -43,29 +43,29 @@ private:
     static std::array<std::pair<size_t, size_t>, 15> const _limits;
 
 public:
-    explicit atom(std::string &line, uint32_t line_number) : base(line, line_number)
+    explicit atom(std::string const& line, uint32_t line_number) : base(line, line_number)
     {}
 
     [[nodiscard]]
-    bool same_res(atom const &other) const
+    bool same_res(atom const& other) const
     {
         return chain_id() == other.chain_id() && res_name() == other.res_name() && res_seq() == other.res_seq();
     }
 
     [[nodiscard]]
-    std::string const &name() const
+    std::string const& name() const
     { return _fields[2]; }
 
     [[nodiscard]]
-    std::string const &res_name() const
+    std::string const& res_name() const
     { return _fields[4]; }
 
     [[nodiscard]]
-    std::string const &chain_id() const
+    std::string const& chain_id() const
     { return _fields[5]; }
 
     [[nodiscard]]
-    std::string const &element_name() const
+    std::string const& element_name() const
     { return _fields[13]; }
 
     [[nodiscard]]
@@ -75,7 +75,7 @@ public:
     [[nodiscard]]
     int charge() const
     {
-        auto const &x = _fields[14];
+        auto const& x = _fields[14];
         return x == "1+" ? 1 : x == "1-" ? -1 : 0;
     } // @TODO config
 
@@ -109,15 +109,15 @@ private:
     static std::array<std::pair<size_t, size_t>, 14> const _limits;
 
 public:
-    explicit helix(std::string &line, uint32_t line_number) : base(line, line_number)
+    explicit helix(std::string const& line, uint32_t line_number) : base(line, line_number)
     {}
 
     [[nodiscard]]
-    std::string const &init_chain_id() const
+    std::string const& init_chain_id() const
     { return _fields[4]; }
 
     [[nodiscard]]
-    std::string const &init_res_name() const
+    std::string const& init_res_name() const
     { return _fields[3]; }
 
     [[nodiscard]]
@@ -125,11 +125,11 @@ public:
     { return std::stoi(_fields[5]); }
 
     [[nodiscard]]
-    std::string const &end_chain_id() const
+    std::string const& end_chain_id() const
     { return _fields[8]; }
 
     [[nodiscard]]
-    std::string const &end_res_name() const
+    std::string const& end_res_name() const
     { return _fields[7]; }
 
     [[nodiscard]]
@@ -170,15 +170,15 @@ private:
     static std::array<std::pair<size_t, size_t>, 23> const _limits;
 
 public:
-    explicit sheet_piece(std::string &line, uint32_t line_number) : base(line, line_number)
+    explicit sheet_piece(std::string const& line, uint32_t line_number) : base(line, line_number)
     {}
 
     [[nodiscard]]
-    std::string const &init_chain_id() const
+    std::string const& init_chain_id() const
     { return _fields[5]; }
 
     [[nodiscard]]
-    std::string const &init_res_name() const
+    std::string const& init_res_name() const
     { return _fields[4]; }
 
     [[nodiscard]]
@@ -186,11 +186,11 @@ public:
     { return std::stoi(_fields[6]); }
 
     [[nodiscard]]
-    std::string const &end_chain_id() const
+    std::string const& end_chain_id() const
     { return _fields[9]; }
 
     [[nodiscard]]
-    std::string const &end_res_name() const
+    std::string const& end_res_name() const
     { return _fields[8]; }
 
     [[nodiscard]]
@@ -231,7 +231,7 @@ private:
     static std::array<std::pair<size_t, size_t>, 13> const _limits;
 
 public:
-    explicit ss(std::string &line, uint32_t line_number) : base(line, line_number)
+    explicit ss(std::string const& line, uint32_t line_number) : base(line, line_number)
     {}
 
     [[nodiscard]]
@@ -247,19 +247,19 @@ public:
     { return std::stoi(_fields[8]); }
 
     [[nodiscard]]
-    std::string const &name_1() const
+    std::string const& name_1() const
     { return _fields[2]; }
 
     [[nodiscard]]
-    std::string const &name_2() const
+    std::string const& name_2() const
     { return _fields[6]; }
 
     [[nodiscard]]
-    std::string const &chain_id_1() const
+    std::string const& chain_id_1() const
     { return _fields[3]; }
 
     [[nodiscard]]
-    std::string const &chain_id_2() const
+    std::string const& chain_id_2() const
     { return _fields[7]; }
 };
 }
