@@ -111,29 +111,25 @@ public:
 class atom final : public kdpoint<3>, public aminoacid::component
 {
 private:
-    // the record it was parsed from
-    records::atom _record;
+    struct impl;
+    impl* pimpl;
 
 public:
-    atom(records::atom const& record, aminoacid const& res)
-            : kdpoint<3>({record.x(), record.y(), record.z()}), component(res), _record(record)
-    {}
+    atom(records::atom const& record, aminoacid const& res);
+
+    ~atom();
 
     [[nodiscard]]
-    std::string const& name() const
-    { return _record.name(); }
+    std::string const& name() const;
 
     [[nodiscard]]
-    std::string const& symbol() const
-    { return _record.element_name(); }
+    std::string const& symbol() const;
 
     [[nodiscard]]
-    double temp_factor() const
-    { return _record.temp_factor(); }
+    double temp_factor() const;
 
     [[nodiscard]]
-    int charge() const
-    { return _record.charge(); }
+    int charge() const;
 
     [[nodiscard]]
     bool is_in_a_positive_ionic_group() const;
@@ -166,22 +162,13 @@ public:
     double mass() const;
 
     [[nodiscard]]
-    bool is_a_hydrogen() const
-    { return symbol() == "H"; }
+    bool is_a_hydrogen() const;
 
     [[nodiscard]]
     bool is_a_cation() const;
 
     [[nodiscard]]
-    bool is_main_chain() const
-    {
-        return
-                this->name() == "C" ||
-                this->name() == "O" ||
-                this->name() == "H" ||
-                this->name() == "HA" ||
-                this->name() == "N";
-    }
+    bool is_main_chain() const;
 };
 
 class ring final : public kdpoint<3>, public aminoacid::component

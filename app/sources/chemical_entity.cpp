@@ -228,7 +228,45 @@ aminoacid::aminoacid(vector<records::atom> const& records, string pdb_name) :
 aminoacid::~aminoacid()
 { delete pimpl; }
 
-double chemical_entity::atom::mass() const
+struct atom::impl final
+{
+public:
+    records::atom _record;
+};
+
+atom::atom(records::atom const& record, aminoacid const& res) :
+    kdpoint<3>({record.x(), record.y(), record.z()}), component(res), pimpl(new impl{record})
+{}
+
+atom::~atom()
+{ delete pimpl; }
+
+string const& atom::name() const
+{ return pimpl->_record.name(); }
+
+string const& atom::symbol() const
+{ return pimpl->_record.element_name(); }
+
+double atom::temp_factor() const
+{ return pimpl->_record.temp_factor(); }
+
+int atom::charge() const
+{ return pimpl->_record.charge(); }
+
+bool atom::is_a_hydrogen() const
+{ return symbol() == "H"; }
+
+bool atom::is_main_chain() const
+{
+    return
+            this->name() == "C" ||
+            this->name() == "O" ||
+            this->name() == "H" ||
+            this->name() == "HA" ||
+            this->name() == "N";
+}
+
+double atom::mass() const
 {
     std::string element = symbol();
     if (element == "H")
