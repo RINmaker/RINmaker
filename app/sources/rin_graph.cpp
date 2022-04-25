@@ -3,6 +3,7 @@
 #include <list>
 #include <queue>
 #include <unordered_map>
+#include <utility>
 
 #include "chemical_entity.h"
 #include "bonds.h"
@@ -230,12 +231,12 @@ public:
     unordered_map<string, node> nodes;
     vector<edge> edges;
 
-    impl(string const& n, parameters const& p) : name{n}, params{p}
+    impl(string nm, parameters const& pr) : name{std::move(nm)}, params{pr}
     {}
 };
 
 graph::graph(
-        string name,
+        string const& name,
         parameters const& params,
         vector<aminoacid const*> const& aminoacids,
         vector<std::shared_ptr<bond::base const>> const& bonds) :

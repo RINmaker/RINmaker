@@ -129,7 +129,7 @@ private:
 
 public:
     graph(
-            std::string name,
+            std::string const& name,
             parameters const& params,
             std::vector<chemical_entity::aminoacid const*> const& aminoacids,
             std::vector<std::shared_ptr<bond::base const>> const& bonds);
