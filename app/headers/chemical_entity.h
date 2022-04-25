@@ -34,6 +34,20 @@ private:
     impl* pimpl;
 
 public:
+    class component
+    {
+    protected:
+        aminoacid const& _res;
+
+        explicit component(aminoacid const& res) : _res(res)
+        {}
+
+    public:
+        [[nodiscard]]
+        aminoacid const& res() const
+        { return _res; }
+    };
+
     aminoacid(std::vector<records::atom> const& records, std::string pdb_name);
 
     ~aminoacid();
@@ -94,21 +108,7 @@ public:
     std::string secondary_structure_id() const;
 };
 
-class component
-{
-protected:
-    aminoacid const& _res;
-
-    explicit component(aminoacid const& res) : _res(res)
-    {}
-
-public:
-    [[nodiscard]]
-    aminoacid const& res() const
-    { return _res; }
-};
-
-class atom final : public kdpoint<3>, public component
+class atom final : public kdpoint<3>, public aminoacid::component
 {
 private:
     // the record it was parsed from
@@ -184,7 +184,7 @@ public:
     }
 };
 
-class ring final : public kdpoint<3>, public component
+class ring final : public kdpoint<3>, public aminoacid::component
 {
 private:
     std::vector<atom const*> _atoms;
@@ -247,7 +247,7 @@ public:
     string name() const;
 };
 
-class ionic_group final : public kdpoint<3>, public component
+class ionic_group final : public kdpoint<3>, public aminoacid::component
 {
 private:
     std::vector<atom const*> const _atoms;

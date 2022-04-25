@@ -24,8 +24,7 @@ namespace fs = std::filesystem;
 
 using lm = log_manager;
 
-using chemical_entity::aminoacid, chemical_entity::component,
-        chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group;
+using chemical_entity::aminoacid, chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group;
 
 using std::vector, std::string, std::list, std::set, std::map, std::unordered_map, std::function, std::optional,
         std::shared_ptr, std::make_shared, std::make_unique, std::is_base_of, std::ifstream, std::runtime_error,
@@ -310,11 +309,11 @@ vector<shared_ptr<Bond const>>
 find_bonds(vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double dist, parameters const& params)
 {
     static_assert(
-            is_base_of<component, Entity1>::value,
-            "template typename Entity1 must inherit from type chemical_entity::component");
+            is_base_of<aminoacid::component, Entity1>::value,
+            "template typename Entity1 must inherit from type chemical_entity::aminoacid::component");
     static_assert(
-            is_base_of<component, Entity2>::value,
-            "template typename Entity2 must inherit from type chemical_entity::component");
+            is_base_of<aminoacid::component, Entity2>::value,
+            "template typename Entity2 must inherit from type chemical_entity::aminoacid::component");
     static_assert(
             is_base_of<bond::base, Bond>::value, "template typename Bond must inherit from type bond::base");
 

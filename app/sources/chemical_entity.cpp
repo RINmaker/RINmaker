@@ -7,8 +7,7 @@
 #include "utils.h"
 
 using std::vector, std::array, std::unique_ptr, std::string, std::make_unique;
-using chemical_entity::aminoacid, chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group,
-        chemical_entity::component;
+using chemical_entity::aminoacid, chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group;
 
 struct chemical_entity::aminoacid::impl final
 {
