@@ -43,9 +43,8 @@ using std::string;
 class edge
 {
 private:
-    string _source, _target, _source_atom, _target_atom;
-    string _distance, _energy, _angle, _interaction, _orientation;
-    string _donor, _cation, _positive;
+    struct impl;
+    impl * pimpl;
 
 public:
     explicit edge(bond::ss const& bond);
@@ -62,54 +61,45 @@ public:
 
     explicit edge(bond::generic_bond const& bond);
 
-public:
-    [[nodiscard]]
-    string const& source_id() const
-    { return _source; }
+    edge(edge const&);
+
+    ~edge();
 
     [[nodiscard]]
-    string const& target_id() const
-    { return _target; }
+    std::string const& source_id() const;
 
     [[nodiscard]]
-    string const& distance() const
-    { return _distance; }
+    std::string const& target_id() const;
 
     [[nodiscard]]
-    string const& energy() const
-    { return _energy; }
+    std::string const& distance() const;
 
     [[nodiscard]]
-    string const& interaction() const
-    { return _interaction; }
+    std::string const& energy() const;
 
     [[nodiscard]]
-    string const& source_atom() const
-    { return _source_atom; }
+    std::string const& interaction() const;
 
     [[nodiscard]]
-    string const& target_atom() const
-    { return _target_atom; }
+    std::string const& source_atom() const;
 
     [[nodiscard]]
-    string const& angle() const
-    { return _angle; }
+    std::string const& target_atom() const;
 
     [[nodiscard]]
-    string const& donor() const
-    { return _donor; }
+    std::string const& angle() const;
 
     [[nodiscard]]
-    string const& cation() const
-    { return _cation; }
+    std::string const& donor() const;
 
     [[nodiscard]]
-    string const& positive() const
-    { return _positive; }
+    std::string const& cation() const;
 
     [[nodiscard]]
-    string const& orientation() const
-    { return _orientation; }
+    std::string const& positive() const;
+
+    [[nodiscard]]
+    std::string const& orientation() const;
 
     void append_to(pugi::xml_node& rin, bool metadata);
 };

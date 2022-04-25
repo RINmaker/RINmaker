@@ -8,10 +8,65 @@
 #include "chemical_entity.h"
 #include "config.h"
 
-using namespace rin;
+namespace fs = std::filesystem;
+
+using std::vector, std::string, std::queue, std::to_string, std::unordered_map;
 using chemical_entity::aminoacid;
 
-graph::graph(string name, rin::parameters const& params, vector<aminoacid const*> const& aminoacids, vector<std::shared_ptr<bond::base const>> const& bonds) : _name(std::move(name)), _params(params)
+using namespace rin;
+
+struct edge::impl final
+{
+public:
+    string _source, _target, _source_atom, _target_atom;
+    string _distance, _energy, _angle, _interaction, _orientation;
+    string _donor, _cation, _positive;
+};
+
+edge::edge(edge const& other) : pimpl{new impl(*other.pimpl)}
+{}
+
+edge::~edge()
+{ delete pimpl; }
+
+string const& edge::source_id() const
+{ return pimpl->_source; }
+
+string const& edge::target_id() const
+{ return pimpl->_target; }
+
+string const& edge::distance() const
+{ return pimpl->_distance; }
+
+string const& edge::energy() const
+{ return pimpl->_energy; }
+
+string const& edge::interaction() const
+{ return pimpl->_interaction; }
+
+string const& edge::source_atom() const
+{ return pimpl->_source_atom; }
+
+string const& edge::target_atom() const
+{ return pimpl->_target_atom; }
+
+string const& edge::angle() const
+{ return pimpl->_angle; }
+
+string const& edge::donor() const
+{ return pimpl->_donor; }
+
+string const& edge::cation() const
+{ return pimpl->_cation; }
+
+string const& edge::positive() const
+{ return pimpl->_positive; }
+
+string const& edge::orientation() const
+{ return pimpl->_orientation; }
+
+graph::graph(string name, rin::parameters const& params, vector<aminoacid const*> const& aminoacids,
+             vector<std::shared_ptr<bond::base const>> const& bonds) : _name(std::move(name)), _params(params)
 {
     for (auto a: aminoacids)
     {
@@ -44,7 +99,8 @@ void graph::write_to_file(std::filesystem::path const& out_path) const
     pugi::xml_node graphml = doc.append_child("graphml");
     graphml.append_attribute("xmlns") = "http://graphml.graphdrawing.org/xmlns";
     graphml.append_attribute("xmlns:xsi") = "http://www.w3.org/2001/XMLSchema-instance";
-    graphml.append_attribute("xsi:schemaLocation") = "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
+    graphml.append_attribute("xsi:schemaLocation") =
+            "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
 
     // parameters summary
     auto comment = graphml.parent().insert_child_before(pugi::node_comment, graphml);
@@ -76,113 +132,121 @@ void graph::write_to_file(std::filesystem::path const& out_path) const
     doc.save_file(out_path.c_str());
 }
 
-edge::edge(bond::ss const& bond) :
-        _source(bond.source_id()),
-        _target(bond.target_id()),
-        _distance(std::to_string(bond.get_length())),
-        _energy(std::to_string(bond.get_energy())),
-        _interaction(bond.get_interaction()),
-        _source_atom("SG"), // TODO config
-        _target_atom("SG"), // TODO config
-        _donor(cfg::graphml::none),
-        _cation(cfg::graphml::none),
-        _positive(cfg::graphml::none),
-        _orientation(cfg::graphml::none),
-        _angle(cfg::graphml::null)
-{}
+edge::edge(bond::ss const& bond) : pimpl{new impl()}
+{
+    pimpl->_source = bond.source_id();
+    pimpl->_target = bond.target_id();
+    pimpl->_distance = std::to_string(bond.get_length());
+    pimpl->_energy = std::to_string(bond.get_energy());
+    pimpl->_interaction = bond.get_interaction();
+    pimpl->_source_atom = "SG"; // TODO config
+    pimpl->_target_atom = "SG"; // TODO config
+    pimpl->_donor = cfg::graphml::none;
+    pimpl->_cation = cfg::graphml::none;
+    pimpl->_positive = cfg::graphml::none;
+    pimpl->_orientation = cfg::graphml::none;
+    pimpl->_angle = cfg::graphml::null;
+}
 
-edge::edge(bond::vdw const& bond) :
-        _source(bond.source_atom().res().id()),
-        _target(bond.target_atom().res().id()),
-        _distance(std::to_string(bond.get_length())),
-        _energy(std::to_string(bond.get_energy())),
-        _interaction(bond.get_interaction()),
-        _source_atom(bond.source_atom().name()),
-        _target_atom(bond.target_atom().name()),
-        _donor(cfg::graphml::none),
-        _angle(cfg::graphml::null),
-        _cation(cfg::graphml::none),
-        _orientation(cfg::graphml::none),
-        _positive(cfg::graphml::none)
-{}
+edge::edge(bond::vdw const& bond) : pimpl{new impl()}
+{
+    pimpl->_source = bond.source_atom().res().id();
+    pimpl->_target = bond.target_atom().res().id();
+    pimpl->_distance = std::to_string(bond.get_length());
+    pimpl->_energy = std::to_string(bond.get_energy());
+    pimpl->_interaction = bond.get_interaction();
+    pimpl->_source_atom = bond.source_atom().name();
+    pimpl->_target_atom = bond.target_atom().name();
+    pimpl->_donor = cfg::graphml::none;
+    pimpl->_angle = cfg::graphml::null;
+    pimpl->_cation = cfg::graphml::none;
+    pimpl->_orientation = cfg::graphml::none;
+    pimpl->_positive = cfg::graphml::none;
+}
 
-edge::edge(bond::ionic const& bond) :
-        _source(bond.source_positive().res().id()),
-        _target(bond.target_negative().res().id()),
-        _distance(std::to_string(bond.get_length())),
-        _energy(std::to_string(bond.get_energy())),
-        _interaction(bond.get_interaction()),
-        _source_atom(bond.source_positive().name()),
-        _target_atom(bond.target_negative().name()),
-        _positive(bond.source_positive().res().id()),
-        _angle(cfg::graphml::null),
-        _donor(cfg::graphml::none),
-        _cation(cfg::graphml::none),
-        _orientation(cfg::graphml::none)
-{}
+edge::edge(bond::ionic const& bond) : pimpl{new impl()}
+{
+    pimpl->_source = bond.source_positive().res().id();
+    pimpl->_target = bond.target_negative().res().id();
+    pimpl->_distance = std::to_string(bond.get_length());
+    pimpl->_energy = std::to_string(bond.get_energy());
+    pimpl->_interaction = bond.get_interaction();
+    pimpl->_source_atom = bond.source_positive().name();
+    pimpl->_target_atom = bond.target_negative().name();
+    pimpl->_positive = bond.source_positive().res().id();
+    pimpl->_angle = cfg::graphml::null;
+    pimpl->_donor = cfg::graphml::none;
+    pimpl->_cation = cfg::graphml::none;
+    pimpl->_orientation = cfg::graphml::none;
+}
 
-edge::edge(bond::hydrogen const& bond) :
-        _source(bond.source_atom().res().id()),
-        _target(bond.target_atom().res().id()),
-        _distance(std::to_string(bond.get_length())),
-        _energy(std::to_string(bond.get_energy())),
-        _interaction(bond.get_interaction()),
-        _source_atom(bond.source_atom().name()),
-        _target_atom(bond.target_atom().name()),
-        _angle(std::to_string(bond.get_angle())),
-        _donor(bond.donor().res().id()),
-        _cation(cfg::graphml::none),
-        _positive(cfg::graphml::none),
-        _orientation(cfg::graphml::none)
-{}
+edge::edge(bond::hydrogen const& bond) : pimpl{new impl()}
+{
+    pimpl->_source = bond.source_atom().res().id();
+    pimpl->_target = bond.target_atom().res().id();
+    pimpl->_distance = std::to_string(bond.get_length());
+    pimpl->_energy = std::to_string(bond.get_energy());
+    pimpl->_interaction = bond.get_interaction();
+    pimpl->_source_atom = bond.source_atom().name();
+    pimpl->_target_atom = bond.target_atom().name();
+    pimpl->_angle = std::to_string(bond.get_angle());
+    pimpl->_donor = bond.donor().res().id();
+    pimpl->_cation = cfg::graphml::none;
+    pimpl->_positive = cfg::graphml::none;
+    pimpl->_orientation = cfg::graphml::none;
+}
 
-edge::edge(bond::pipistack const& bond) :
-        _source(bond.source_ring().res().id()),
-        _target(bond.target_ring().res().id()),
-        _distance(std::to_string(bond.get_length())),
-        _energy(std::to_string(bond.get_energy())),
-        _interaction(bond.get_interaction()),
-        _source_atom(bond.source_ring().name()),
-        _target_atom(bond.target_ring().name()),
-        _angle(std::to_string(bond.angle())),
-        _donor(cfg::graphml::none),
-        _cation(cfg::graphml::none),
-        _positive(cfg::graphml::none),
-        _orientation(cfg::graphml::none)
-{}
+edge::edge(bond::pipistack const& bond) : pimpl{new impl()}
+{
+    pimpl->_source = bond.source_ring().res().id();
+    pimpl->_target = bond.target_ring().res().id();
+    pimpl->_distance = std::to_string(bond.get_length());
+    pimpl->_energy = std::to_string(bond.get_energy());
+    pimpl->_interaction = bond.get_interaction();
+    pimpl->_source_atom = bond.source_ring().name();
+    pimpl->_target_atom = bond.target_ring().name();
+    pimpl->_angle = std::to_string(bond.angle());
+    pimpl->_donor = cfg::graphml::none;
+    pimpl->_cation = cfg::graphml::none;
+    pimpl->_positive = cfg::graphml::none;
+    pimpl->_orientation = cfg::graphml::none;
+}
 
-edge::edge(bond::pication const& bond) :
-        _source(bond.source_ring().res().id()),
-        _target(bond.target_cation().res().id()),
-        _distance(std::to_string(bond.get_length())),
-        _energy(std::to_string(bond.get_energy())),
-        _interaction(bond.get_interaction()),
-        _source_atom(bond.source_ring().name()),
-        _target_atom(bond.target_cation().name()),
-        _cation(bond.target_cation().res().id()),
-        _angle(std::to_string(bond.angle())),
-        _donor(cfg::graphml::none),
-        _positive(cfg::graphml::none),
-        _orientation(cfg::graphml::none)
-{}
+edge::edge(bond::pication const& bond) : pimpl{new impl()}
+{
+    pimpl->_source = bond.source_ring().res().id();
+    pimpl->_target = bond.target_cation().res().id();
+    pimpl->_distance = std::to_string(bond.get_length());
+    pimpl->_energy = std::to_string(bond.get_energy());
+    pimpl->_interaction = bond.get_interaction();
+    pimpl->_source_atom = bond.source_ring().name();
+    pimpl->_target_atom = bond.target_cation().name();
+    pimpl->_cation = bond.target_cation().res().id();
+    pimpl->_angle = std::to_string(bond.angle());
+    pimpl->_donor = cfg::graphml::none;
+    pimpl->_positive = cfg::graphml::none;
+    pimpl->_orientation = cfg::graphml::none;
+}
 
-edge::edge(bond::generic_bond const& bond) :
-        _source(bond.source().id()),
-        _target(bond.target().id()),
-        _distance(std::to_string(bond.get_length())),
-        _energy(cfg::graphml::none),
-        _interaction(bond.get_interaction()),
-        _source_atom(bond.source().name()),
-        _target_atom(bond.target().name()),
-        _angle(cfg::graphml::null),
-        _donor(cfg::graphml::none),
-        _cation(cfg::graphml::none),
-        _positive(cfg::graphml::none),
-        _orientation(cfg::graphml::none)
-{}
+edge::edge(bond::generic_bond const& bond) : pimpl{new impl()}
+{
+    pimpl->_source = bond.source().id();
+    pimpl->_target = bond.target().id();
+    pimpl->_distance = std::to_string(bond.get_length());
+    pimpl->_energy = cfg::graphml::none;
+    pimpl->_interaction = bond.get_interaction();
+    pimpl->_source_atom = bond.source().name();
+    pimpl->_target_atom = bond.target().name();
+    pimpl->_angle = cfg::graphml::null;
+    pimpl->_donor = cfg::graphml::none;
+    pimpl->_cation = cfg::graphml::none;
+    pimpl->_positive = cfg::graphml::none;
+    pimpl->_orientation = cfg::graphml::none;
+}
 
 void add_data(
-        pugi::xml_node& node, string const& prefix, string const& type, string const& key_name, string const& key_value, string const& key_type, bool with_metadata)
+        pugi::xml_node& node, string const& prefix, string const& type, string const& key_name, string const& key_value,
+        string const& key_type, bool with_metadata)
 {
     pugi::xml_node data = node.append_child("data");
     data.append_attribute("key") = (prefix + key_name).c_str();
@@ -203,24 +267,24 @@ void edge::append_to(pugi::xml_node& rin, bool metadata)
 {
     // the xml node representing a rin edge
     pugi::xml_node edge = rin.append_child("edge");
-    edge.append_attribute("source") = _source.c_str();
-    edge.append_attribute("target") = _target.c_str();
+    edge.append_attribute("source") = pimpl->_source.c_str();
+    edge.append_attribute("target") = pimpl->_target.c_str();
 
-    add_data(edge, "e_", "edge", "NodeId1", _source, "string", metadata);
-    add_data(edge, "e_", "edge", "NodeId2", _target, "string", metadata);
+    add_data(edge, "e_", "edge", "NodeId1", pimpl->_source, "string", metadata);
+    add_data(edge, "e_", "edge", "NodeId2", pimpl->_target, "string", metadata);
 
-    add_data(edge, "e_", "edge", "Energy", _energy, "double", metadata);
-    add_data(edge, "e_", "edge", "Distance", _distance, "double", metadata);
+    add_data(edge, "e_", "edge", "Energy", pimpl->_energy, "double", metadata);
+    add_data(edge, "e_", "edge", "Distance", pimpl->_distance, "double", metadata);
 
-    add_data(edge, "e_", "edge", "Interaction", _interaction, "string", metadata);
-    add_data(edge, "e_", "edge", "Atom1", _source_atom, "string", metadata);
-    add_data(edge, "e_", "edge", "Atom2", _target_atom, "string", metadata);
+    add_data(edge, "e_", "edge", "Interaction", pimpl->_interaction, "string", metadata);
+    add_data(edge, "e_", "edge", "Atom1", pimpl->_source_atom, "string", metadata);
+    add_data(edge, "e_", "edge", "Atom2", pimpl->_target_atom, "string", metadata);
 
-    add_data(edge, "e_", "edge", "Angle", _angle, "double", metadata);
-    add_data(edge, "e_", "edge", "Donor", _donor, "string", metadata);
-    add_data(edge, "e_", "edge", "Cation", _cation, "string", metadata);
-    add_data(edge, "e_", "edge", "Positive", _positive, "string", metadata);
-    add_data(edge, "e_", "edge", "Orientation", _orientation, "string", metadata);
+    add_data(edge, "e_", "edge", "Angle", pimpl->_angle, "double", metadata);
+    add_data(edge, "e_", "edge", "Donor", pimpl->_donor, "string", metadata);
+    add_data(edge, "e_", "edge", "Cation", pimpl->_cation, "string", metadata);
+    add_data(edge, "e_", "edge", "Positive", pimpl->_positive, "string", metadata);
+    add_data(edge, "e_", "edge", "Orientation", pimpl->_orientation, "string", metadata);
 }
 
 node::node(chemical_entity::aminoacid const& res) :
