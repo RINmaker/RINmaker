@@ -3,20 +3,13 @@
 #include <string>
 #include <vector>
 #include <array>
-#include <tuple>
-#include <memory>
 
 #include "config.h"
-#include "prelude.h"
-
-#include "log_manager.h"
 
 #include "rin_graph.h"
 #include "pdb_records.h"
-
 #include "secondary_structures.h"
 
-#include "spatial/geometry.h"
 #include "spatial/kdpoint.h"
 
 namespace chemical_entity
@@ -48,7 +41,7 @@ public:
         { return _res; }
     };
 
-    aminoacid(std::vector<records::atom> const& records, std::string pdb_name);
+    aminoacid(std::vector<records::atom> const& records, std::string const& pdb_name);
 
     ~aminoacid();
 
@@ -204,7 +197,7 @@ public:
     atom const& atom_closest_to(atom const& atom) const;
 
     [[nodiscard]]
-    string name() const;
+    std::string name() const;
 };
 
 class ionic_group final : public kdpoint<3>, public aminoacid::component
@@ -225,8 +218,6 @@ public:
     double ionion_energy_q() const;
 
     [[nodiscard]]
-    string name() const;
+    std::string name() const;
 };
 }
-
-string getNameFromAtoms(std::vector<const chemical_entity::atom*> const& atoms, string const& delimiter = ":");
