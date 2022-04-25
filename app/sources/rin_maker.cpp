@@ -169,7 +169,7 @@ rin::maker::maker(string const& pdb_name,
                   vector<records::atom> const& atom_records,
                   vector<records::ss> const& ssbond_records,
                   vector<records::helix> const& helix_records,
-                  vector<records::sheet_piece> const& sheet_records) : pimpl{make_unique<impl>()}
+                  vector<records::sheet_piece> const& sheet_records) : pimpl{new impl()}
 {
     vector<records::atom> tmp_atoms;
     vector<aminoacid*> tmp_aminoacids;
@@ -301,6 +301,9 @@ rin::maker::maker(string const& pdb_name,
     pimpl->alpha_carbon_tree = kdtree<atom, 3>(pimpl->alpha_carbon_vector);
     pimpl->beta_carbon_tree = kdtree<atom, 3>(pimpl->beta_carbon_vector);
 }
+
+rin::maker::~maker()
+{ delete pimpl; }
 
 template<typename Bond, typename Entity1, typename Entity2>
 vector<shared_ptr<Bond const>>

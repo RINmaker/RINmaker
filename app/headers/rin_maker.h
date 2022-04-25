@@ -17,7 +17,7 @@ struct maker final
 {
 private:
     struct impl;
-    std::unique_ptr<impl> pimpl;
+    impl* pimpl;
 
 public:
     static std::vector<std::shared_ptr<rin::maker>> parse_models(std::filesystem::path const& pdb_path);
@@ -27,6 +27,8 @@ public:
           std::vector<records::ss> const& ssbond_records,
           std::vector<records::helix> const& helix_records,
           std::vector<records::sheet_piece> const& sheet_records);
+
+    ~maker();
 
     rin::graph operator()(parameters const& params) const;
 };
