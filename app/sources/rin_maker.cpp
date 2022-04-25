@@ -1,43 +1,37 @@
 #include "rin_maker.h"
 
-#include <fstream>
-#include <functional>
-#include <exception>
-
 #include <string>
 #include <list>
-
-#include <optional>
-
 #include <map>
 #include <unordered_map>
 
+#include <functional>
+#include <optional>
+
+#include <fstream>
+
+#include <exception>
 #include <utility>
 
+#include "bonds.h"
 #include "chemical_entity.h"
 
+#include "rin_params.h"
 #include "log_manager.h"
 #include "spatial/kdtree.h"
-
-#include "rin_params.h"
-#include "bonds.h"
 
 namespace fs = std::filesystem;
 
 using lm = log_manager;
 
-using chemical_entity::aminoacid;
-using chemical_entity::atom;
-using chemical_entity::ring;
-using chemical_entity::ionic_group;
+using chemical_entity::aminoacid, chemical_entity::component,
+        chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group;
 
-using std::string, std::function, std::optional, std::shared_ptr;
-using std::list, std::vector, std::map, std::unordered_map;
-using std::is_base_of;
+using std::vector, std::string, std::list, std::set, std::map, std::unordered_map, std::function, std::optional,
+        std::shared_ptr, std::make_shared, std::make_unique, std::is_base_of, std::ifstream, std::runtime_error,
+        std::pair, std::nullopt;
 
-using rin::parameters;
-
-using prelude::interval;
+using rin::parameters, prelude::interval;
 
 struct rin::maker::impl
 {
@@ -61,24 +55,22 @@ public:
 
     string _pdb_name;
 
-    impl() = default;
-
     ~impl()
     { for (auto* res: _aminoacids) delete res; }
 };
 
 vector<shared_ptr<rin::maker>> rin::maker::parse_models(fs::path const& pdb_path)
 {
-    std::ifstream pdb_file;
+    ifstream pdb_file;
     pdb_file.open(pdb_path);
 
     // might throw
     if (!pdb_file.is_open())
-        throw std::runtime_error("could not open " + pdb_path.string() + "\n");
+        throw runtime_error("could not open " + pdb_path.string() + "\n");
 
     string ls;
     uint32_t ln = 0;
-    std::vector<std::pair<uint32_t, std::string>> numbered_lines;
+    vector<pair<uint32_t, string>> numbered_lines;
     while (getline(pdb_file, ls))
         numbered_lines.emplace_back(ln++, ls);
     pdb_file.close();
@@ -127,9 +119,10 @@ vector<shared_ptr<rin::maker>> rin::maker::parse_models(fs::path const& pdb_path
         models.push_back(tmp_model);
 
     auto const pdb_name = pdb_path.stem().string();
-    vector<std::shared_ptr<rin::maker>> rin_makers;
+    vector<shared_ptr<rin::maker>> rin_makers;
     for (auto const& model: models)
-        rin_makers.emplace_back(std::make_shared<rin::maker>(pdb_name, model, ssbond_records, helix_records, sheet_records));
+        rin_makers.emplace_back(
+                make_shared<rin::maker>(pdb_name, model, ssbond_records, helix_records, sheet_records));
 
     return rin_makers;
 }
@@ -138,7 +131,7 @@ template<typename Record>
 class secondary_structure_helper final
 {
 private:
-    std::unordered_map<string, std::map<interval<int>, Record, interval<int>::less>> _map;
+    unordered_map<string, map<interval<int>, Record, interval<int>::less>> _map;
 
 public:
     void insert(Record const& record)
@@ -146,21 +139,19 @@ public:
         auto chain = _map.find(record.init_chain_id());
         if (chain == _map.end())
         {
-            std::map<interval<int>, Record, interval<int>::less> new_chain;
+            map<interval<int>, Record, interval<int>::less> new_chain;
             new_chain.insert({record.range(), record});
             _map.insert({record.init_chain_id(), new_chain});
         }
         else
-        {
-            chain->second.insert({record.range(), record});
-        }
+        { chain->second.insert({record.range(), record}); }
     }
 
     [[nodiscard]]
     size_t size() const
     { return _map.size(); }
 
-    std::optional<Record> find(chemical_entity::aminoacid& res) const
+    optional<Record> find(aminoacid const& res) const
     {
         auto chain = _map.find(res.chain_id());
         if (chain != _map.end())
@@ -170,7 +161,7 @@ public:
                 return kv->second;
         }
 
-        return std::nullopt;
+        return nullopt;
     }
 };
 
@@ -178,11 +169,10 @@ rin::maker::maker(string const& pdb_name,
                   vector<records::atom> const& atom_records,
                   vector<records::ss> const& ssbond_records,
                   vector<records::helix> const& helix_records,
-                  vector<records::sheet_piece> const& sheet_records)
-                  : pimpl{std::make_unique<impl>()}
+                  vector<records::sheet_piece> const& sheet_records) : pimpl{make_unique<impl>()}
 {
     vector<records::atom> tmp_atoms;
-    std::vector<chemical_entity::aminoacid*> tmp_aminoacids;
+    vector<aminoacid*> tmp_aminoacids;
 
     lm::main()->info("parsing pdb lines...");
 
@@ -201,7 +191,7 @@ rin::maker::maker(string const& pdb_name,
         tmp_aminoacids.emplace_back(new aminoacid(tmp_atoms, pdb_name));
 
     for (auto const& record: ssbond_records)
-        pimpl->_ss_bonds.emplace_back(std::make_shared<bond::ss>(record));
+        pimpl->_ss_bonds.emplace_back(make_shared<bond::ss>(record));
 
     auto sheet_helper = secondary_structure_helper<records::sheet_piece>();
     for (auto const& record: sheet_records)
@@ -301,18 +291,16 @@ rin::maker::maker(string const& pdb_name,
 
     lm::main()->info("building acceleration structures...");
 
-    pimpl->_hdonor_tree = kdtree<chemical_entity::atom, 3>(hdonors);
-    pimpl->_vdw_tree = kdtree<chemical_entity::atom, 3>(pimpl->_vdw_vector);
+    pimpl->_hdonor_tree = kdtree<atom, 3>(hdonors);
+    pimpl->_vdw_tree = kdtree<atom, 3>(pimpl->_vdw_vector);
 
-    pimpl->_ring_tree = kdtree<chemical_entity::ring, 3>(pimpl->_ring_vector);
-    pimpl->_pication_ring_tree = kdtree<chemical_entity::ring, 3>(pimpl->_pication_ring_vector);
-    pimpl->_positive_ion_tree = kdtree<chemical_entity::ionic_group, 3>(positives);
+    pimpl->_ring_tree = kdtree<ring, 3>(pimpl->_ring_vector);
+    pimpl->_pication_ring_tree = kdtree<ring, 3>(pimpl->_pication_ring_vector);
+    pimpl->_positive_ion_tree = kdtree<ionic_group, 3>(positives);
 
     pimpl->_alpha_carbon_tree = kdtree<atom, 3>(pimpl->_alpha_carbon_vector);
     pimpl->_beta_carbon_tree = kdtree<atom, 3>(pimpl->_beta_carbon_vector);
 }
-
-using chemical_entity::component;
 
 template<typename Bond, typename Entity1, typename Entity2>
 vector<shared_ptr<Bond const>>
@@ -341,7 +329,6 @@ find_bonds(vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, do
 
     return bonds;
 }
-
 
 vector<shared_ptr<bond::base const>> filter_hbond_realistic(vector<shared_ptr<bond::base const>> const& input)
 {
@@ -423,8 +410,6 @@ vector<shared_ptr<bond::base const>> filter_hbond_realistic(vector<shared_ptr<bo
     return output;
 }
 
-using std::set, std::unordered_map;
-
 template<typename Bond>
 vector<shared_ptr<Bond const>> remove_duplicates(vector<shared_ptr<Bond const>> const& unfiltered)
 {
@@ -445,14 +430,14 @@ vector<shared_ptr<Bond const>> remove_duplicates(vector<shared_ptr<Bond const>> 
     return results;
 }
 
-template <typename Bond>
+template<typename Bond>
 vector<shared_ptr<Bond const>> filter_best(vector<shared_ptr<Bond const>> const& unfiltered)
 {
     vector<shared_ptr<Bond const>> results;
     results.reserve(unfiltered.size());
 
     unordered_map<string, shared_ptr<Bond const>> res_pairs;
-    for (auto const& b : unfiltered)
+    for (auto const& b: unfiltered)
     {
         auto const pair_id = b->get_id_simple();
         auto const pair = res_pairs.find(pair_id);
@@ -466,7 +451,7 @@ vector<shared_ptr<Bond const>> filter_best(vector<shared_ptr<Bond const>> const&
     return results;
 }
 
-template <typename Bond>
+template<typename Bond>
 void append(vector<shared_ptr<bond::base const>>& dst, vector<shared_ptr<Bond const>> const& src)
 { dst.insert(dst.end(), src.begin(), src.end()); }
 
