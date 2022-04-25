@@ -44,7 +44,7 @@ class edge
 {
 private:
     struct impl;
-    impl * pimpl;
+    impl* pimpl;
 
 public:
     explicit edge(bond::ss const& bond);
@@ -107,30 +107,23 @@ public:
 class node
 {
 private:
-    string _id;
-    string _pdb_name;
-    string _chain;
-    string _seq;
-    string _name;
-    string _x, _y, _z;
-    string _bfactor;
-    string _secondary;
-
-    int _degree = 0;
+    struct impl;
+    impl* pimpl;
 
 public:
     explicit node(chemical_entity::aminoacid const& res);
 
-    void inc_degree()
-    { ++_degree; }
+    node(node const& other);
+
+    ~node();
+
+    void inc_degree();
 
     [[nodiscard]]
-    int degree() const
-    { return _degree; }
+    int degree() const;
 
     [[nodiscard]]
-    string const& get_id() const
-    { return _id; }
+    string const& get_id() const;
 
     void append_to(pugi::xml_node& graphml, bool with_metadata) const;
 };
@@ -151,13 +144,16 @@ private:
     vector<edge> _edges;
 
 public:
-    graph(string name, parameters const& params, vector<aminoacid const*> const& aminoacids, vector<std::shared_ptr<bond::base const>> const& bonds);
+    graph(string name, parameters const& params, vector<aminoacid const*> const& aminoacids,
+          vector<std::shared_ptr<bond::base const>> const& bonds);
 
     void write_to_file(fs::path const& out_path) const;
 
-    string name() const { return _name; }
+    string name() const
+    { return _name; }
 
-    std::vector<edge> get_edges() const { return _edges; }
+    std::vector<edge> get_edges() const
+    { return _edges; }
 
     std::unordered_map<std::string, node> get_nodes() const
     {

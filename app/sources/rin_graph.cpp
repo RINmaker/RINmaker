@@ -287,19 +287,52 @@ void edge::append_to(pugi::xml_node& rin, bool metadata)
     add_data(edge, "e_", "edge", "Orientation", pimpl->_orientation, "string", metadata);
 }
 
-node::node(chemical_entity::aminoacid const& res) :
-        _id(res.id()),
-        _chain(res.chain_id()),
-        _seq(std::to_string(res.sequence_number())),
-        _name(res.name()),
-        _x(std::to_string(res[0])),
-        _y(std::to_string(res[1])),
-        _z(std::to_string(res[2])),
-        _bfactor(res.ca() == nullptr ? "NULL" : std::to_string(res.ca()->temp_factor())),
-        _secondary(res.secondary_structure_id()),
-        _pdb_name(res.pdb_name()), // TODO
-        _degree(0)
+struct node::impl final
+{
+public:
+    string _id;
+    string _pdb_name;
+    string _chain;
+    string _seq;
+    string _name;
+    string _x, _y, _z;
+    string _bfactor;
+    string _secondary;
+
+    int _degree = 0;
+};
+
+
+node::node(chemical_entity::aminoacid const& res) : pimpl{new impl()}
+{
+    pimpl->_id = res.id();
+    pimpl->_chain = res.chain_id();
+    pimpl->_seq = std::to_string(res.sequence_number());
+    pimpl->_name = res.name();
+    pimpl->_x = std::to_string(res[0]);
+    pimpl->_y = std::to_string(res[1]);
+    pimpl->_z = std::to_string(res[2]);
+    pimpl->_bfactor = res.ca() == nullptr ? "NULL" : std::to_string(res.ca()->temp_factor());
+    pimpl->_secondary = res.secondary_structure_id();
+    pimpl->_pdb_name = res.pdb_name();
+    pimpl->_degree = 0;
+}
+
+node::node(node const& other) : pimpl{new impl(*other.pimpl)}
 {}
+
+node::~node()
+{ delete pimpl; }
+
+void node::inc_degree()
+{ ++pimpl->_degree; }
+
+int node::degree() const
+{ return pimpl->_degree; }
+
+[[nodiscard]]
+string const& node::get_id() const
+{ return pimpl->_id; }
 
 
 void node::append_to(pugi::xml_node& graph, bool with_metadata) const
@@ -307,22 +340,22 @@ void node::append_to(pugi::xml_node& graph, bool with_metadata) const
     pugi::xml_node node;
 
     node = graph.prepend_child("node");
-    node.append_attribute("id") = _id.c_str();
+    node.append_attribute("id") = pimpl->_id.c_str();
 
-    add_data(node, "v_", "node", "Degree", std::to_string(_degree), "double", with_metadata);
-    add_data(node, "v_", "node", "NodeId", _id, "string", with_metadata);
+    add_data(node, "v_", "node", "Degree", std::to_string(pimpl->_degree), "double", with_metadata);
+    add_data(node, "v_", "node", "NodeId", pimpl->_id, "string", with_metadata);
 
-    add_data(node, "v_", "node", "Residue", _id, "string", with_metadata);
-    add_data(node, "v_", "node", "Chain", _chain, "string", with_metadata);
-    add_data(node, "v_", "node", "Position", _seq, "double", with_metadata);
-    add_data(node, "v_", "node", "Name", _name, "string", with_metadata);
+    add_data(node, "v_", "node", "Residue", pimpl->_id, "string", with_metadata);
+    add_data(node, "v_", "node", "Chain", pimpl->_chain, "string", with_metadata);
+    add_data(node, "v_", "node", "Position", pimpl->_seq, "double", with_metadata);
+    add_data(node, "v_", "node", "Name", pimpl->_name, "string", with_metadata);
 
-    add_data(node, "v_", "node", "x", _x, "double", with_metadata);
-    add_data(node, "v_", "node", "y", _y, "double", with_metadata);
-    add_data(node, "v_", "node", "z", _z, "double", with_metadata);
+    add_data(node, "v_", "node", "x", pimpl->_x, "double", with_metadata);
+    add_data(node, "v_", "node", "y", pimpl->_y, "double", with_metadata);
+    add_data(node, "v_", "node", "z", pimpl->_z, "double", with_metadata);
 
-    add_data(node, "v_", "node", "Bfactor_CA", _bfactor, "double", with_metadata);
-    add_data(node, "v_", "node", "Secondary_Structure", _secondary, "string", with_metadata);
+    add_data(node, "v_", "node", "Bfactor_CA", pimpl->_bfactor, "double", with_metadata);
+    add_data(node, "v_", "node", "Secondary_Structure", pimpl->_secondary, "string", with_metadata);
 
-    add_data(node, "v_", "node", "PdbName", _pdb_name, "string", with_metadata);
+    add_data(node, "v_", "node", "PdbName", pimpl->_pdb_name, "string", with_metadata);
 }
