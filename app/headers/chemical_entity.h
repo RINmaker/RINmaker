@@ -19,11 +19,6 @@
 #include "spatial/geometry.h"
 #include "spatial/kdpoint.h"
 
-namespace rin
-{
-struct maker;
-}
-
 namespace chemical_entity
 {
 
