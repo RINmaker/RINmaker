@@ -12,8 +12,24 @@
 #include <map>
 #include <unordered_map>
 
+#include <utility>
+
+#include "chemical_entity.h"
+
+#include "log_manager.h"
+#include "spatial/kdtree.h"
+
 #include "rin_params.h"
 #include "bonds.h"
+
+namespace fs = std::filesystem;
+
+using lm = log_manager;
+
+using chemical_entity::aminoacid;
+using chemical_entity::atom;
+using chemical_entity::ring;
+using chemical_entity::ionic_group;
 
 using std::string, std::function, std::optional, std::shared_ptr;
 using std::list, std::vector, std::map, std::unordered_map;
@@ -22,6 +38,34 @@ using std::is_base_of;
 using rin::parameters;
 
 using prelude::interval;
+
+struct rin::maker::impl
+{
+public:
+    vector<aminoacid const*> _aminoacids;
+
+    kdtree<atom, 3> _hdonor_tree, _vdw_tree;
+    vector<atom const*> _hacceptor_vector, _vdw_vector, _cation_vector;
+
+    kdtree<ring, 3> _ring_tree, _pication_ring_tree;
+    vector<ring const*> _ring_vector, _pication_ring_vector;
+
+    kdtree<ionic_group, 3> _positive_ion_tree;
+    vector<ionic_group const*> _negative_ion_vector;
+
+    kdtree<atom, 3> _alpha_carbon_tree, _beta_carbon_tree;
+    vector<atom const*> _alpha_carbon_vector, _beta_carbon_vector;
+
+    // ss bonds are directly parsed, not computed by us
+    vector<shared_ptr<bond::ss const>> _ss_bonds;
+
+    string _pdb_name;
+
+    impl() = default;
+
+    ~impl()
+    { for (auto* res: _aminoacids) delete res; }
+};
 
 vector<shared_ptr<rin::maker>> rin::maker::parse_models(fs::path const& pdb_path)
 {
@@ -135,8 +179,8 @@ rin::maker::maker(string const& pdb_name,
                   vector<records::ss> const& ssbond_records,
                   vector<records::helix> const& helix_records,
                   vector<records::sheet_piece> const& sheet_records)
+                  : pimpl{std::make_unique<impl>()}
 {
-
     vector<records::atom> tmp_atoms;
     std::vector<chemical_entity::aminoacid*> tmp_aminoacids;
 
@@ -157,7 +201,7 @@ rin::maker::maker(string const& pdb_name,
         tmp_aminoacids.emplace_back(new aminoacid(tmp_atoms, pdb_name));
 
     for (auto const& record: ssbond_records)
-        _ss_bonds.emplace_back(std::make_shared<bond::ss>(record));
+        pimpl->_ss_bonds.emplace_back(std::make_shared<bond::ss>(record));
 
     auto sheet_helper = secondary_structure_helper<records::sheet_piece>();
     for (auto const& record: sheet_records)
@@ -185,9 +229,9 @@ rin::maker::maker(string const& pdb_name,
         }
     }
 
-    _aminoacids.reserve(tmp_aminoacids.size());
+    pimpl->_aminoacids.reserve(tmp_aminoacids.size());
     for (auto res: tmp_aminoacids)
-        _aminoacids.emplace_back(res);
+        pimpl->_aminoacids.emplace_back(res);
 
     lm::main()->info("retrieving components from aminoacids...");
 
@@ -195,16 +239,16 @@ rin::maker::maker(string const& pdb_name,
     vector<atom const*> hdonors;
     vector<ionic_group const*> positives;
 
-    for (auto const* res: _aminoacids)
+    for (auto const* res: pimpl->_aminoacids)
     {
 
         auto carbon = res->ca();
         if (carbon != nullptr)
-            _alpha_carbon_vector.push_back(carbon);
+            pimpl->_alpha_carbon_vector.push_back(carbon);
 
         carbon = res->cb();
         if (carbon != nullptr)
-            _beta_carbon_vector.push_back(carbon);
+            pimpl->_beta_carbon_vector.push_back(carbon);
 
         for (auto const* a: res->atoms())
         {
@@ -212,13 +256,13 @@ rin::maker::maker(string const& pdb_name,
                 hdonors.push_back(a);
 
             if (a->is_a_hydrogen_acceptor())
-                _hacceptor_vector.push_back(a);
+                pimpl->_hacceptor_vector.push_back(a);
 
             if (a->is_a_vdw_candidate())
-                _vdw_vector.push_back(a);
+                pimpl->_vdw_vector.push_back(a);
 
             if (a->is_a_cation())
-                _cation_vector.push_back(a);
+                pimpl->_cation_vector.push_back(a);
         }
 
         auto const* group = res->positive_ionic_group();
@@ -227,49 +271,46 @@ rin::maker::maker(string const& pdb_name,
 
         group = res->negative_ionic_group();
         if (group != nullptr)
-            _negative_ion_vector.push_back(group);
+            pimpl->_negative_ion_vector.push_back(group);
 
         auto const* ring = res->primary_ring();
         if (ring != nullptr)
         {
-            _ring_vector.push_back(ring);
+            pimpl->_ring_vector.push_back(ring);
 
             if (ring->is_a_pication_candidate())
-                _pication_ring_vector.push_back(ring);
+                pimpl->_pication_ring_vector.push_back(ring);
         }
 
         ring = res->secondary_ring();
         if (ring != nullptr)
         {
-            _ring_vector.push_back(ring);
+            pimpl->_ring_vector.push_back(ring);
 
             if (ring->is_a_pication_candidate())
-                _pication_ring_vector.push_back(ring);
+                pimpl->_pication_ring_vector.push_back(ring);
         }
     }
 
-    lm::main()->info("hydrogen acceptors: {}", _hacceptor_vector.size());
+    lm::main()->info("hydrogen acceptors: {}", pimpl->_hacceptor_vector.size());
     lm::main()->info("hydrogen donors: {}", hdonors.size());
-    lm::main()->info("vdw candidates: {}", _vdw_vector.size());
-    lm::main()->info("cations: {}", _cation_vector.size());
-    lm::main()->info("aromatic rings: {}", _ring_vector.size());
-    lm::main()->info("aromatic rings (valid for pication): {}", _ring_vector.size());
+    lm::main()->info("vdw candidates: {}", pimpl->_vdw_vector.size());
+    lm::main()->info("cations: {}", pimpl->_cation_vector.size());
+    lm::main()->info("aromatic rings: {}", pimpl->_ring_vector.size());
+    lm::main()->info("aromatic rings (valid for pication): {}", pimpl->_ring_vector.size());
 
     lm::main()->info("building acceleration structures...");
 
-    _hdonor_tree = kdtree<chemical_entity::atom, 3>(hdonors);
-    _vdw_tree = kdtree<chemical_entity::atom, 3>(_vdw_vector);
+    pimpl->_hdonor_tree = kdtree<chemical_entity::atom, 3>(hdonors);
+    pimpl->_vdw_tree = kdtree<chemical_entity::atom, 3>(pimpl->_vdw_vector);
 
-    _ring_tree = kdtree<chemical_entity::ring, 3>(_ring_vector);
-    _pication_ring_tree = kdtree<chemical_entity::ring, 3>(_pication_ring_vector);
-    _positive_ion_tree = kdtree<chemical_entity::ionic_group, 3>(positives);
+    pimpl->_ring_tree = kdtree<chemical_entity::ring, 3>(pimpl->_ring_vector);
+    pimpl->_pication_ring_tree = kdtree<chemical_entity::ring, 3>(pimpl->_pication_ring_vector);
+    pimpl->_positive_ion_tree = kdtree<chemical_entity::ionic_group, 3>(positives);
 
-    _alpha_carbon_tree = kdtree<atom, 3>(_alpha_carbon_vector);
-    _beta_carbon_tree = kdtree<atom, 3>(_beta_carbon_vector);
+    pimpl->_alpha_carbon_tree = kdtree<atom, 3>(pimpl->_alpha_carbon_vector);
+    pimpl->_beta_carbon_tree = kdtree<atom, 3>(pimpl->_beta_carbon_vector);
 }
-
-rin::maker::~maker()
-{ for (auto* res: _aminoacids) delete res; }
 
 using chemical_entity::component;
 
@@ -437,34 +478,34 @@ rin::graph rin::maker::operator()(parameters const& params) const
     case parameters::interaction_type_t::NONCOVALENT_BONDS:
     {
         auto const hydrogen_bonds = find_bonds<bond::hydrogen>(
-                _hacceptor_vector,
-                _hdonor_tree,
+                pimpl->_hacceptor_vector,
+                pimpl->_hdonor_tree,
                 params.query_dist_hbond(),
                 params);
 
         auto const vdw_bonds = remove_duplicates(
                 find_bonds<bond::vdw>(
-                        _vdw_vector,
-                        _vdw_tree,
+                        pimpl->_vdw_vector,
+                        pimpl->_vdw_tree,
                         params.query_dist_vdw(),
                         params));
 
         auto const ionic_bonds = find_bonds<bond::ionic>(
-                _negative_ion_vector,
-                _positive_ion_tree,
+                pimpl->_negative_ion_vector,
+                pimpl->_positive_ion_tree,
                 params.query_dist_ionic(),
                 params);
 
         auto const cationpi_bonds = find_bonds<bond::pication>(
-                _cation_vector,
-                _pication_ring_tree,
+                pimpl->_cation_vector,
+                pimpl->_pication_ring_tree,
                 params.query_dist_pica(),
                 params);
 
         auto const pipistack_bonds = remove_duplicates(
                 find_bonds<bond::pipistack>(
-                        _ring_vector,
-                        _ring_tree,
+                        pimpl->_ring_vector,
+                        pimpl->_ring_tree,
                         params.query_dist_pipi(),
                         params));
 
@@ -476,7 +517,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
             append(results, ionic_bonds);
             append(results, cationpi_bonds);
             append(results, pipistack_bonds);
-            append(results, _ss_bonds);
+            append(results, pimpl->_ss_bonds);
             break;
 
         case parameters::network_policy_t::BEST_ONE:
@@ -485,7 +526,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
             append(results, ionic_bonds);
             append(results, cationpi_bonds);
             append(results, pipistack_bonds);
-            append(results, _ss_bonds);
+            append(results, pimpl->_ss_bonds);
 
             results = filter_best(results);
             break;
@@ -496,7 +537,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
             append(results, filter_best(ionic_bonds));
             append(results, filter_best(cationpi_bonds));
             append(results, filter_best(pipistack_bonds));
-            append(results, filter_best(_ss_bonds));
+            append(results, filter_best(pimpl->_ss_bonds));
             break;
         }
 
@@ -509,8 +550,8 @@ rin::graph rin::maker::operator()(parameters const& params) const
     case parameters::interaction_type_t::GENERIC_ALPHA:
     {
         auto alpha_bonds = find_bonds<bond::generic_bond>(
-                _alpha_carbon_vector,
-                _alpha_carbon_tree,
+                pimpl->_alpha_carbon_vector,
+                pimpl->_alpha_carbon_tree,
                 params.query_dist_alpha(),
                 params);
 
@@ -521,8 +562,8 @@ rin::graph rin::maker::operator()(parameters const& params) const
     case parameters::interaction_type_t::GENERIC_BETA:
     {
         auto beta_bonds = find_bonds<bond::generic_bond>(
-                _beta_carbon_vector,
-                _beta_carbon_tree,
+                pimpl->_beta_carbon_vector,
+                pimpl->_beta_carbon_tree,
                 params.query_dist_beta(),
                 params);
 
@@ -534,5 +575,5 @@ rin::graph rin::maker::operator()(parameters const& params) const
     // results = remove_duplicates(results);
     lm::main()->info("there are {} valid bonds after filtering", results.size());
 
-    return {_pdb_name, params, _aminoacids, results};
+    return {pimpl->_pdb_name, params, pimpl->_aminoacids, results};
 }
