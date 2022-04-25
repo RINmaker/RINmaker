@@ -2,10 +2,6 @@
 
 #include <string>
 #include <vector>
-#include <list>
-#include <array>
-#include <queue>
-#include <unordered_map>
 #include <filesystem>
 #include <pugixml.hpp>
 
@@ -37,9 +33,6 @@ class generic_bond;
 
 namespace rin
 {
-
-using std::string;
-
 class edge
 {
 private:
@@ -101,7 +94,7 @@ public:
     [[nodiscard]]
     std::string const& orientation() const;
 
-    void append_to(pugi::xml_node& rin, bool metadata);
+    void append_to(pugi::xml_node& rin, bool with_metadata);
 };
 
 class node
@@ -128,13 +121,6 @@ public:
     void append_to(pugi::xml_node& graphml, bool with_metadata) const;
 };
 
-using std::unordered_map;
-using std::queue;
-using std::vector;
-using std::list;
-using chemical_entity::aminoacid;
-namespace fs = std::filesystem;
-
 class graph
 {
 private:
@@ -142,14 +128,17 @@ private:
     impl* pimpl;
 
 public:
-    graph(string name, parameters const& params, vector<aminoacid const*> const& aminoacids,
-          vector<std::shared_ptr<bond::base const>> const& bonds);
+    graph(
+            std::string name,
+            parameters const& params,
+            std::vector<chemical_entity::aminoacid const*> const& aminoacids,
+            std::vector<std::shared_ptr<bond::base const>> const& bonds);
 
     graph(graph const& other);
 
     ~graph();
 
-    void write_to_file(fs::path const& out_path) const;
+    void write_to_file(std::filesystem::path const& out_path) const;
 
     std::string name() const;
 
