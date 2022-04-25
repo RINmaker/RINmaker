@@ -6,10 +6,105 @@
 #include "energy.h"
 #include "utils.h"
 
-using std::vector;
-using std::array;
-using std::unique_ptr;
-using chemical_entity::atom;
+using std::vector, std::array, std::unique_ptr, std::string, std::make_unique;
+using chemical_entity::aminoacid, chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group,
+        chemical_entity::component;
+
+struct chemical_entity::aminoacid::impl final
+{
+public:
+    std::vector<std::unique_ptr<atom const>> _atoms;
+
+    std::unique_ptr<ring const> _primary_ring, _secondary_ring;
+    std::unique_ptr<ionic_group const> _positive_ionic_group, _negative_ionic_group;
+
+    std::unique_ptr<structure::base> _secondary_structure{make_unique<structure::base>()};
+
+    atom const* _alpha_carbon = nullptr;
+    atom const* _beta_carbon = nullptr;
+
+    std::string _chain_id;
+
+    std::string _name;
+
+    int _sequence_number = 0;
+
+    std::string _id;
+
+    std::string _pdb_name;
+
+    ~impl() = default;
+};
+
+std::vector<chemical_entity::atom const*> chemical_entity::aminoacid::atoms() const
+{
+    std::vector<atom const*> obs;
+    obs.reserve(pimpl->_atoms.size());
+
+    for (auto const& a_uptr: pimpl->_atoms)
+        obs.push_back(a_uptr.get());
+
+    return obs;
+}
+
+std::string const& chemical_entity::aminoacid::pdb_name() const
+{ return pimpl->_pdb_name; }
+
+atom const* aminoacid::ca() const
+{ return pimpl->_alpha_carbon; }
+
+atom const* aminoacid::cb() const
+{ return pimpl->_beta_carbon; }
+
+ring const* aminoacid::primary_ring() const
+{ return pimpl->_primary_ring.get(); }
+
+ring const* aminoacid::secondary_ring() const
+{ return pimpl->_secondary_ring.get(); }
+
+ionic_group const* aminoacid::positive_ionic_group() const
+{ return pimpl->_positive_ionic_group.get(); }
+
+[[nodiscard]]
+ionic_group const* aminoacid::negative_ionic_group() const
+{ return pimpl->_negative_ionic_group.get(); }
+
+string const& aminoacid::name() const
+{ return pimpl->_name; }
+
+string const& aminoacid::chain_id() const
+{ return pimpl->_chain_id; }
+
+string const& aminoacid::id() const
+{ return pimpl->_id; }
+
+int aminoacid::sequence_number() const
+{ return pimpl->_sequence_number; }
+
+bool aminoacid::operator==(aminoacid const& rhs) const
+{ return pimpl->_id == rhs.pimpl->_id; }
+
+bool aminoacid::operator!=(aminoacid const& rhs) const
+{ return !(*this == rhs); }
+
+bool aminoacid::satisfies_minimum_separation(aminoacid const& aa, int minimum_separation) const
+{
+    if (*this == aa)
+    {
+        return false;
+    }
+
+    if (pimpl->_chain_id != aa.pimpl->_chain_id)
+    {
+        return true;
+    }
+
+    return abs(pimpl->_sequence_number - aa.pimpl->_sequence_number) >= minimum_separation;
+}
+
+aminoacid::operator rin::node() const
+{ return rin::node(*this); }
+
 
 array<double, 3> centre_of_mass(vector<atom const*> const& atoms)
 {
@@ -28,19 +123,20 @@ array<double, 3> centre_of_mass(vector<atom const*> const& atoms)
     return centroid;
 }
 
-chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records, std::string pdb_name) :
-        kdpoint<3>({0, 0, 0}),
-        _pdb_name(std::move(pdb_name)),
-        _secondary_structure(std::make_unique<structure::base>())
+aminoacid::aminoacid(vector<records::atom> const& records, string pdb_name) :
+        kdpoint<3>({0, 0, 0}), pimpl{new chemical_entity::aminoacid::impl()}
 {
     auto assert_ring_correctness =
-            [](string const& name, uint32_t line_number, std::vector<std::string> const& expected_atoms, std::vector<atom const*> const& found_atoms)
+            [](string const& name, uint32_t line_number, std::vector<std::string> const& expected_atoms,
+               std::vector<atom const*> const& found_atoms)
             {
                 if (expected_atoms.size() != found_atoms.size())
                 {
                     string expected_atoms_str = joinStrings(expected_atoms, ",");
                     string found_atoms_str = getNameFromAtoms(found_atoms, ",");
-                    string exception_description = "line number: " + std::to_string(line_number) + ", aminoacid: " + name + " - expected aromatic ring: " + expected_atoms_str + ", found: " + found_atoms_str;
+                    string exception_description =
+                            "line number: " + std::to_string(line_number) + ", aminoacid: " + name +
+                            " - expected aromatic ring: " + expected_atoms_str + ", found: " + found_atoms_str;
                     throw std::invalid_argument(exception_description);
                 }
             };
@@ -52,29 +148,29 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
     */
 
     records::atom const& first = records.front();
-    _name = first.res_name();
-    _sequence_number = first.res_seq();
-    _chain_id = first.chain_id();
+    pimpl->_name = first.res_name();
+    pimpl->_sequence_number = first.res_seq();
+    pimpl->_chain_id = first.chain_id();
 
-    _id = _chain_id + ":" + std::to_string(_sequence_number) + ":_:" + _name;
+    pimpl->_id = pimpl->_chain_id + ":" + std::to_string(pimpl->_sequence_number) + ":_:" + pimpl->_name;
 
     // discover if this has 0, 1 or 2 aromatic rings
     int n_of_rings = 0;
     std::vector<std::string> patterns_1, patterns_2;
 
-    if (_name == "HIS")
+    if (pimpl->_name == "HIS")
     {
         // HIS has a 5-atoms ring
         patterns_1 = {"CD2", "CE1", "CG", "ND1", "NE2"};
         n_of_rings = 1;
     }
-    else if (_name == "PHE" || _name == "TYR")
+    else if (pimpl->_name == "PHE" || pimpl->_name == "TYR")
     {
         // PHE, TYR have a 6-atoms ring
         patterns_1 = {"CD1", "CD2", "CE1", "CE2", "CG", "CZ"};
         n_of_rings = 1;
     }
-    else if (_name == "TRP")
+    else if (pimpl->_name == "TRP")
     {
         // TRP has both a 6-atoms ring and a 5-atoms ring
         patterns_1 = {"CD2", "CE2", "CE3", "CH2", "CZ2", "CZ3"};
@@ -89,14 +185,14 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
 
     for (auto const& record: records)
     {
-        _atoms.push_back(std::make_unique<atom const>(record, *this));
-        auto const a = _atoms.back().get();
+        pimpl->_atoms.push_back(std::make_unique<atom const>(record, *this));
+        auto const a = pimpl->_atoms.back().get();
 
         if (a->name() == "CA")
-            _alpha_carbon = a;
+            pimpl->_alpha_carbon = a;
 
         else if (a->name() == "CB")
-            _beta_carbon = a;
+            pimpl->_beta_carbon = a;
 
         if (n_of_rings >= 1 && std::find(patterns_1.begin(), patterns_1.end(), a->name()) != patterns_1.end())
             ring_1.push_back(a);
@@ -114,21 +210,24 @@ chemical_entity::aminoacid::aminoacid(std::vector<records::atom> const& records,
 
     if (n_of_rings >= 1)
     {
-        assert_ring_correctness(_name, first.line_number(), patterns_1, ring_1);
-        _primary_ring = std::make_unique<ring const>(ring_1, *this);
+        assert_ring_correctness(pimpl->_name, first.line_number(), patterns_1, ring_1);
+        pimpl->_primary_ring = std::make_unique<ring const>(ring_1, *this);
     }
     if (n_of_rings == 2)
     {
-        assert_ring_correctness(_name, first.line_number(), patterns_2, ring_2);
-        _secondary_ring = std::make_unique<ring const>(ring_2, *this);
+        assert_ring_correctness(pimpl->_name, first.line_number(), patterns_2, ring_2);
+        pimpl->_secondary_ring = std::make_unique<ring const>(ring_2, *this);
     }
 
     if (!positive.empty())
-        _positive_ionic_group = std::make_unique<ionic_group const>(positive, 1, *this);
+        pimpl->_positive_ionic_group = std::make_unique<ionic_group const>(positive, 1, *this);
 
     if (!negative.empty())
-        _negative_ionic_group = std::make_unique<ionic_group const>(negative, -1, *this);
+        pimpl->_negative_ionic_group = std::make_unique<ionic_group const>(negative, -1, *this);
 }
+
+aminoacid::~aminoacid()
+{ delete pimpl; }
 
 double chemical_entity::atom::mass() const
 {
@@ -396,7 +495,8 @@ string chemical_entity::ring::name() const
     return getNameFromAtoms(_atoms);
 }
 
-chemical_entity::ionic_group::ionic_group(std::vector<atom const*> const& atoms, int const& charge, aminoacid const& res)
+chemical_entity::ionic_group::ionic_group(std::vector<atom const*> const& atoms, int const& charge,
+                                          aminoacid const& res)
         : kdpoint<3>({0, 0, 0}), component(res), _atoms(atoms), _charge(charge)
 { _position = centre_of_mass(atoms); }
 
@@ -420,20 +520,20 @@ string chemical_entity::ionic_group::name() const
 
 void chemical_entity::aminoacid::make_secondary_structure()
 {
-    _secondary_structure = std::make_unique<structure::loop>();
+    pimpl->_secondary_structure = std::make_unique<structure::loop>();
 }
 
 void chemical_entity::aminoacid::make_secondary_structure(records::helix const& record)
 {
-    _secondary_structure = std::make_unique<structure::helix>(record, *this);
+    pimpl->_secondary_structure = std::make_unique<structure::helix>(record, *this);
 }
 
 void chemical_entity::aminoacid::make_secondary_structure(const records::sheet_piece& record)
 {
-    _secondary_structure = std::make_unique<structure::sheet_piece>(record, *this);
+    pimpl->_secondary_structure = std::make_unique<structure::sheet_piece>(record, *this);
 }
 
 std::string chemical_entity::aminoacid::secondary_structure_id() const
 {
-    return _secondary_structure->pretty();
+    return pimpl->_secondary_structure->pretty();
 }

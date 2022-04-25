@@ -21,7 +21,6 @@
 
 namespace chemical_entity
 {
-
 class atom;
 
 class ring;
@@ -31,116 +30,60 @@ class ionic_group;
 class aminoacid : public kdpoint<3>
 {
 private:
-    std::vector<std::unique_ptr<atom const>> _atoms;
-
-    std::unique_ptr<ring const> _primary_ring, _secondary_ring;
-    std::unique_ptr<ionic_group const> _positive_ionic_group, _negative_ionic_group;
-
-    std::unique_ptr<structure::base> _secondary_structure;
-
-    atom const* _alpha_carbon = nullptr;
-    atom const* _beta_carbon = nullptr;
-
-private:
-    std::string _chain_id;
-
-    std::string _name;
-
-    int _sequence_number = 0;
-
-    std::string _id;
-
-    std::string _pdb_name;
+    struct impl;
+    impl* pimpl;
 
 public:
-    explicit aminoacid(std::vector<records::atom> const& records, std::string pdb_name);
+    aminoacid(std::vector<records::atom> const& records, std::string pdb_name);
+
+    ~aminoacid();
 
     [[nodiscard]]
-    std::vector<atom const*> atoms() const
-    {
-        std::vector<atom const*> obs;
-        obs.reserve(_atoms.size());
-
-        for (auto const& a_uptr : _atoms)
-            obs.push_back(a_uptr.get());
-
-        return obs;
-    }
+    std::vector<atom const*> atoms() const;
 
     [[nodiscard]]
-    std::string const& pdb_name() const
-    { return _pdb_name; }
+    std::string const& pdb_name() const;
 
     [[nodiscard]]
-    atom const* ca() const
-    { return _alpha_carbon; }
+    atom const* ca() const;
 
     [[nodiscard]]
-    atom const* cb() const
-    { return _beta_carbon; }
+    atom const* cb() const;
 
     [[nodiscard]]
-    ring const* primary_ring() const
-    { return _primary_ring.get(); }
+    ring const* primary_ring() const;
 
     [[nodiscard]]
-    ring const* secondary_ring() const
-    { return _secondary_ring.get(); }
+    ring const* secondary_ring() const;
 
     [[nodiscard]]
-    ionic_group const* positive_ionic_group() const
-    { return _positive_ionic_group.get(); }
+    ionic_group const* positive_ionic_group() const;
 
     [[nodiscard]]
-    ionic_group const* negative_ionic_group() const
-    { return _negative_ionic_group.get(); }
-
-public:
-    [[nodiscard]]
-    std::string const& name() const
-    { return _name; }
+    ionic_group const* negative_ionic_group() const;
 
     [[nodiscard]]
-    std::string const& chain_id() const
-    { return _chain_id; }
+    std::string const& name() const;
 
     [[nodiscard]]
-    std::string const& id() const
-    { return _id; }
+    std::string const& chain_id() const;
 
     [[nodiscard]]
-    int sequence_number() const
-    { return _sequence_number; }
-
-public:
-    bool operator==(aminoacid const& rhs) const
-    { return _id == rhs._id; }
-
-    bool operator!=(aminoacid const& rhs) const
-    { return !(*this == rhs); }
+    std::string const& id() const;
 
     [[nodiscard]]
-    bool
-    satisfies_minimum_separation(aminoacid const& aa, int minimum_separation = cfg::params::seq_sep) const
-    {
-        if (*this == aa)
-        {
-            return false;
-        }
+    int sequence_number() const;
 
-        if (_chain_id != aa._chain_id)
-        {
-            return true;
-        }
+    bool operator==(aminoacid const& rhs) const;
 
-        return abs(_sequence_number - aa._sequence_number) >= minimum_separation;
-    }
+    bool operator!=(aminoacid const& rhs) const;
 
     [[nodiscard]]
-    explicit operator rin::node() const
-    { return rin::node(*this); } // TODO can become a conversion operator
+    bool satisfies_minimum_separation(aminoacid const& aa, int minimum_separation = cfg::params::seq_sep) const;
 
-public:
+    [[nodiscard]]
+    explicit operator rin::node() const;
+
     void make_secondary_structure();
 
     void make_secondary_structure(records::helix const& record);
