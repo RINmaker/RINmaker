@@ -170,6 +170,8 @@ rin::maker::maker(string const& pdb_name,
                   vector<records::helix> const& helix_records,
                   vector<records::sheet_piece> const& sheet_records) : pimpl{new impl()}
 {
+    pimpl->pdb_name = pdb_name;
+
     vector<records::atom> tmp_atoms;
     vector<aminoacid*> tmp_aminoacids;
 
