@@ -235,7 +235,7 @@ public:
 };
 
 atom::atom(records::atom const& record, aminoacid const& res) :
-    kdpoint<3>({record.x(), record.y(), record.z()}), component(res), pimpl(new impl{record})
+        kdpoint<3>({record.x(), record.y(), record.z()}), component(res), pimpl(new impl{record})
 {}
 
 atom::~atom()
@@ -532,10 +532,22 @@ string chemical_entity::ring::name() const
     return getNameFromAtoms(_atoms);
 }
 
-chemical_entity::ionic_group::ionic_group(std::vector<atom const*> const& atoms, int const& charge,
-                                          aminoacid const& res)
-        : kdpoint<3>({0, 0, 0}), component(res), _atoms(atoms), _charge(charge)
+struct ionic_group::impl
+{
+public:
+    std::vector<atom const*> const _atoms;
+    int const _charge;
+};
+
+ionic_group::ionic_group(vector<atom const*> const& atoms, int const& charge, aminoacid const& res) :
+        kdpoint<3>({0, 0, 0}), component(res), pimpl{new impl{atoms, charge}}
 { _position = centre_of_mass(atoms); }
+
+ionic_group::~ionic_group()
+{ delete pimpl; }
+
+int ionic_group::charge() const
+{ return pimpl->_charge; }
 
 double chemical_entity::ionic_group::ionion_energy_q() const
 {
@@ -552,7 +564,7 @@ double chemical_entity::ionic_group::ionion_energy_q() const
 
 string chemical_entity::ionic_group::name() const
 {
-    return getNameFromAtoms(_atoms);
+    return getNameFromAtoms(pimpl->_atoms);
 }
 
 void chemical_entity::aminoacid::make_secondary_structure()

@@ -237,15 +237,16 @@ public:
 class ionic_group final : public kdpoint<3>, public aminoacid::component
 {
 private:
-    std::vector<atom const*> const _atoms;
-    int const _charge;
+    struct impl;
+    impl* pimpl;
 
 public:
     ionic_group(std::vector<atom const*> const& atoms, int const& charge, aminoacid const& res);
 
+    ~ionic_group();
+
     [[nodiscard]]
-    int charge() const
-    { return _charge; }
+    int charge() const;
 
     [[nodiscard]]
     double ionion_energy_q() const;
