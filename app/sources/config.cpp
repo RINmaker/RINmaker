@@ -60,7 +60,7 @@ namespace graphml
 {
 char const* null = "-999.9";
 char const* none = "None";
-char const* default_dirname = "./outputs";
+char const* default_dirname = ".";
 char const* output_file_suffix = ".graphml";
 }
 }
