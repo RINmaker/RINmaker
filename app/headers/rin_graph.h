@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include <filesystem>
 #include <pugixml.hpp>
 
@@ -37,7 +38,7 @@ class edge
 {
 private:
     struct impl;
-    impl* pimpl;
+    std::shared_ptr<impl const> pimpl;
 
 public:
     explicit edge(bond::ss const& bond);
@@ -53,8 +54,6 @@ public:
     explicit edge(bond::pipistack const& bond);
 
     explicit edge(bond::generic_bond const& bond);
-
-    edge(edge const&);
 
     ~edge();
 
@@ -101,12 +100,14 @@ class node
 {
 private:
     struct impl;
-    impl* pimpl;
+    std::unique_ptr<impl> pimpl;
 
 public:
     explicit node(chemical_entity::aminoacid const& res);
 
     node(node const& other);
+
+    node& operator=(node const& rhs);
 
     ~node();
 
@@ -125,7 +126,7 @@ class graph
 {
 private:
     struct impl;
-    impl* pimpl;
+    std::shared_ptr<impl const> pimpl;
 
 public:
     graph(
