@@ -39,13 +39,12 @@ string app_full_name()
     return buf;
 }
 
-bool read_args(int argc, const char* argv[], optional<arguments>& result)
+optional<arguments> read_args(int argc, const char* argv[])
 {
-    result = nullopt;
     if (argc <= 1)
     {
         cout << "Use -h or --help for help." << endl;
-        return false;
+        return nullopt;
     }
 
     CLI::App app(app_full_name());
@@ -150,7 +149,12 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
        ->default_val(cfg::params::pipistack_normal_centre_angle_range)
        ->check(positive_check);
 
-    CLI11_PARSE(app, argc, argv);
+    //CLI11_PARSE(app, argc, argv);
+    try {
+        app.parse(argc, argv);
+    } catch(const CLI::ParseError &e) {
+        return nullopt;
+    }
 
     auto pcfg = rin::parameters::configurator()
             .set_query_dist_alpha(generic_distance)
@@ -191,8 +195,7 @@ bool read_args(int argc, const char* argv[], optional<arguments>& result)
     fs::create_directory(out_dir);
     auto out_path = out_dir / pdb_path.filename().replace_extension(".graphml");
 
-    result = arguments{params, pdb_path, out_path, log_dir};
-    return true;
+    return arguments{params, pdb_path, out_path, log_dir};
 }
 
 std::vector<std::pair<uint32_t, std::string>> read_lines(std::filesystem::path const& file_path)

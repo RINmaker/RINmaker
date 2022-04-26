@@ -19,7 +19,7 @@ struct arguments final
     std::filesystem::path pdb_path, out_path, log_path;
 };
 
-bool read_args(int argc, const char* argv[], std::optional<arguments>& result);
+std::optional<arguments> read_args(int argc, const char* argv[]);
 
 std::vector<std::pair<uint32_t, std::string>> read_lines(std::filesystem::path const& file_path);
 

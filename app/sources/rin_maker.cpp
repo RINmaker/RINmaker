@@ -485,7 +485,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
                 params.query_dist_ionic(),
                 params);
 
-        auto const cationpi_bonds = find_bonds<bond::pication>(
+        auto const pication_bonds = find_bonds<bond::pication>(
                 pimpl->cation_vector,
                 pimpl->pication_ring_tree,
                 params.query_dist_pica(),
@@ -504,7 +504,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
             append(results, hydrogen_bonds);
             append(results, vdw_bonds);
             append(results, ionic_bonds);
-            append(results, cationpi_bonds);
+            append(results, pication_bonds);
             append(results, pipistack_bonds);
             append(results, pimpl->ss_bonds);
             break;
@@ -513,7 +513,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
             append(results, hydrogen_bonds);
             append(results, vdw_bonds);
             append(results, ionic_bonds);
-            append(results, cationpi_bonds);
+            append(results, pication_bonds);
             append(results, pipistack_bonds);
             append(results, pimpl->ss_bonds);
 
@@ -524,7 +524,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
             append(results, filter_best(hydrogen_bonds));
             append(results, filter_best(vdw_bonds));
             append(results, filter_best(ionic_bonds));
-            append(results, filter_best(cationpi_bonds));
+            append(results, filter_best(pication_bonds));
             append(results, filter_best(pipistack_bonds));
             append(results, filter_best(pimpl->ss_bonds));
             break;

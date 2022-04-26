@@ -9,8 +9,8 @@ int main(int argc, const char* argv[])
 {
     try
     {
-        optional<arguments> maybe_args;
-        if (read_args(argc, argv, maybe_args) && maybe_args.has_value())
+        optional<arguments> maybe_args = read_args(argc, argv);
+        if (maybe_args.has_value())
         {
             auto const parsed_args = maybe_args.value();
 

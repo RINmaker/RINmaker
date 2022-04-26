@@ -87,7 +87,7 @@ protected:
         const char* args[2] = { exePath.c_str(), pdbPath.c_str() };
 
         std::optional<arguments> maybe_args;
-        read_args(2, args, maybe_args);
+        maybe_args = read_args(2, args);
         // won't throw std::bad_optional because args are hand crafted above
         auto const parsed_args = maybe_args.value();
         auto const models = rin::maker::parse_models(parsed_args.pdb_path);
