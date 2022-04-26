@@ -256,8 +256,7 @@ aminoacid::aminoacid(vector<records::atom> const& records, string const& pdb_nam
         pimpl->negative_ionic_group = make_unique<ionic_group const>(negative, -1, *this);
 }
 
-aminoacid::~aminoacid()
-{ delete pimpl; }
+aminoacid::~aminoacid() = default;
 
 struct atom::impl final
 {
@@ -269,8 +268,7 @@ atom::atom(records::atom const& record, aminoacid const& res) :
         kdpoint<3>({record.x(), record.y(), record.z()}), component(res), pimpl{new impl{record}}
 {}
 
-atom::~atom()
-{ delete pimpl; }
+atom::~atom() = default;
 
 string const& atom::name() const
 { return pimpl->record.name(); }
@@ -518,17 +516,19 @@ public:
 };
 
 ring::ring(vector<atom const*> const& atoms, aminoacid const& res) :
-        kdpoint<3>({0, 0, 0}), component(res), pimpl{new impl()}
+        kdpoint<3>({0, 0, 0}), component(res)
 {
+    auto tmp_pimpl = std::make_shared<impl>();
+
     if (atoms.size() < 3)
         throw invalid_argument("rings should have at least 3 atoms");
 
-    pimpl->atoms = atoms;
+    tmp_pimpl->atoms = atoms;
 
     double sum_radii = 0;
     for (auto* a: atoms)
         sum_radii += distance(*a);
-    pimpl->mean_radius = sum_radii / (double) atoms.size();
+    tmp_pimpl->mean_radius = sum_radii / (double) atoms.size();
 
     _position = centre_of_mass(atoms);
 
@@ -536,11 +536,12 @@ ring::ring(vector<atom const*> const& atoms, aminoacid const& res) :
     // it only deviates from a SVD best-fit method no more than 1-2°, on average
     array<double, 3> const v = (array<double, 3>) ((*atoms[0]) - (*atoms[1]));
     array<double, 3> const w = (array<double, 3>) ((*atoms[2]) - (*atoms[1]));
-    pimpl->normal = geom::cross(v, w);
+    tmp_pimpl->normal = geom::cross(v, w);
+
+    pimpl = tmp_pimpl;
 }
 
-ring::~ring()
-{ delete pimpl; }
+ring::~ring() = default;
 
 array<double, 3> const& ring::normal() const
 { return pimpl->normal; }
@@ -615,8 +616,7 @@ ionic_group::ionic_group(vector<atom const*> const& atoms, int const& charge, am
         kdpoint<3>({0, 0, 0}), component(res), pimpl{new impl{atoms, charge}}
 { _position = centre_of_mass(atoms); }
 
-ionic_group::~ionic_group()
-{ delete pimpl; }
+ionic_group::~ionic_group() = default;
 
 int ionic_group::charge() const
 { return pimpl->charge; }

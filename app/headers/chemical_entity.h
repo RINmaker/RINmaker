@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <memory>
 
 #include "config.h"
 
@@ -24,7 +25,7 @@ class aminoacid : public kdpoint<3>
 {
 private:
     struct impl;
-    impl* pimpl;
+    std::unique_ptr<impl> pimpl;
 
 public:
     class component
@@ -105,7 +106,7 @@ class atom final : public kdpoint<3>, public aminoacid::component
 {
 private:
     struct impl;
-    impl* pimpl;
+    std::shared_ptr<impl const> pimpl;
 
 public:
     atom(records::atom const& record, aminoacid const& res);
@@ -168,7 +169,7 @@ class ring final : public kdpoint<3>, public aminoacid::component
 {
 private:
     struct impl;
-    impl* pimpl;
+    std::shared_ptr<impl const> pimpl;
 
 public:
     ring(std::vector<atom const*> const& atoms, aminoacid const& res);
@@ -204,7 +205,7 @@ class ionic_group final : public kdpoint<3>, public aminoacid::component
 {
 private:
     struct impl;
-    impl* pimpl;
+    std::shared_ptr<impl const> pimpl;
 
 public:
     ionic_group(std::vector<atom const*> const& atoms, int const& charge, aminoacid const& res);
