@@ -624,11 +624,11 @@ int ionic_group::charge() const
 double ionic_group::ionion_energy_q() const
 {
     //                                    q  // * number of protons
-    if (_res.name() == "LYS") return 0.640; // * 81;
-    if (_res.name() == "ASP") return 0.380; // * 95;
-    if (_res.name() == "HIS") return 0.380; // * 83;
-    if (_res.name() == "ARG") return 0.260; // * 77;
-    if (_res.name() == "GLU") return 0.635; // * 69;
+    if (res().name() == "LYS") return 0.640; // * 81;
+    if (res().name() == "ASP") return 0.380; // * 95;
+    if (res().name() == "HIS") return 0.380; // * 83;
+    if (res().name() == "ARG") return 0.260; // * 77;
+    if (res().name() == "GLU") return 0.635; // * 69;
 
     // TODO exception it should not happen
     return 0;
