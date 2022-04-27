@@ -168,9 +168,10 @@ rin::maker::maker(string const& pdb_name,
                   vector<records::atom> const& atom_records,
                   vector<records::ss> const& ssbond_records,
                   vector<records::helix> const& helix_records,
-                  vector<records::sheet_piece> const& sheet_records) : pimpl{new impl()}
+                  vector<records::sheet_piece> const& sheet_records)
 {
-    pimpl->pdb_name = pdb_name;
+    auto tmp_pimpl = make_shared<impl>();
+    tmp_pimpl->pdb_name = pdb_name;
 
     vector<records::atom> tmp_atoms;
     vector<aminoacid*> tmp_aminoacids;
@@ -192,7 +193,7 @@ rin::maker::maker(string const& pdb_name,
         tmp_aminoacids.emplace_back(new aminoacid(tmp_atoms, pdb_name));
 
     for (auto const& record: ssbond_records)
-        pimpl->ss_bonds.emplace_back(make_shared<bond::ss>(record));
+        tmp_pimpl->ss_bonds.emplace_back(make_shared<bond::ss>(record));
 
     auto sheet_helper = secondary_structure_helper<records::sheet_piece>();
     for (auto const& record: sheet_records)
@@ -220,9 +221,9 @@ rin::maker::maker(string const& pdb_name,
         }
     }
 
-    pimpl->aminoacids.reserve(tmp_aminoacids.size());
+    tmp_pimpl->aminoacids.reserve(tmp_aminoacids.size());
     for (auto res: tmp_aminoacids)
-        pimpl->aminoacids.emplace_back(res);
+        tmp_pimpl->aminoacids.emplace_back(res);
 
     lm::main()->info("retrieving components from aminoacids...");
 
@@ -230,16 +231,16 @@ rin::maker::maker(string const& pdb_name,
     vector<atom const*> hdonors;
     vector<ionic_group const*> positives;
 
-    for (auto const* res: pimpl->aminoacids)
+    for (auto const* res: tmp_pimpl->aminoacids)
     {
 
         auto carbon = res->ca();
         if (carbon != nullptr)
-            pimpl->alpha_carbon_vector.push_back(carbon);
+            tmp_pimpl->alpha_carbon_vector.push_back(carbon);
 
         carbon = res->cb();
         if (carbon != nullptr)
-            pimpl->beta_carbon_vector.push_back(carbon);
+            tmp_pimpl->beta_carbon_vector.push_back(carbon);
 
         for (auto const* a: res->atoms())
         {
@@ -247,13 +248,13 @@ rin::maker::maker(string const& pdb_name,
                 hdonors.push_back(a);
 
             if (a->is_a_hydrogen_acceptor())
-                pimpl->hacceptor_vector.push_back(a);
+                tmp_pimpl->hacceptor_vector.push_back(a);
 
             if (a->is_a_vdw_candidate())
-                pimpl->vdw_vector.push_back(a);
+                tmp_pimpl->vdw_vector.push_back(a);
 
             if (a->is_a_cation())
-                pimpl->cation_vector.push_back(a);
+                tmp_pimpl->cation_vector.push_back(a);
         }
 
         auto const* group = res->positive_ionic_group();
@@ -262,49 +263,50 @@ rin::maker::maker(string const& pdb_name,
 
         group = res->negative_ionic_group();
         if (group != nullptr)
-            pimpl->negative_ion_vector.push_back(group);
+            tmp_pimpl->negative_ion_vector.push_back(group);
 
         auto const* ring = res->primary_ring();
         if (ring != nullptr)
         {
-            pimpl->ring_vector.push_back(ring);
+            tmp_pimpl->ring_vector.push_back(ring);
 
             if (ring->is_a_pication_candidate())
-                pimpl->pication_ring_vector.push_back(ring);
+                tmp_pimpl->pication_ring_vector.push_back(ring);
         }
 
         ring = res->secondary_ring();
         if (ring != nullptr)
         {
-            pimpl->ring_vector.push_back(ring);
+            tmp_pimpl->ring_vector.push_back(ring);
 
             if (ring->is_a_pication_candidate())
-                pimpl->pication_ring_vector.push_back(ring);
+                tmp_pimpl->pication_ring_vector.push_back(ring);
         }
     }
 
-    lm::main()->info("hydrogen acceptors: {}", pimpl->hacceptor_vector.size());
+    lm::main()->info("hydrogen acceptors: {}", tmp_pimpl->hacceptor_vector.size());
     lm::main()->info("hydrogen donors: {}", hdonors.size());
-    lm::main()->info("vdw candidates: {}", pimpl->vdw_vector.size());
-    lm::main()->info("cations: {}", pimpl->cation_vector.size());
-    lm::main()->info("aromatic rings: {}", pimpl->ring_vector.size());
-    lm::main()->info("aromatic rings (valid for pication): {}", pimpl->ring_vector.size());
+    lm::main()->info("vdw candidates: {}", tmp_pimpl->vdw_vector.size());
+    lm::main()->info("cations: {}", tmp_pimpl->cation_vector.size());
+    lm::main()->info("aromatic rings: {}", tmp_pimpl->ring_vector.size());
+    lm::main()->info("aromatic rings (valid for pication): {}", tmp_pimpl->ring_vector.size());
 
     lm::main()->info("building acceleration structures...");
 
-    pimpl->hdonor_tree = kdtree<atom, 3>(hdonors);
-    pimpl->vdw_tree = kdtree<atom, 3>(pimpl->vdw_vector);
+    tmp_pimpl->hdonor_tree = kdtree<atom, 3>(hdonors);
+    tmp_pimpl->vdw_tree = kdtree<atom, 3>(tmp_pimpl->vdw_vector);
 
-    pimpl->ring_tree = kdtree<ring, 3>(pimpl->ring_vector);
-    pimpl->pication_ring_tree = kdtree<ring, 3>(pimpl->pication_ring_vector);
-    pimpl->positive_ion_tree = kdtree<ionic_group, 3>(positives);
+    tmp_pimpl->ring_tree = kdtree<ring, 3>(tmp_pimpl->ring_vector);
+    tmp_pimpl->pication_ring_tree = kdtree<ring, 3>(tmp_pimpl->pication_ring_vector);
+    tmp_pimpl->positive_ion_tree = kdtree<ionic_group, 3>(positives);
 
-    pimpl->alpha_carbon_tree = kdtree<atom, 3>(pimpl->alpha_carbon_vector);
-    pimpl->beta_carbon_tree = kdtree<atom, 3>(pimpl->beta_carbon_vector);
+    tmp_pimpl->alpha_carbon_tree = kdtree<atom, 3>(tmp_pimpl->alpha_carbon_vector);
+    tmp_pimpl->beta_carbon_tree = kdtree<atom, 3>(tmp_pimpl->beta_carbon_vector);
+
+    pimpl = tmp_pimpl;
 }
 
-rin::maker::~maker()
-{ delete pimpl; }
+rin::maker::~maker() = default;
 
 template<typename Bond, typename Entity1, typename Entity2>
 vector<shared_ptr<Bond const>>
