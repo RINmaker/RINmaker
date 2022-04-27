@@ -27,7 +27,7 @@ int main(int argc, const char* argv[])
             for (auto const& rm : models)
             {
                 // create rin and write to graphml
-                auto const view = (*rm)(parsed_args.params);
+                auto const view = rm(parsed_args.params);
 
                 auto const out_path = parsed_args.out_path.parent_path() / (
                         parsed_args.pdb_path.stem().string() +

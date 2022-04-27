@@ -96,7 +96,7 @@ protected:
         auto const parsed_args = maybe_args.value();
         auto const models = rin::maker::parse_models(parsed_args.pdb_path);
         // again, won't throw because tests are hand crafted to have 1 model each
-        return Result(*models.at(0), parsed_args.params);
+        return Result(models.at(0), parsed_args.params);
     }
 
     void TearDown() override { }

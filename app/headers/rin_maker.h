@@ -20,7 +20,7 @@ private:
     std::shared_ptr<impl const> pimpl;
 
 public:
-    static std::vector<std::shared_ptr<rin::maker>> parse_models(std::filesystem::path const& pdb_path);
+    static std::vector<rin::maker> parse_models(std::filesystem::path const& pdb_path);
 
     maker(std::string const& pdb_name,
           std::vector<records::atom> const& atom_records,
