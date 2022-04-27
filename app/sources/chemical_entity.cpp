@@ -7,6 +7,8 @@
 #include "prelude.h"
 #include "utils.h"
 
+#include "private/chemical_entity_impl.h"
+
 using std::vector, std::array, std::string, std::unique_ptr, std::make_unique, std::to_string, std::invalid_argument;
 
 using chemical_entity::aminoacid, chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group,
@@ -22,30 +24,6 @@ string getNameFromAtoms(vector<atom const*> const& atoms, string const& delimite
 
     return joinStrings(atoms_name, delimiter);
 }
-
-struct aminoacid::impl final
-{
-public:
-    vector<unique_ptr<atom const>> _atoms;
-
-    unique_ptr<ring const> primary_ring, secondary_ring;
-    unique_ptr<ionic_group const> positive_ionic_group, negative_ionic_group;
-
-    unique_ptr<structure::base> secondary_structure{make_unique<structure::base>()};
-
-    atom const* alpha_carbon = nullptr;
-    atom const* beta_carbon = nullptr;
-
-    string chain_id;
-
-    string name;
-
-    int sequence_number = 0;
-
-    string id;
-
-    string pdb_name;
-};
 
 vector<atom const*> aminoacid::atoms() const
 {
@@ -258,11 +236,6 @@ aminoacid::aminoacid(vector<records::atom> const& records, string const& pdb_nam
 
 aminoacid::~aminoacid() = default;
 
-struct atom::impl final
-{
-public:
-    records::atom record;
-};
 
 atom::atom(records::atom const& record, aminoacid const& res) :
         kdpoint<3>({record.x(), record.y(), record.z()}), component(res), pimpl{new impl{record}}
@@ -505,16 +478,6 @@ vector<atom const*> atom::attached_hydrogens() const
     return hydrogens;
 }
 
-struct ring::impl final
-{
-public:
-    vector<atom const*> atoms;
-
-    array<double, 3> normal{};
-    double mean_radius;
-
-};
-
 ring::ring(vector<atom const*> const& atoms, aminoacid const& res) :
         kdpoint<3>({0, 0, 0}), component(res)
 {
@@ -604,13 +567,6 @@ string ring::name() const
 {
     return getNameFromAtoms(pimpl->atoms);
 }
-
-struct ionic_group::impl
-{
-public:
-    vector<atom const*> const atoms;
-    int const charge;
-};
 
 ionic_group::ionic_group(vector<atom const*> const& atoms, int const& charge, aminoacid const& res) :
         kdpoint<3>({0, 0, 0}), component(res), pimpl{new impl{atoms, charge}}

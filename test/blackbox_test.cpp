@@ -1,5 +1,9 @@
 #include "blackbox_test.h"
 
+#include "../app/sources/private/rin_graph_impl.h"
+
+#include "../app/sources/private/chemical_entity_impl.h"
+
 #define MY_DBL_EPSILON 0.00005
 
 using namespace std;

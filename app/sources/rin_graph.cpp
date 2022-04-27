@@ -11,6 +11,8 @@
 
 #include "config.h"
 
+#include "private/rin_graph_impl.h"
+
 namespace fs = std::filesystem;
 
 using std::vector, std::string, std::queue, std::to_string, std::unordered_map, pugi::xml_node, std::to_string;
@@ -38,13 +40,6 @@ void add_data(
     }
 }
 
-struct edge::impl final
-{
-public:
-    string source, target, source_atom, target_atom;
-    string distance, energy, angle, interaction, orientation;
-    string donor, cation, positive;
-};
 
 edge::edge(bond::ss const& bond)
 {
@@ -234,18 +229,6 @@ void edge::append_to(xml_node& rin, bool with_metadata)
     add_data(pugi_node, "e_", "edge", "Orientation", pimpl->orientation, "string", with_metadata);
 }
 
-struct graph::impl final
-{
-public:
-    string name;
-    parameters params;
-    unordered_map<string, node> nodes;
-    vector<edge> edges;
-
-    impl(string nm, parameters const& pr) : name{std::move(nm)}, params{pr}
-    {}
-};
-
 graph::graph(
         string const& name,
         parameters const& params,
@@ -338,21 +321,6 @@ void graph::write_to_file(fs::path const& out_path) const
 
     doc.save_file(out_path.c_str());
 }
-
-struct node::impl final
-{
-public:
-    string id;
-    string pdb_name;
-    string chain;
-    string seq;
-    string name;
-    string x, y, z;
-    string bfactor;
-    string secondary;
-
-    int degree = 0;
-};
 
 node::node(chemical_entity::aminoacid const& res) : pimpl{new impl()}
 {
