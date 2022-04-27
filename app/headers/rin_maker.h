@@ -17,7 +17,7 @@ struct maker final
 {
 private:
     struct impl;
-    impl* pimpl;
+    std::shared_ptr<impl const> pimpl;
 
 public:
     static std::vector<std::shared_ptr<rin::maker>> parse_models(std::filesystem::path const& pdb_path);
