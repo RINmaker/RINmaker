@@ -75,10 +75,10 @@ public:
     generic_bond(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     [[nodiscard]]
-    chemical_entity::aminoacid const& source() const;
+    chemical_entity::aminoacid source() const;
 
     [[nodiscard]]
-    chemical_entity::aminoacid const& target() const;
+    chemical_entity::aminoacid target() const;
 
     [[nodiscard]]
     std::string get_interaction() const override;

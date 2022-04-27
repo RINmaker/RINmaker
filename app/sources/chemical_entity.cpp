@@ -234,6 +234,47 @@ aminoacid::aminoacid(vector<records::atom> const& records, string const& pdb_nam
         pimpl->negative_ionic_group = make_unique<ionic_group const>(negative, -1, *this);
 }
 
+[[nodiscard]]
+aminoacid aminoacid::component::res() const
+{
+    auto res_opt = (std::optional<aminoacid>) obs;
+    //if (res_opt.has_value()) // TODO (?) throw exception other than std::bad_optional?
+    return res_opt.value();
+}
+
+aminoacid::aminoacid() : kdpoint<3>({0, 0, 0})
+{}
+
+aminoacid::observer::observer(aminoacid const& res) : res_pimpl{res.pimpl}, res_position{(std::array<double, 3>) res}
+{}
+
+aminoacid::observer::operator std::optional<aminoacid>() const
+{
+    // check if aminoacid exists
+    if (!res_pimpl.expired())
+    {
+        // information-less aminoacid
+        aminoacid res;
+
+        // restore all of its information
+        res._position = res_position;
+        res.pimpl = res_pimpl.lock();
+
+        // return value
+        return {res};
+    }
+
+    else
+        // return nothing
+        return std::nullopt;
+}
+
+aminoacid::operator observer() const
+{ return observer{*this}; }
+
+aminoacid::component::component(aminoacid const& res) : obs{(observer) res}
+{}
+
 aminoacid::~aminoacid() = default;
 
 
