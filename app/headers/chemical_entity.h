@@ -163,6 +163,9 @@ public:
 
     [[nodiscard]]
     bool is_main_chain() const;
+
+    [[nodiscard]]
+    int32_t atom_number() const;
 };
 
 class ring final : public kdpoint<3>, public aminoacid::component

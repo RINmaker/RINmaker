@@ -268,6 +268,12 @@ bool atom::is_main_chain() const
             this->name() == "N";
 }
 
+
+int32_t atom::atom_number() const
+{
+    return pimpl->record.serial();
+}
+
 double atom::mass() const
 {
     auto element = symbol();
