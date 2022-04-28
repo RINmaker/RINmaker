@@ -4,6 +4,7 @@
 #include <vector>
 #include <memory>
 #include <filesystem>
+#include <unordered_map>
 #include <pugixml.hpp>
 
 #include "rin_params.h"
