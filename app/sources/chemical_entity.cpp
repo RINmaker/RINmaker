@@ -354,7 +354,6 @@ bool atom::is_a_hydrogen_donor() const
             (res_name == "THR" && n == "OG1") ||
             (res_name == "TRP" && n == "NE1") ||
             (res_name == "TYR" && n == "OH") ||
-            (res_name == "CYS" && n == "SG") ||
             n == "NH" || n == "N";
 }
 
@@ -393,8 +392,8 @@ bool atom::is_a_hydrogen_acceptor() const
             (res_name == "SER" && n == "OG") ||
             (res_name == "THR" && n == "OG1") ||
             (res_name == "TYR" && n == "OH") ||
-            (res_name == "MET" && n == "SD") ||
-            n == "C" || n == "O";
+            //n == "C" ||
+            n == "O";
 }
 
 int atom::how_many_hydrogen_can_accept() const
