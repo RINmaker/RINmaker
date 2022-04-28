@@ -183,12 +183,12 @@ TEST_F(BlackBoxTest, IonIon7) {
 TEST_F(BlackBoxTest, IonIon8) {
     Result r = SetUp("ionion/8.pdb");
 
-    auto a = r.find_edges([](const edge &e) { return interaction_name(e) == "IONIC"; });
-
-
     EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "IONIC"; }), 1);
-
-    //TODO add information about bond
+    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+        return interaction_name(e) == "IONIC" && source(e) == "LYS" && target(e) == "ASP" &&
+               compare_distance(e, 3.19828) &&
+               source_atom(e) == "NZ" && target_atom(e) == "CG:OD1:OD2";
+    }));
 }
 TEST_F(BlackBoxTest, IonIon9) {
     Result r = SetUp("ionion/9.pdb");
