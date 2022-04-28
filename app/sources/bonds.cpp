@@ -37,10 +37,10 @@ generic_bond::generic_bond(parameters const& params, atom const& a, atom const& 
         _target(*sort_by_res_id(a, b).second)
 {}
 
-chemical_entity::aminoacid const& generic_bond::source() const
+chemical_entity::aminoacid generic_bond::source() const
 { return _source.res(); }
 
-chemical_entity::aminoacid const& generic_bond::target() const
+chemical_entity::aminoacid generic_bond::target() const
 { return _target.res(); }
 
 string generic_bond::get_interaction() const

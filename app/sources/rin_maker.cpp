@@ -58,7 +58,7 @@ public:
     { for (auto* res: aminoacids) delete res; }
 };
 
-vector<shared_ptr<rin::maker>> rin::maker::parse_models(fs::path const& pdb_path)
+vector<std::function<rin::maker(void)>> rin::maker::parse_models(fs::path const& pdb_path)
 {
     ifstream pdb_file;
     pdb_file.open(pdb_path);
@@ -118,10 +118,12 @@ vector<shared_ptr<rin::maker>> rin::maker::parse_models(fs::path const& pdb_path
         models.push_back(tmp_model);
 
     auto const pdb_name = pdb_path.stem().string();
-    vector<shared_ptr<rin::maker>> rin_makers;
+    vector<std::function<rin::maker(void)>> rin_makers;
     for (auto const& model: models)
-        rin_makers.emplace_back(
-                make_shared<rin::maker>(pdb_name, model, ssbond_records, helix_records, sheet_records));
+        rin_makers.emplace_back([=]()
+                                {
+                                    return rin::maker{pdb_name, model, ssbond_records, helix_records, sheet_records};
+                                });
 
     return rin_makers;
 }

@@ -4,6 +4,7 @@
 #include <string>
 
 #include <memory>
+#include <functional>
 #include <filesystem>
 
 #include "rin_graph.h"
@@ -20,7 +21,7 @@ private:
     std::shared_ptr<impl const> pimpl;
 
 public:
-    static std::vector<std::shared_ptr<rin::maker>> parse_models(std::filesystem::path const& pdb_path);
+    static std::vector<std::function<rin::maker(void)>> parse_models(std::filesystem::path const& pdb_path);
 
     maker(std::string const& pdb_name,
           std::vector<records::atom> const& atom_records,

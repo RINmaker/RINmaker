@@ -4,6 +4,7 @@
 #include <vector>
 #include <array>
 #include <memory>
+#include <optional>
 
 #include "config.h"
 
@@ -25,23 +26,42 @@ class aminoacid : public kdpoint<3>
 {
 private:
     struct impl;
-    std::unique_ptr<impl> pimpl;
+    std::shared_ptr<impl> pimpl;
 
 public:
+    class observer final
+    {
+    private:
+        std::weak_ptr<impl> res_pimpl;
+        std::array<double, 3> res_position;
+
+    public:
+        explicit observer(aminoacid const& res);
+
+        [[nodiscard]]
+        explicit operator std::optional<aminoacid>() const;
+    };
+
+    explicit operator observer() const;
+
     class component
     {
     protected:
-        aminoacid const& _res;
+        observer obs;
 
-        explicit component(aminoacid const& res) : _res(res)
-        {}
+        explicit component(aminoacid const& res);
 
     public:
         [[nodiscard]]
-        aminoacid const& res() const
-        { return _res; }
+        aminoacid res() const;
     };
 
+private:
+    friend class observer;
+
+    aminoacid();
+
+public:
     aminoacid(std::vector<records::atom> const& records, std::string const& pdb_name);
 
     ~aminoacid();
