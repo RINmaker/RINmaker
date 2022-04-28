@@ -153,6 +153,7 @@ optional<arguments> read_args(int argc, const char* argv[])
     try {
         app.parse(argc, argv);
     } catch(const CLI::ParseError &e) {
+        app.exit(e);
         return nullopt;
     }
 

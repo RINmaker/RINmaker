@@ -144,15 +144,12 @@ aminoacid::aminoacid(vector<records::atom> const& records, string const& pdb_nam
                     string exception_description =
                             "line number: " + std::to_string(line_number) + ", aminoacid: " + name +
                             " - expected aromatic ring: " + expected_atoms_str + ", found: " + found_atoms_str;
-                    throw invalid_argument(exception_description);
+                    throw std::invalid_argument(exception_description);
                 }
             };
 
-    /* TODO throw exception. It cannot happen.
     if (records.empty())
-    {
-    }
-    */
+        throw std::invalid_argument("it's not possible to construct an aminoacid without records");
 
     auto const& first = records.front();
     pimpl->name = first.res_name();
@@ -318,54 +315,24 @@ int32_t atom::atom_number() const
 double atom::mass() const
 {
     auto element = symbol();
-    if (element == "H")
-    {
-        return 1.008;
-    }
-    else if (element == "C")
-    {
-        return 12.011;
-    }
-    else if (element == "N")
-    {
-        return 14.007;
-    }
-    else if (element == "O")
-    {
-        return 15.994;
-    }
-    else if (element == "S")
-    {
-        return 32.065;
-    }
+    if (element == "H") return 1.008;
+    if (element == "C") return 12.011;
+    if (element == "N") return 14.007;
+    if (element == "O") return 15.994;
+    if (element == "S") return 32.065;
 
-    // this point should be never reached (it depends on the guarantees of the contents of PDB files)
-    // TODO exception
-    return 1;
+    throw std::invalid_argument("atom::mass(): unsupported element " + element);
 }
 
 double atom::vdw_radius() const
 {
     string element = symbol();
-    if (element == "S")
-    {
-        return 1.89;
-    }
-    else if (element == "C")
-    {
-        return 1.77;
-    }
-    else if (element == "O")
-    {
-        return 1.55;
-    }
-    else if (element == "N")
-    {
-        return 1.60;
-    }
+    if (element == "S") return 1.89;
+    if (element == "C") return 1.77;
+    if (element == "O") return 1.55;
+    if (element == "N") return 1.60;
 
-    // TODO exception
-    return 0;
+    throw std::invalid_argument("atom::vdw_radius(): unsupported element " + element);
 }
 
 bool atom::is_a_cation() const
@@ -499,10 +466,7 @@ bool atom::is_a_vdw_candidate() const
     auto n = name();
     auto en = symbol();
 
-    double* opslVdwValue = get_vdw_opsl_values(res_name, n, en);
-    return !(opslVdwValue[0] == 0. &&
-             opslVdwValue[1] == 0. &&
-             opslVdwValue[2] == 0.);
+    return has_vdw_opsl_values(res_name, n, en);
 
     /*return
             (res_name == "GLN" && (n == "NE1" || n == "OE1")) ||
@@ -626,15 +590,15 @@ int ionic_group::charge() const
 
 double ionic_group::ionion_energy_q() const
 {
-    //                                    q  // * number of protons
-    if (res().name() == "LYS") return 0.640; // * 81;
-    if (res().name() == "ASP") return 0.380; // * 95;
-    if (res().name() == "HIS") return 0.380; // * 83;
-    if (res().name() == "ARG") return 0.260; // * 77;
-    if (res().name() == "GLU") return 0.635; // * 69;
+    string res_name = res().name();
+    //                                q  // * number of protons
+    if (res_name == "LYS") return 0.640; // * 81;
+    if (res_name == "ASP") return 0.380; // * 95;
+    if (res_name == "HIS") return 0.380; // * 83;
+    if (res_name == "ARG") return 0.260; // * 77;
+    if (res_name == "GLU") return 0.635; // * 69;
 
-    // TODO exception it should not happen
-    return 0;
+    throw std::invalid_argument("ionic_group::ionion_energy_q(): unsupported residue " + res_name);
 }
 
 string ionic_group::name() const
