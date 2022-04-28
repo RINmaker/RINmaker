@@ -89,7 +89,7 @@ double distance(std::array<double, K> const& a, std::array<double, K> const& b)
 template <size_t K>
 double angle(std::array<double, K> const& v, std::array<double, K> const& w)
 {
-    //TODO segnala errore se uno dei sue vettori è nullo
+    //TODO signals an error if one of its vectors is null
     return acos(dot(v, w) / (magnitude(v) * magnitude(w))) * (180.0 / PI_GRECO);
 }
 
