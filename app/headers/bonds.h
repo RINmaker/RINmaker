@@ -248,6 +248,8 @@ public:
 
     pipistack(chemical_entity::ring const& a, chemical_entity::ring const& b, double angle);
 
+    double energy(double angle);
+
     [[nodiscard]]
     chemical_entity::ring const& source_ring() const
     { return _source_ring; }

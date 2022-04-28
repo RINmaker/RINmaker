@@ -9,6 +9,9 @@ namespace constant
 const double ion_ion_k = 33.4450992;
 const double avogadro = 6.02214076E23;
 const double bohr_radius = 5.2917721E-11;//m
+const double pipi_a = -0.5274;
+const double pipi_b = 25.6290;
+const double pipi_c = -25.653;
 }
 
 namespace cfg
