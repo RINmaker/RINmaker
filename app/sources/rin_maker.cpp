@@ -336,10 +336,9 @@ find_bonds(vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, do
     return bonds;
 }
 
-vector<shared_ptr<bond::base const>> filter_hbond_realistic(vector<shared_ptr<bond::base const>> const& input)
+std::vector<shared_ptr<bond::hydrogen const>> filter_hbond_realistic(std::vector<shared_ptr<bond::hydrogen const>> input)
 {
-    std::set<shared_ptr<bond::hydrogen const>> hydrogen_bonds_output;
-    std::vector<shared_ptr<bond::hydrogen const>> hydrogen_bonds_input;
+    std::vector<shared_ptr<bond::hydrogen const>> output;
     std::unordered_map<chemical_entity::atom const*, int> donors_bond_count;
     std::unordered_map<chemical_entity::atom const*, int> hydrogen_bond_count;
     std::unordered_map<chemical_entity::atom const*, int> acceptors_bond_count;
@@ -363,7 +362,7 @@ vector<shared_ptr<bond::base const>> filter_hbond_realistic(vector<shared_ptr<bo
             container[atom] = 0;
         container[atom]++;
     };
-    auto can_be_added = [&](shared_ptr<bond::hydrogen const> bond) -> bool
+    auto can_be_added = [&](shared_ptr<bond::hydrogen const> const& bond) -> bool
     {
         return (get_bond_count(donors_bond_count, bond->donor_ptr()) <
                 bond->donor().how_many_hydrogen_can_donate() &&
@@ -372,45 +371,24 @@ vector<shared_ptr<bond::base const>> filter_hbond_realistic(vector<shared_ptr<bo
                 get_bond_count(acceptors_bond_count, bond->acceptor_ptr()) <
                 bond->acceptor().how_many_hydrogen_can_accept());
     };
-    auto add_bond = [&](shared_ptr<bond::hydrogen const> bond) -> void
+    auto add_bond = [&](shared_ptr<bond::hydrogen const> const& bond) -> void
     {
         inc_bond_count(donors_bond_count, bond->donor_ptr());
         inc_bond_count(hydrogen_bond_count, bond->hydrogen_ptr());
         inc_bond_count(acceptors_bond_count, bond->acceptor_ptr());
-        hydrogen_bonds_output.insert(bond);
+        output.push_back(bond);
     };
 
-    //Extract hydrogen bonds from input
-    for (auto& i: input)
-    {
-        if (i->get_type() == "hydrogen")
-            hydrogen_bonds_input.push_back(std::dynamic_pointer_cast<bond::hydrogen const>(i));
-    }
-
     //Order from smallest to largest energy
-    sort(
-            hydrogen_bonds_input.begin(), hydrogen_bonds_input.end(),
-            [](shared_ptr<bond::hydrogen const> a, shared_ptr<bond::hydrogen const> b)
+    sort(input.begin(), input.end(),
+            [](shared_ptr<bond::hydrogen const> const& a, shared_ptr<bond::hydrogen const> const& b)
             { return a->get_energy() < b->get_energy(); });
 
     //Add as many hydrogen bonds as possible
-    for (auto i: hydrogen_bonds_input)
+    for (const auto& i: input)
     {
         if (can_be_added(i))
             add_bond(i);
-    }
-
-    //Let's build the output list
-    vector<shared_ptr<bond::base const>> output;
-    for (auto i: input)
-    {
-        //Insert i into the output if it is not an hydrogen or if it is in the filtered list
-        if (i->get_type() != "hydrogen" ||
-            hydrogen_bonds_output.find(std::dynamic_pointer_cast<bond::hydrogen const>(i)) !=
-            hydrogen_bonds_output.end())
-        {
-            output.push_back(i);
-        }
     }
 
     return output;
@@ -468,11 +446,13 @@ rin::graph rin::maker::operator()(parameters const& params) const
     {
     case parameters::interaction_type_t::NONCOVALENT_BONDS:
     {
-        auto const hydrogen_bonds = find_bonds<bond::hydrogen>(
+        auto hydrogen_bonds = find_bonds<bond::hydrogen>(
                 pimpl->hacceptor_vector,
                 pimpl->hdonor_tree,
                 params.query_dist_hbond(),
                 params);
+        if (params.hbond_realistic())
+            hydrogen_bonds = filter_hbond_realistic(hydrogen_bonds);
 
         auto const vdw_bonds = remove_duplicates(
                 find_bonds<bond::vdw>(
@@ -531,9 +511,6 @@ rin::graph rin::maker::operator()(parameters const& params) const
             append(results, filter_best(pimpl->ss_bonds));
             break;
         }
-
-        if (params.hbond_realistic())
-            results = filter_hbond_realistic(results);
 
         break;
     }
