@@ -34,13 +34,13 @@ public:
     std::string pdb_name;
 };
 
-struct chemical_entity::aminoacid::observer::impl final
+struct chemical_entity::aminoacid::component::impl final
 {
 public:
-    std::weak_ptr<aminoacid::impl> res_pimpl;
-    std::array<double, 3> res_position;
+    std::weak_ptr<aminoacid::impl> res_impl;
+    std::array<double, 3> res_pos;
 
-    explicit impl(aminoacid const& res) : res_pimpl{res.pimpl}, res_position{(std::array<double, 3>) res}
+    explicit impl(aminoacid const& res) : res_impl{res.pimpl}, res_pos{(std::array<double, 3>) res}
     {}
 };
 

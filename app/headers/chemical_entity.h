@@ -29,25 +29,11 @@ private:
     std::shared_ptr<impl> pimpl;
 
 public:
-    class observer final
-    {
-    private:
-        struct impl;
-        std::shared_ptr<observer::impl> pimpl;
-
-    public:
-        explicit observer(aminoacid const& res);
-
-        [[nodiscard]]
-        explicit operator std::optional<aminoacid>() const;
-    };
-
-    explicit operator observer() const;
-
     class component
     {
     private:
-        observer obs;
+        struct impl;
+        std::shared_ptr<component::impl> pimpl;
 
     protected:
         explicit component(aminoacid const& res);
@@ -57,8 +43,7 @@ public:
         aminoacid res() const;
     };
 
-private:
-    friend class observer;
+    friend class component;
 
     aminoacid();
 

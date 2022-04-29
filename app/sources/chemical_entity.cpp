@@ -234,42 +234,25 @@ aminoacid::aminoacid(vector<records::atom> const& records, string const& pdb_nam
 [[nodiscard]]
 aminoacid aminoacid::component::res() const
 {
-    auto res_opt = (std::optional<aminoacid>) obs;
-    //if (res_opt.has_value()) // TODO (?) throw exception other than std::bad_optional?
-    return res_opt.value();
+    // information-less aminoacid
+    aminoacid res;
+
+    // restore all of its information
+    res._position = pimpl->res_pos;
+
+    // TODO check and throw exception?
+    // to me it is redundant.
+    res.pimpl = pimpl->res_impl.lock();
+
+    // return value
+    return res;
 }
+
 
 aminoacid::aminoacid() : kdpoint<3>({0, 0, 0})
 {}
 
-aminoacid::observer::observer(aminoacid const& res) : pimpl{std::make_shared<impl>(res)}
-{}
-
-aminoacid::observer::operator std::optional<aminoacid>() const
-{
-    // check if aminoacid exists
-    if (!pimpl->res_pimpl.expired())
-    {
-        // information-less aminoacid
-        aminoacid res;
-
-        // restore all of its information
-        res._position = pimpl->res_position;
-        res.pimpl = pimpl->res_pimpl.lock();
-
-        // return value
-        return {res};
-    }
-
-    else
-        // return nothing
-        return std::nullopt;
-}
-
-aminoacid::operator observer() const
-{ return observer{*this}; }
-
-aminoacid::component::component(aminoacid const& res) : obs{(observer) res}
+aminoacid::component::component(aminoacid const& res) : pimpl{std::make_shared<component::impl>(res)}
 {}
 
 aminoacid::~aminoacid() = default;
