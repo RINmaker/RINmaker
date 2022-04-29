@@ -98,9 +98,9 @@ private:
     double const _angle;
 
     // returns a pair sigma_ij,epsilon_ij
-    std::pair<double, double> getSigmaEpsilon(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor);
+    static std::pair<double, double> getSigmaEpsilon(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor);
 
-    double energy(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor, chemical_entity::atom const* hydrogen);
+    static double energy(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor, chemical_entity::atom const* hydrogen);
 
 public:
     static std::shared_ptr<hydrogen const> test(rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor);
@@ -239,7 +239,7 @@ public:
 
     pipistack(chemical_entity::ring const& a, chemical_entity::ring const& b, double angle);
 
-    double energy(double angle);
+    static double energy(double angle);
 
     [[nodiscard]]
     chemical_entity::ring const& source_ring() const
@@ -312,7 +312,7 @@ private:
     chemical_entity::atom const& _source_atom;
     chemical_entity::atom const& _target_atom;
 
-    double energy(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
+    static double energy(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
 
 public:
     static std::shared_ptr<vdw const> test(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
