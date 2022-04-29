@@ -91,8 +91,8 @@ public:
 class hydrogen final : public base
 {
 private:
-    chemical_entity::atom const& _acceptor;
-    chemical_entity::atom const& _donor;
+    chemical_entity::atom const _acceptor;
+    chemical_entity::atom const _donor;
     chemical_entity::atom const* _hydrogen;
 
     double const _angle;
@@ -153,8 +153,8 @@ public:
 class ionic final : public base
 {
 private:
-    chemical_entity::ionic_group const& _negative;
-    chemical_entity::ionic_group const& _positive;
+    chemical_entity::ionic_group const _negative;
+    chemical_entity::ionic_group const _positive;
 
 public:
     static std::shared_ptr<ionic const> test(rin::parameters const& params, chemical_entity::ionic_group const& a, chemical_entity::ionic_group const& b);
@@ -189,8 +189,8 @@ public:
 class pication : public base
 {
 private:
-    chemical_entity::atom const& _cation;
-    chemical_entity::ring const& _ring;
+    chemical_entity::atom const _cation;
+    chemical_entity::ring const _ring;
 
     double _angle;
 
@@ -230,8 +230,8 @@ public:
 class pipistack final : public base
 {
 private:
-    chemical_entity::ring const& _source_ring;
-    chemical_entity::ring const& _target_ring;
+    chemical_entity::ring const _source_ring;
+    chemical_entity::ring const _target_ring;
     double const _angle;
 
 public:
@@ -309,8 +309,8 @@ public:
 class vdw final : public base
 {
 private:
-    chemical_entity::atom const& _source_atom;
-    chemical_entity::atom const& _target_atom;
+    chemical_entity::atom const _source_atom;
+    chemical_entity::atom const _target_atom;
 
     static double energy(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
 
