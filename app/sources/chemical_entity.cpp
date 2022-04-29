@@ -242,20 +242,20 @@ aminoacid aminoacid::component::res() const
 aminoacid::aminoacid() : kdpoint<3>({0, 0, 0})
 {}
 
-aminoacid::observer::observer(aminoacid const& res) : res_pimpl{res.pimpl}, res_position{(std::array<double, 3>) res}
+aminoacid::observer::observer(aminoacid const& res) : pimpl{std::make_shared<impl>(res)}
 {}
 
 aminoacid::observer::operator std::optional<aminoacid>() const
 {
     // check if aminoacid exists
-    if (!res_pimpl.expired())
+    if (!pimpl->res_pimpl.expired())
     {
         // information-less aminoacid
         aminoacid res;
 
         // restore all of its information
-        res._position = res_position;
-        res.pimpl = res_pimpl.lock();
+        res._position = pimpl->res_position;
+        res.pimpl = pimpl->res_pimpl.lock();
 
         // return value
         return {res};

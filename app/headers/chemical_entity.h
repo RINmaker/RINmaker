@@ -32,8 +32,8 @@ public:
     class observer final
     {
     private:
-        std::weak_ptr<impl> res_pimpl;
-        std::array<double, 3> res_position;
+        struct impl;
+        std::shared_ptr<observer::impl> pimpl;
 
     public:
         explicit observer(aminoacid const& res);
@@ -46,9 +46,10 @@ public:
 
     class component
     {
-    protected:
+    private:
         observer obs;
 
+    protected:
         explicit component(aminoacid const& res);
 
     public:
