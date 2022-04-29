@@ -2,8 +2,6 @@
 
 #include <utility>
 
-#include "chemical_entity.h"
-
 using chemical_entity::aminoacid, chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group;
 using rin::parameters;
 

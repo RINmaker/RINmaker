@@ -8,19 +8,10 @@
 #include "rin_graph.h"
 #include "pdb_records.h"
 
+#include "chemical_entity.h"
+
 #include "energy.h"
 #include "rin_params.h"
-
-namespace chemical_entity
-{
-class aminoacid;
-
-class atom;
-
-class ring;
-
-class ionic_group;
-}
 
 namespace bond
 {
