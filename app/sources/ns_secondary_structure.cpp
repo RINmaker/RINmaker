@@ -6,21 +6,27 @@
 using namespace secondary_structure;
 
 sheet_piece::sheet_piece(record::sheet_piece record, chemical_entity::aminoacid const& res) :
-    base(), _record(std::move(record)), _res(res)
+    base(),
+    _record(std::move(record)),
+    _sheet_id{record.get_id()},
+    _seq_dist{std::to_string(1 + res.sequence_number() - record.init_seq_number())}
 {}
 
 helix::helix(record::helix record, chemical_entity::aminoacid const& res) :
-    base(), _record(std::move(record)), _res(res)
+    base(),
+    _record(std::move(record)),
+    _helix_serial{std::to_string(record.serial())},
+    _seq_dist{std::to_string(1 + res.sequence_number() - record.init_seq_number())}
 {}
 
 std::string sheet_piece::pretty() const
 {
-    return "SHEET:" + _record.get_id() + ":" + std::to_string(1 + _res.sequence_number() - _record.init_seq_number());
+    return "SHEET:" + _sheet_id + ":" + _seq_dist;
 }
 
 std::string helix::pretty() const
 {
-    return "HELIX:" + std::to_string(_record.serial()) + ":" + std::to_string(1 + _res.sequence_number() - _record.init_seq_number());
+    return "HELIX:" + _helix_serial + ":" + _seq_dist;
 }
 
 std::string loop::pretty() const { return "LOOP"; } // TODO config

@@ -29,7 +29,7 @@ class sheet_piece : public base
 {
 private:
     record::sheet_piece const _record;
-    chemical_entity::aminoacid const& _res;
+    std::string const _sheet_id, _seq_dist;
 
 public:
     sheet_piece(record::sheet_piece record, chemical_entity::aminoacid const& res);
@@ -42,7 +42,7 @@ class helix : public base
 {
 private:
     record::helix const _record;
-    chemical_entity::aminoacid const& _res;
+    std::string const _helix_serial, _seq_dist;
 
 public:
     helix(record::helix record, chemical_entity::aminoacid const& res);
