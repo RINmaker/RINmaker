@@ -124,26 +124,23 @@ array<double, 3> centre_of_mass(vector<atom> const& atoms)
     return centroid;
 }
 
+void assert_ring_correctness(
+        string const& name, uint32_t line_number, vector<string> const& expected_atoms, vector<atom> const& found_atoms)
+{
+    if (expected_atoms.size() != found_atoms.size())
+    {
+        string expected_atoms_str = joinStrings(expected_atoms, ",");
+        string found_atoms_str = getNameFromAtoms(found_atoms, ",");
+        string exception_description =
+                "line number: " + std::to_string(line_number) + ", aminoacid: " + name +
+                " - expected aromatic ring: " + expected_atoms_str + ", found: " + found_atoms_str;
+        throw std::invalid_argument(exception_description);
+    }
+};
+
 aminoacid::aminoacid(vector<record::atom> const& records, string const& pdb_name) :
         kdpoint<3>({0, 0, 0}), pimpl{new impl()}
 {
-    /*
-    auto assert_ring_correctness =
-            [](string const& name, uint32_t line_number, vector<string> const& expected_atoms,
-               vector<atom const*> const& found_atoms)
-            {
-                if (expected_atoms.size() != found_atoms.size())
-                {
-                    string expected_atoms_str = joinStrings(expected_atoms, ",");
-                    string found_atoms_str = getNameFromAtoms(found_atoms, ",");
-                    string exception_description =
-                            "line number: " + std::to_string(line_number) + ", aminoacid: " + name +
-                            " - expected aromatic ring: " + expected_atoms_str + ", found: " + found_atoms_str;
-                    throw std::invalid_argument(exception_description);
-                }
-            };
-    */
-
     if (records.empty())
         throw std::invalid_argument("it's not possible to construct an aminoacid without record");
 
@@ -211,12 +208,12 @@ aminoacid::aminoacid(vector<record::atom> const& records, string const& pdb_name
 
     if (n_of_rings >= 1)
     {
-        //assert_ring_correctness(pimpl->name, first.line_number(), patterns_1, ring_1);
+        assert_ring_correctness(pimpl->name, first.line_number(), patterns_1, ring_1);
         pimpl->primary_ring = ring(ring_1, *this);
     }
     if (n_of_rings == 2)
     {
-        //assert_ring_correctness(pimpl->name, first.line_number(), patterns_2, ring_2);
+        assert_ring_correctness(pimpl->name, first.line_number(), patterns_2, ring_2);
         pimpl->secondary_ring = ring(ring_2, *this);
     }
 
