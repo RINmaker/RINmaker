@@ -186,15 +186,15 @@ rin::maker::maker(string const& pdb_name,
     {
         for (auto& res: tmp_pimpl->aminoacids)
         {
-            res.make_secondary_structure();
+            res.set_loop();
 
             auto sheet = sheet_helper.find(res);
             if (sheet.has_value())
-                res.make_secondary_structure(sheet.value());
+                res.set_sheet(sheet.value());
 
             auto helix = helix_helper.find(res);
             if (helix.has_value())
-                res.make_secondary_structure(helix.value());
+                res.set_helix(helix.value());
         }
     }
 

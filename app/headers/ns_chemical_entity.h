@@ -98,11 +98,11 @@ public:
     [[nodiscard]]
     explicit operator rin::node() const;
 
-    void make_secondary_structure();
+    void set_loop();
 
-    void make_secondary_structure(record::helix const& record);
+    void set_helix(record::helix const& record);
 
-    void make_secondary_structure(record::sheet_piece const& record);
+    void set_sheet(record::sheet_piece const& record);
 
     [[nodiscard]]
     std::string secondary_structure_id() const;

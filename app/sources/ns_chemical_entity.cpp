@@ -93,17 +93,17 @@ bool aminoacid::satisfies_minimum_separation(aminoacid const& aa, int minimum_se
 aminoacid::operator rin::node() const
 { return rin::node(*this); }
 
-void aminoacid::make_secondary_structure()
+void aminoacid::set_loop()
 {
     pimpl->secondary_structure = std::make_unique<secondary_structure::loop>();
 }
 
-void aminoacid::make_secondary_structure(record::helix const& record)
+void aminoacid::set_helix(record::helix const& record)
 {
     pimpl->secondary_structure = std::make_unique<secondary_structure::helix>(record, *this);
 }
 
-void aminoacid::make_secondary_structure(const record::sheet_piece& record)
+void aminoacid::set_sheet(const record::sheet_piece& record)
 {
     pimpl->secondary_structure = std::make_unique<secondary_structure::sheet_piece>(record, *this);
 }
