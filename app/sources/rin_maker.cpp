@@ -20,6 +20,8 @@
 #include "log_manager.h"
 #include "spatial/kdtree.h"
 
+#include "private/rin_maker_impl.h"
+
 namespace fs = std::filesystem;
 
 using lm = log_manager;
@@ -31,29 +33,6 @@ using std::vector, std::string, std::list, std::set, std::map, std::unordered_ma
         std::pair, std::nullopt;
 
 using rin::parameters, prelude::interval;
-
-struct rin::maker::impl
-{
-public:
-    vector<aminoacid> aminoacids;
-
-    kdtree<atom, 3> hdonor_tree, vdw_tree;
-    vector<atom> hacceptor_vector, vdw_vector, cation_vector;
-
-    kdtree<ring, 3> ring_tree, pication_ring_tree;
-    vector<ring> ring_vector, pication_ring_vector;
-
-    kdtree<ionic_group, 3> positive_ion_tree;
-    vector<ionic_group> negative_ion_vector;
-
-    kdtree<atom, 3> alpha_carbon_tree, beta_carbon_tree;
-    vector<atom> alpha_carbon_vector, beta_carbon_vector;
-
-    // ss bonds are directly parsed, not computed by us
-    vector<shared_ptr<bond::ss const>> ss_bonds;
-
-    string pdb_name;
-};
 
 vector<std::function<rin::maker(void)>> rin::maker::parse_models(fs::path const& pdb_path)
 {
