@@ -53,28 +53,28 @@ public:
     ~aminoacid();
 
     [[nodiscard]]
-    std::vector<atom const*> atoms() const;
+    std::vector<atom> const& atoms() const;
 
     [[nodiscard]]
     std::string const& pdb_name() const;
 
     [[nodiscard]]
-    atom const* ca() const;
+    std::optional<atom> const& ca() const;
 
     [[nodiscard]]
-    atom const* cb() const;
+    std::optional<atom> const& cb() const;
 
     [[nodiscard]]
-    ring const* primary_ring() const;
+    std::optional<ring> const& primary_ring() const;
 
     [[nodiscard]]
-    ring const* secondary_ring() const;
+    std::optional<ring> const& secondary_ring() const;
 
     [[nodiscard]]
-    ionic_group const* positive_ionic_group() const;
+    std::optional<ionic_group> const& positive_ionic_group() const;
 
     [[nodiscard]]
-    ionic_group const* negative_ionic_group() const;
+    std::optional<ionic_group> const& negative_ionic_group() const;
 
     [[nodiscard]]
     std::string const& name() const;
@@ -150,7 +150,7 @@ public:
     int how_many_hydrogen_can_accept() const;
 
     [[nodiscard]]
-    std::vector<atom const*> attached_hydrogens() const;
+    std::vector<atom> attached_hydrogens() const;
 
     [[nodiscard]]
     bool is_a_vdw_candidate() const;
@@ -184,7 +184,7 @@ private:
     std::shared_ptr<impl const> pimpl;
 
 public:
-    ring(std::vector<atom const*> const& atoms, aminoacid const& res);
+    ring(std::vector<atom> const& atoms, aminoacid const& res);
 
     ~ring();
 
@@ -207,7 +207,7 @@ public:
     double angle_between_normal_and_centres_joining(ring const& other) const;
 
     [[nodiscard]]
-    atom const& atom_closest_to(atom const& atom) const;
+    atom atom_closest_to(atom const& atom) const;
 
     [[nodiscard]]
     std::string name() const;
@@ -220,7 +220,7 @@ private:
     std::shared_ptr<impl const> pimpl;
 
 public:
-    ionic_group(std::vector<atom const*> const& atoms, int const& charge, aminoacid const& res);
+    ionic_group(std::vector<atom> const& atoms, int const& charge, aminoacid const& res);
 
     ~ionic_group();
 

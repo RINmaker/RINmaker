@@ -5,6 +5,7 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <optional>
 #include <array>
 
 #include "ns_record.h"
@@ -13,15 +14,15 @@
 struct chemical_entity::aminoacid::impl final
 {
 public:
-    std::vector<std::unique_ptr<chemical_entity::atom const>> _atoms;
+    std::vector<chemical_entity::atom> _atoms;
 
-    std::unique_ptr<chemical_entity::ring const> primary_ring, secondary_ring;
-    std::unique_ptr<chemical_entity::ionic_group const> positive_ionic_group, negative_ionic_group;
+    std::optional<chemical_entity::ring> primary_ring = std::nullopt, secondary_ring = std::nullopt;
+    std::optional<chemical_entity::ionic_group> positive_ionic_group = std::nullopt, negative_ionic_group = std::nullopt;
 
     std::unique_ptr<secondary_structure::base> secondary_structure{std::make_unique<secondary_structure::base>()};
 
-    chemical_entity::atom const* alpha_carbon = nullptr;
-    chemical_entity::atom const* beta_carbon = nullptr;
+    std::optional<chemical_entity::atom> alpha_carbon = std::nullopt;
+    std::optional<chemical_entity::atom> beta_carbon = std::nullopt;
 
     std::string chain_id;
 
@@ -53,7 +54,7 @@ public:
 struct chemical_entity::ring::impl final
 {
 public:
-    std::vector<chemical_entity::atom const*> atoms;
+    std::vector<chemical_entity::atom> atoms;
 
     std::array<double, 3> normal{};
     double mean_radius;
@@ -62,6 +63,6 @@ public:
 struct chemical_entity::ionic_group::impl
 {
 public:
-    std::vector<chemical_entity::atom const*> const atoms;
+    std::vector<chemical_entity::atom> const atoms;
     int const charge;
 };

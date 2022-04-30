@@ -247,18 +247,18 @@ std::shared_ptr<hydrogen const> hydrogen::test(parameters const& params, atom co
         if (!(acceptor.res() == donor.res()))
         {
             auto hydrogens = donor.attached_hydrogens();
-            for (auto* h: hydrogens)
+            for (auto const& h: hydrogens)
             {
                 array<double, 3> const da = (array<double, 3>) (acceptor - donor);
-                array<double, 3> const dh = (array<double, 3>) (*h - donor);
+                array<double, 3> const dh = (array<double, 3>) (h - donor);
                 double angle_adh = geom::angle<3>(da, dh);
 
-                array<double, 3> const ha = (array<double, 3>) (acceptor - *h);
-                array<double, 3> const hd = (array<double, 3>) (donor - *h);
+                array<double, 3> const ha = (array<double, 3>) (acceptor - h);
+                array<double, 3> const hd = (array<double, 3>) (donor - h);
                 double angle_ahd = geom::angle<3>(ha, hd);
 
                 if (angle_adh <= cfg::params::hbond_angle) // 63
-                    return std::make_shared<hydrogen const>(acceptor, donor, *h, angle_ahd);
+                    return std::make_shared<hydrogen const>(acceptor, donor, h, angle_ahd);
             }
         }
     }

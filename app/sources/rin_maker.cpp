@@ -207,54 +207,51 @@ rin::maker::maker(string const& pdb_name,
     for (auto const& res: tmp_pimpl->aminoacids)
     {
 
-        auto carbon = res.ca();
-        if (carbon != nullptr)
-            tmp_pimpl->alpha_carbon_vector.push_back(*carbon);
+        auto const& ca = res.ca();
+        if (ca.has_value())
+            tmp_pimpl->alpha_carbon_vector.push_back(ca.value());
 
-        carbon = res.cb();
-        if (carbon != nullptr)
-            tmp_pimpl->beta_carbon_vector.push_back(*carbon);
+        auto const& cb = res.cb();
+        if (cb.has_value())
+            tmp_pimpl->beta_carbon_vector.push_back(cb.value());
 
-        for (auto const* a: res.atoms())
+        for (auto const& a : res.atoms())
         {
-            if (a->is_a_hydrogen_donor())
-                hdonors.push_back(*a);
+            if (a.is_a_hydrogen_donor())
+                hdonors.push_back(a);
 
-            if (a->is_a_hydrogen_acceptor())
-                tmp_pimpl->hacceptor_vector.push_back(*a);
+            if (a.is_a_hydrogen_acceptor())
+                tmp_pimpl->hacceptor_vector.push_back(a);
 
-            if (a->is_a_vdw_candidate())
-                tmp_pimpl->vdw_vector.push_back(*a);
+            if (a.is_a_vdw_candidate())
+                tmp_pimpl->vdw_vector.push_back(a);
 
-            if (a->is_a_cation())
-                tmp_pimpl->cation_vector.push_back(*a);
+            if (a.is_a_cation())
+                tmp_pimpl->cation_vector.push_back(a);
         }
 
-        auto const* group = res.positive_ionic_group();
-        if (group != nullptr)
-            positives.push_back(*group);
+        auto const& pos_group = res.positive_ionic_group();
+        if (pos_group.has_value())
+            positives.push_back(pos_group.value());
 
-        group = res.negative_ionic_group();
-        if (group != nullptr)
-            tmp_pimpl->negative_ion_vector.push_back(*group);
+        auto const& neg_group = res.negative_ionic_group();
+        if (neg_group.has_value())
+            tmp_pimpl->negative_ion_vector.push_back(neg_group.value());
 
-        auto const* ring = res.primary_ring();
-        if (ring != nullptr)
+        auto const ring_setup = [&](std::optional<ring> const& ropt)
         {
-            tmp_pimpl->ring_vector.push_back(*ring);
+            if (ropt.has_value())
+            {
+                auto const& ring = ropt.value();
+                tmp_pimpl->ring_vector.push_back(ring);
 
-            if (ring->is_a_pication_candidate())
-                tmp_pimpl->pication_ring_vector.push_back(*ring);
-        }
+                if (ring.is_a_pication_candidate())
+                    tmp_pimpl->pication_ring_vector.push_back(ring);
+            }
+        };
 
-        ring = res.secondary_ring();
-        if (ring != nullptr)
-        {
-            tmp_pimpl->ring_vector.push_back(*ring);
-
-            if (ring->is_a_pication_candidate())
-                tmp_pimpl->pication_ring_vector.push_back(*ring);
-        }
+        ring_setup(res.primary_ring());
+        ring_setup(res.secondary_ring());
     }
 
     lm::main()->info("hydrogen acceptors: {}", tmp_pimpl->hacceptor_vector.size());

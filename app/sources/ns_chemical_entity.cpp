@@ -14,48 +14,42 @@ using std::vector, std::array, std::string, std::unique_ptr, std::make_unique, s
 using chemical_entity::aminoacid, chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group,
         secondary_structure::helix, secondary_structure::loop, secondary_structure::sheet_piece;
 
-string getNameFromAtoms(vector<atom const*> const& atoms, string const& delimiter = ":")
+string getNameFromAtoms(vector<atom> const& atoms, string const& delimiter = ":")
 {
     vector<string> atoms_name;
-    for (auto i: atoms)
-        atoms_name.push_back(i->name());
+    for (auto const& a: atoms)
+        atoms_name.push_back(a.name());
 
     sort(atoms_name.begin(), atoms_name.end());
 
     return joinStrings(atoms_name, delimiter);
 }
 
-vector<atom const*> aminoacid::atoms() const
+vector<atom> const& aminoacid::atoms() const
 {
-    vector<atom const*> obs;
-    obs.reserve(pimpl->_atoms.size());
-
-    for (auto const& a_uptr: pimpl->_atoms)
-        obs.push_back(a_uptr.get());
-
-    return obs;
+    return pimpl->_atoms;
 }
 
 string const& aminoacid::pdb_name() const
 { return pimpl->pdb_name; }
 
-atom const* aminoacid::ca() const
+std::optional<atom> const& aminoacid::ca() const
 { return pimpl->alpha_carbon; }
 
-atom const* aminoacid::cb() const
+std::optional<atom> const& aminoacid::cb() const
 { return pimpl->beta_carbon; }
 
-ring const* aminoacid::primary_ring() const
-{ return pimpl->primary_ring.get(); }
+std::optional<ring> const& aminoacid::primary_ring() const
+{ return pimpl->primary_ring; }
 
-ring const* aminoacid::secondary_ring() const
-{ return pimpl->secondary_ring.get(); }
+std::optional<ring> const& aminoacid::secondary_ring() const
+{ return pimpl->secondary_ring; }
 
-ionic_group const* aminoacid::positive_ionic_group() const
-{ return pimpl->positive_ionic_group.get(); }
+std::optional<ionic_group> const& aminoacid::positive_ionic_group() const
+{ return pimpl->positive_ionic_group; }
 
-ionic_group const* aminoacid::negative_ionic_group() const
-{ return pimpl->negative_ionic_group.get(); }
+std::optional<ionic_group> const& aminoacid::negative_ionic_group() const
+{ return pimpl->negative_ionic_group; }
 
 string const& aminoacid::name() const
 { return pimpl->name; }
@@ -113,15 +107,15 @@ string aminoacid::secondary_structure_id() const
     return pimpl->secondary_structure->pretty();
 }
 
-array<double, 3> centre_of_mass(vector<atom const*> const& atoms)
+array<double, 3> centre_of_mass(vector<atom> const& atoms)
 {
     double mass{0.0};
     array<double, 3> centroid{0.0, 0.0, 0.0};
-    for (auto a_ptr: atoms)
+    for (auto const& a: atoms)
     {
-        double const m = a_ptr->mass();
+        double const m = a.mass();
         for (size_t i = 0; i < 3; ++i)
-            centroid[i] += (*a_ptr)[i] * m;
+            centroid[i] += a[i] * m;
         mass += m;
     }
     for (size_t i = 0; i < 3; ++i)
@@ -133,6 +127,7 @@ array<double, 3> centre_of_mass(vector<atom const*> const& atoms)
 aminoacid::aminoacid(vector<record::atom> const& records, string const& pdb_name) :
         kdpoint<3>({0, 0, 0}), pimpl{new impl()}
 {
+    /*
     auto assert_ring_correctness =
             [](string const& name, uint32_t line_number, vector<string> const& expected_atoms,
                vector<atom const*> const& found_atoms)
@@ -147,6 +142,7 @@ aminoacid::aminoacid(vector<record::atom> const& records, string const& pdb_name
                     throw std::invalid_argument(exception_description);
                 }
             };
+    */
 
     if (records.empty())
         throw std::invalid_argument("it's not possible to construct an aminoacid without record");
@@ -184,30 +180,30 @@ aminoacid::aminoacid(vector<record::atom> const& records, string const& pdb_name
     }
 
     // note: are they mutually exclusive? should be addressed
-    vector<atom const*> positive, negative;
-    vector<atom const*> ring_1, ring_2;
+    vector<atom> positive, negative;
+    vector<atom> ring_1, ring_2;
 
     for (auto const& record: records)
     {
-        pimpl->_atoms.push_back(make_unique<atom const>(record, *this));
-        auto const a = pimpl->_atoms.back().get();
+        pimpl->_atoms.emplace_back(record, *this);
+        auto const& a = pimpl->_atoms.back();
 
-        if (a->name() == "CA")
+        if (a.name() == "CA")
             pimpl->alpha_carbon = a;
 
-        else if (a->name() == "CB")
+        else if (a.name() == "CB")
             pimpl->beta_carbon = a;
 
-        if (n_of_rings >= 1 && find(patterns_1.begin(), patterns_1.end(), a->name()) != patterns_1.end())
+        if (n_of_rings >= 1 && find(patterns_1.begin(), patterns_1.end(), a.name()) != patterns_1.end())
             ring_1.push_back(a);
 
-        if (n_of_rings == 2 && find(patterns_2.begin(), patterns_2.end(), a->name()) != patterns_2.end())
+        if (n_of_rings == 2 && find(patterns_2.begin(), patterns_2.end(), a.name()) != patterns_2.end())
             ring_2.push_back(a);
 
-        if (a->is_in_a_positive_ionic_group())
+        if (a.is_in_a_positive_ionic_group())
             positive.push_back(a);
 
-        else if (a->is_in_a_negative_ionic_group())
+        else if (a.is_in_a_negative_ionic_group())
             negative.push_back(a);
     }
 
@@ -215,20 +211,20 @@ aminoacid::aminoacid(vector<record::atom> const& records, string const& pdb_name
 
     if (n_of_rings >= 1)
     {
-        assert_ring_correctness(pimpl->name, first.line_number(), patterns_1, ring_1);
-        pimpl->primary_ring = make_unique<ring const>(ring_1, *this);
+        //assert_ring_correctness(pimpl->name, first.line_number(), patterns_1, ring_1);
+        pimpl->primary_ring = ring(ring_1, *this);
     }
     if (n_of_rings == 2)
     {
-        assert_ring_correctness(pimpl->name, first.line_number(), patterns_2, ring_2);
-        pimpl->secondary_ring = make_unique<ring const>(ring_2, *this);
+        //assert_ring_correctness(pimpl->name, first.line_number(), patterns_2, ring_2);
+        pimpl->secondary_ring = ring(ring_2, *this);
     }
 
     if (!positive.empty())
-        pimpl->positive_ionic_group = make_unique<ionic_group const>(positive, 1, *this);
+        pimpl->positive_ionic_group = ionic_group(positive, 1, *this);
 
     if (!negative.empty())
-        pimpl->negative_ionic_group = make_unique<ionic_group const>(negative, -1, *this);
+        pimpl->negative_ionic_group = ionic_group(negative, -1, *this);
 }
 
 [[nodiscard]]
@@ -461,22 +457,20 @@ bool atom::is_a_vdw_candidate() const
             en == "C" || en == "S";*/
 }
 
-vector<atom const*> atom::attached_hydrogens() const
+vector<atom> atom::attached_hydrogens() const
 {
-    vector<atom const*> hydrogens;
+    vector<atom> hydrogens;
     auto const hydrogen_name_pattern = "H" + name().substr(1, name().size() - 1);
-    for (atom const* a: res().atoms())
+    for (auto const& a : res().atoms())
     {
-        if (a->is_a_hydrogen() && prelude::match(a->name(), hydrogen_name_pattern))
-        {
+        if (a.is_a_hydrogen() && prelude::match(a.name(), hydrogen_name_pattern))
             hydrogens.push_back(a);
-        }
     }
 
     return hydrogens;
 }
 
-ring::ring(vector<atom const*> const& atoms, aminoacid const& res) :
+ring::ring(vector<atom> const& atoms, aminoacid const& res) :
         kdpoint<3>({0, 0, 0}), component(res)
 {
     auto tmp_pimpl = std::make_shared<impl>();
@@ -487,16 +481,16 @@ ring::ring(vector<atom const*> const& atoms, aminoacid const& res) :
     tmp_pimpl->atoms = atoms;
 
     double sum_radii = 0;
-    for (auto* a: atoms)
-        sum_radii += distance(*a);
+    for (auto const& a: atoms)
+        sum_radii += distance(a);
     tmp_pimpl->mean_radius = sum_radii / (double) atoms.size();
 
     _position = centre_of_mass(atoms);
 
     // kudos to Giulio Marcolin for the following shortcut
     // it only deviates from a SVD best-fit method no more than 1-2°, on average
-    array<double, 3> const v = (array<double, 3>) ((*atoms[0]) - (*atoms[1]));
-    array<double, 3> const w = (array<double, 3>) ((*atoms[2]) - (*atoms[1]));
+    array<double, 3> const v = (array<double, 3>) (atoms[0] - atoms[1]);
+    array<double, 3> const w = (array<double, 3>) (atoms[2] - atoms[1]);
     tmp_pimpl->normal = geom::cross(v, w);
 
     pimpl = tmp_pimpl;
@@ -518,12 +512,12 @@ bool ring::is_a_pication_candidate() const
 
 double ring::closest_distance_between_atoms(ring const& other) const
 {
-    double minimum = pimpl->atoms[0]->distance(*other.pimpl->atoms[0]);
-    for (auto* atom_1: pimpl->atoms)
+    double minimum = pimpl->atoms[0].distance(other.pimpl->atoms[0]);
+    for (auto const& atom_1: pimpl->atoms)
     {
-        for (auto* atom_2: other.pimpl->atoms)
+        for (auto const& atom_2: other.pimpl->atoms)
         {
-            double current = atom_1->distance(*atom_2);
+            double current = atom_1.distance(atom_2);
             if (current < minimum)
             {
                 minimum = current;
@@ -543,14 +537,14 @@ double ring::angle_between_normal_and_centres_joining(ring const& other) const
     return geom::d_angle<3>(pimpl->normal, centres_joining);
 }
 
-atom const& ring::atom_closest_to(atom const& atom) const
+atom ring::atom_closest_to(atom const& atom) const
 {
-    auto* closest_atom = pimpl->atoms[0];
-    double min_distance = closest_atom->distance(atom);
+    auto closest_atom = pimpl->atoms[0];
+    double min_distance = closest_atom.distance(atom);
 
-    for (auto* a: pimpl->atoms)
+    for (auto const& a : pimpl->atoms)
     {
-        const double distance = a->distance(atom);
+        const double distance = a.distance(atom);
         if (distance < min_distance)
         {
             min_distance = distance;
@@ -558,7 +552,7 @@ atom const& ring::atom_closest_to(atom const& atom) const
         }
     }
 
-    return *closest_atom;
+    return closest_atom;
 }
 
 string ring::name() const
@@ -566,7 +560,7 @@ string ring::name() const
     return getNameFromAtoms(pimpl->atoms);
 }
 
-ionic_group::ionic_group(vector<atom const*> const& atoms, int const& charge, aminoacid const& res) :
+ionic_group::ionic_group(vector<atom> const& atoms, int const& charge, aminoacid const& res) :
         kdpoint<3>({0, 0, 0}), component(res), pimpl{new impl{atoms, charge}}
 { _position = centre_of_mass(atoms); }
 
