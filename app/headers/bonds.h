@@ -57,8 +57,8 @@ public:
 class generic_bond final : public base
 {
 private:
-    chemical_entity::atom const& _source;
-    chemical_entity::atom const& _target;
+    chemical_entity::atom const _source;
+    chemical_entity::atom const _target;
 
 public:
     static std::shared_ptr<generic_bond const> test(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
