@@ -32,11 +32,7 @@ private:
     chemical_entity::aminoacid const& _res;
 
 public:
-    sheet_piece(record::sheet_piece record, chemical_entity::aminoacid const& res) :
-            base(),
-            _record(std::move(record)),
-            _res(res)
-    {}
+    sheet_piece(record::sheet_piece record, chemical_entity::aminoacid const& res);
 
     [[nodiscard]]
     std::string pretty() const override;
@@ -49,11 +45,7 @@ private:
     chemical_entity::aminoacid const& _res;
 
 public:
-    helix(record::helix record, chemical_entity::aminoacid const& res) :
-            base(),
-            _record(std::move(record)),
-            _res(res)
-    {}
+    helix(record::helix record, chemical_entity::aminoacid const& res);
 
     [[nodiscard]]
     std::string pretty() const override;
