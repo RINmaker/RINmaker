@@ -10,7 +10,7 @@
 
 #include "rin_graph.h"
 #include "ns_record.h"
-#include "secondary_structures.h"
+#include "ns_secondary_structure.h"
 
 #include "spatial/kdpoint.h"
 

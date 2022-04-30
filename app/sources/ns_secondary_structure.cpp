@@ -1,4 +1,4 @@
-#include "secondary_structures.h"
+#include "ns_secondary_structure.h"
 
 #include "ns_record.h"
 #include "ns_chemical_entity.h"

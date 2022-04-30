@@ -8,7 +8,7 @@
 #include <array>
 
 #include "ns_record.h"
-#include "secondary_structures.h"
+#include "ns_secondary_structure.h"
 
 struct chemical_entity::aminoacid::impl final
 {
