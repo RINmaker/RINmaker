@@ -20,7 +20,7 @@
 #include "log_manager.h"
 #include "spatial/kdtree.h"
 
-#include "private/rin_maker_impl.h"
+#include "private/impl_rin_maker.h"
 
 namespace fs = std::filesystem;
 

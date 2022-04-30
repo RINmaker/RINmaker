@@ -1,8 +1,8 @@
 #include "blackbox_test.h"
 
-#include "../app/sources/private/rin_graph_impl.h"
+#include "../app/sources/private/impl_rin_graph.h"
 
-#include "../app/sources/private/chemical_entity_impl.h"
+#include "../app/sources/private/impl_chemical_entity.h"
 
 #define MY_DBL_EPSILON 0.00005
 

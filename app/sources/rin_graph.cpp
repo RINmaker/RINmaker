@@ -11,7 +11,7 @@
 
 #include "config.h"
 
-#include "private/rin_graph_impl.h"
+#include "private/impl_rin_graph.h"
 
 namespace fs = std::filesystem;
 
