@@ -24,10 +24,10 @@ public:
     static std::vector<std::function<rin::maker(void)>> parse_models(std::filesystem::path const& pdb_path);
 
     maker(std::string const& pdb_name,
-          std::vector<records::atom> const& atom_records,
-          std::vector<records::ss> const& ssbond_records,
-          std::vector<records::helix> const& helix_records,
-          std::vector<records::sheet_piece> const& sheet_records);
+          std::vector<record::atom> const& atom_records,
+          std::vector<record::ss> const& ssbond_records,
+          std::vector<record::helix> const& helix_records,
+          std::vector<record::sheet_piece> const& sheet_records);
 
     ~maker();
 

@@ -179,7 +179,7 @@ string pipistack::get_interaction() const
 string pipistack::get_type() const
 { return "pipistack"; }
 
-ss::ss(records::ss const& record) :
+ss::ss(record::ss const& record) :
         base(record.length(), 167), // TODO config
         _source_name(record.name_1()),
         _target_name(record.name_2()),

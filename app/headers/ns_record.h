@@ -5,7 +5,7 @@
 
 #include "prelude.h"
 
-namespace records
+namespace record
 {
 template<size_t N, typename Derived>
 class base

@@ -1,6 +1,6 @@
 #include "ns_record.h"
 
-using namespace records;
+using namespace record;
 
 // FIXME: these _limits initializations should be avoided
 

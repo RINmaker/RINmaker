@@ -98,12 +98,12 @@ void aminoacid::make_secondary_structure()
     pimpl->secondary_structure = std::make_unique<structure::loop>();
 }
 
-void aminoacid::make_secondary_structure(records::helix const& record)
+void aminoacid::make_secondary_structure(record::helix const& record)
 {
     pimpl->secondary_structure = std::make_unique<structure::helix>(record, *this);
 }
 
-void aminoacid::make_secondary_structure(const records::sheet_piece& record)
+void aminoacid::make_secondary_structure(const record::sheet_piece& record)
 {
     pimpl->secondary_structure = std::make_unique<structure::sheet_piece>(record, *this);
 }
@@ -130,7 +130,7 @@ array<double, 3> centre_of_mass(vector<atom const*> const& atoms)
     return centroid;
 }
 
-aminoacid::aminoacid(vector<records::atom> const& records, string const& pdb_name) :
+aminoacid::aminoacid(vector<record::atom> const& records, string const& pdb_name) :
         kdpoint<3>({0, 0, 0}), pimpl{new impl()}
 {
     auto assert_ring_correctness =
@@ -149,7 +149,7 @@ aminoacid::aminoacid(vector<records::atom> const& records, string const& pdb_nam
             };
 
     if (records.empty())
-        throw std::invalid_argument("it's not possible to construct an aminoacid without records");
+        throw std::invalid_argument("it's not possible to construct an aminoacid without record");
 
     auto const& first = records.front();
     pimpl->name = first.res_name();
@@ -258,7 +258,7 @@ aminoacid::component::component(aminoacid const& res) : pimpl{std::make_shared<c
 aminoacid::~aminoacid() = default;
 
 
-atom::atom(records::atom const& record, aminoacid const& res) :
+atom::atom(record::atom const& record, aminoacid const& res) :
         kdpoint<3>({record.x(), record.y(), record.z()}), component(res), pimpl{new impl{record}}
 {}
 

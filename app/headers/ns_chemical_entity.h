@@ -48,7 +48,7 @@ public:
     aminoacid();
 
 public:
-    aminoacid(std::vector<records::atom> const& records, std::string const& pdb_name);
+    aminoacid(std::vector<record::atom> const& records, std::string const& pdb_name);
 
     ~aminoacid();
 
@@ -100,9 +100,9 @@ public:
 
     void make_secondary_structure();
 
-    void make_secondary_structure(records::helix const& record);
+    void make_secondary_structure(record::helix const& record);
 
-    void make_secondary_structure(records::sheet_piece const& record);
+    void make_secondary_structure(record::sheet_piece const& record);
 
     [[nodiscard]]
     std::string secondary_structure_id() const;
@@ -115,7 +115,7 @@ private:
     std::shared_ptr<impl const> pimpl;
 
 public:
-    atom(records::atom const& record, aminoacid const& res);
+    atom(record::atom const& record, aminoacid const& res);
 
     ~atom();
 

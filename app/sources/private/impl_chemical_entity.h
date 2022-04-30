@@ -47,7 +47,7 @@ public:
 struct chemical_entity::atom::impl final
 {
 public:
-    records::atom record;
+    record::atom record;
 };
 
 struct chemical_entity::ring::impl final

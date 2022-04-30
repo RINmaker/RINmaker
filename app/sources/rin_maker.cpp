@@ -50,15 +50,15 @@ vector<std::function<rin::maker(void)>> rin::maker::parse_models(fs::path const&
         numbered_lines.emplace_back(ln++, ls);
     pdb_file.close();
 
-    // atom records are split in MODEL sections
-    vector<vector<records::atom>> models;
+    // atom record are split in MODEL sections
+    vector<vector<record::atom>> models;
 
-    // other records are in global sections
-    vector<records::ss> ssbond_records;
-    vector<records::helix> helix_records;
-    vector<records::sheet_piece> sheet_records;
+    // other record are in global sections
+    vector<record::ss> ssbond_records;
+    vector<record::helix> helix_records;
+    vector<record::sheet_piece> sheet_records;
 
-    vector<records::atom> tmp_model;
+    vector<record::atom> tmp_model;
     for (auto const& line: numbered_lines)
     {
         auto const& line_str = line.second;
@@ -143,15 +143,15 @@ public:
 };
 
 rin::maker::maker(string const& pdb_name,
-                  vector<records::atom> const& atom_records,
-                  vector<records::ss> const& ssbond_records,
-                  vector<records::helix> const& helix_records,
-                  vector<records::sheet_piece> const& sheet_records)
+                  vector<record::atom> const& atom_records,
+                  vector<record::ss> const& ssbond_records,
+                  vector<record::helix> const& helix_records,
+                  vector<record::sheet_piece> const& sheet_records)
 {
     auto tmp_pimpl = make_shared<impl>();
     tmp_pimpl->pdb_name = pdb_name;
 
-    vector<records::atom> tmp_atoms;
+    vector<record::atom> tmp_atoms;
 
     lm::main()->info("parsing pdb lines...");
 
@@ -172,11 +172,11 @@ rin::maker::maker(string const& pdb_name,
     for (auto const& record: ssbond_records)
         tmp_pimpl->ss_bonds.emplace_back(make_shared<bond::ss>(record));
 
-    auto sheet_helper = secondary_structure_helper<records::sheet_piece>();
+    auto sheet_helper = secondary_structure_helper<record::sheet_piece>();
     for (auto const& record: sheet_records)
         sheet_helper.insert(record);
 
-    auto helix_helper = secondary_structure_helper<records::helix>();
+    auto helix_helper = secondary_structure_helper<record::helix>();
     for (auto const& record: helix_records)
         helix_helper.insert(record);
 

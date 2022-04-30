@@ -28,11 +28,11 @@ public:
 class sheet_piece : public base
 {
 private:
-    records::sheet_piece const _record;
+    record::sheet_piece const _record;
     chemical_entity::aminoacid const& _res;
 
 public:
-    sheet_piece(records::sheet_piece record, chemical_entity::aminoacid const& res) :
+    sheet_piece(record::sheet_piece record, chemical_entity::aminoacid const& res) :
             base(),
             _record(std::move(record)),
             _res(res)
@@ -45,11 +45,11 @@ public:
 class helix : public base
 {
 private:
-    records::helix const _record;
+    record::helix const _record;
     chemical_entity::aminoacid const& _res;
 
 public:
-    helix(records::helix record, chemical_entity::aminoacid const& res) :
+    helix(record::helix record, chemical_entity::aminoacid const& res) :
             base(),
             _record(std::move(record)),
             _res(res)

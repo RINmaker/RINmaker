@@ -281,7 +281,7 @@ private:
     std::string const _target_name;
 
 public:
-    explicit ss(records::ss const& record);
+    explicit ss(record::ss const& record);
 
     [[nodiscard]]
     std::string source_id() const;
