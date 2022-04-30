@@ -96,10 +96,9 @@ vector<std::function<rin::maker(void)>> rin::maker::parse_models(fs::path const&
     auto const pdb_name = pdb_path.stem().string();
     vector<std::function<rin::maker(void)>> rin_makers;
     for (auto const& model: models)
-        rin_makers.emplace_back([=]()
-                                {
-                                    return rin::maker{pdb_name, model, ssbond_records, helix_records, sheet_records};
-                                });
+        rin_makers.emplace_back(
+                [=]()
+                { return rin::maker{pdb_name, model, ssbond_records, helix_records, sheet_records}; });
 
     return rin_makers;
 }
@@ -351,8 +350,8 @@ std::vector<shared_ptr<bond::hydrogen const>> filter_hbond_realistic(std::vector
 
     //Order from smallest to largest energy
     sort(input.begin(), input.end(),
-            [](shared_ptr<bond::hydrogen const> const& a, shared_ptr<bond::hydrogen const> const& b)
-            { return a->get_energy() < b->get_energy(); });
+         [](shared_ptr<bond::hydrogen const> const& a, shared_ptr<bond::hydrogen const> const& b)
+         { return a->get_energy() < b->get_energy(); });
 
     //Add as many hydrogen bonds as possible
     for (const auto& i: input)
