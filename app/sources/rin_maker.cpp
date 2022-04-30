@@ -337,18 +337,18 @@ std::vector<shared_ptr<bond::hydrogen const>> filter_hbond_realistic(std::vector
     };
     auto can_be_added = [&](shared_ptr<bond::hydrogen const> const& bond) -> bool
     {
-        return (get_bond_count(donors_bond_count, bond->donor_ptr()) <
+        return (get_bond_count(donors_bond_count, &bond->donor()) <
                 bond->donor().how_many_hydrogen_can_donate() &&
-                get_bond_count(hydrogen_bond_count, bond->hydrogen_ptr()) < 1 &&
+                get_bond_count(hydrogen_bond_count, &bond->hydrogen_atom()) < 1 &&
                 //An hydrogen can make only one bond
-                get_bond_count(acceptors_bond_count, bond->acceptor_ptr()) <
+                get_bond_count(acceptors_bond_count, &bond->acceptor()) <
                 bond->acceptor().how_many_hydrogen_can_accept());
     };
     auto add_bond = [&](shared_ptr<bond::hydrogen const> const& bond) -> void
     {
-        inc_bond_count(donors_bond_count, bond->donor_ptr());
-        inc_bond_count(hydrogen_bond_count, bond->hydrogen_ptr());
-        inc_bond_count(acceptors_bond_count, bond->acceptor_ptr());
+        inc_bond_count(donors_bond_count, &bond->donor());
+        inc_bond_count(hydrogen_bond_count, &bond->hydrogen_atom());
+        inc_bond_count(acceptors_bond_count, &bond->acceptor());
         output.push_back(bond);
     };
 

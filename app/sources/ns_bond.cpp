@@ -77,12 +77,12 @@ pair<double, double> hydrogen::getSigmaEpsilon(atom const& donor, atom const& ac
     throw std::invalid_argument("hydrogen::getSigmaEpsilon: donor " + donor_repr + ", acceptor " + acceptor_repr + " unsupported");
 }
 
-double hydrogen::energy(atom const& donor, atom const& acceptor, atom const* hydrogen)
+double hydrogen::energy(atom const& donor, atom const& acceptor, atom const& hydrogen)
 {
     pair<double, double> sigmaEpsilon = getSigmaEpsilon(donor, acceptor);
     double sigma = sigmaEpsilon.first;
     double epsilon = sigmaEpsilon.second;
-    double distance = hydrogen->distance(acceptor);
+    double distance = hydrogen.distance(acceptor);
 
     double sigma_distance_12 = pow(sigma / distance, 12);
     double sigma_distance_10 = pow(sigma / distance, 10);
@@ -90,7 +90,7 @@ double hydrogen::energy(atom const& donor, atom const& acceptor, atom const* hyd
     return 4 * epsilon * (sigma_distance_12 - sigma_distance_10);
 }
 
-hydrogen::hydrogen(atom const& acceptor, atom const& donor, atom const* hydrogen, double angle) :
+hydrogen::hydrogen(atom const& acceptor, atom const& donor, atom const& hydrogen, double angle) :
         base(acceptor.distance(donor), energy(donor, acceptor, hydrogen)),
         _acceptor(acceptor),
         _donor(donor),
@@ -104,13 +104,9 @@ atom const& hydrogen::acceptor() const
 atom const& hydrogen::donor() const
 { return _donor; }
 
-atom const* hydrogen::acceptor_ptr() const
-{ return &_acceptor; }
 
-atom const* hydrogen::donor_ptr() const
-{ return &_donor; }
 
-atom const* hydrogen::hydrogen_ptr() const
+atom const& hydrogen::hydrogen_atom() const
 { return _hydrogen; }
 
 double hydrogen::get_angle() const
@@ -262,7 +258,7 @@ std::shared_ptr<hydrogen const> hydrogen::test(parameters const& params, atom co
                 double angle_ahd = geom::angle<3>(ha, hd);
 
                 if (angle_adh <= cfg::params::hbond_angle) // 63
-                    return std::make_shared<hydrogen const>(acceptor, donor, h, angle_ahd);
+                    return std::make_shared<hydrogen const>(acceptor, donor, *h, angle_ahd);
             }
         }
     }
@@ -403,7 +399,7 @@ string hydrogen::get_id_simple() const
            ":" +
            target_atom().res().id() +
            ":" +
-           hydrogen_ptr()->name();
+            hydrogen_atom().name();
 }
 
 string vdw::get_id_simple() const

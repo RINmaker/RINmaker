@@ -93,19 +93,19 @@ class hydrogen final : public base
 private:
     chemical_entity::atom const _acceptor;
     chemical_entity::atom const _donor;
-    chemical_entity::atom const* _hydrogen;
+    chemical_entity::atom const _hydrogen;
 
     double const _angle;
 
     // returns a pair sigma_ij,epsilon_ij
     static std::pair<double, double> getSigmaEpsilon(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor);
 
-    static double energy(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor, chemical_entity::atom const* hydrogen);
+    static double energy(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor, chemical_entity::atom const& hydrogen);
 
 public:
     static std::shared_ptr<hydrogen const> test(rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor);
 
-    hydrogen(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle);
+    hydrogen(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const& hydrogen, double angle);
 
     [[nodiscard]]
     chemical_entity::atom const& acceptor() const;
@@ -122,13 +122,7 @@ public:
     { return donor(); }
 
     [[nodiscard]]
-    chemical_entity::atom const* acceptor_ptr() const;
-
-    [[nodiscard]]
-    chemical_entity::atom const* donor_ptr() const;
-
-    [[nodiscard]]
-    chemical_entity::atom const* hydrogen_ptr() const;
+    chemical_entity::atom const& hydrogen_atom() const;
 
     [[nodiscard]]
     double get_angle() const;
