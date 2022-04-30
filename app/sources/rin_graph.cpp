@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "chemical_entity.h"
-#include "bonds.h"
+#include "ns_bond.h"
 
 #include "config.h"
 

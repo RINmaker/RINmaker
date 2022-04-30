@@ -13,7 +13,7 @@
 #include <exception>
 #include <utility>
 
-#include "bonds.h"
+#include "ns_bond.h"
 #include "chemical_entity.h"
 
 #include "rin_params.h"
