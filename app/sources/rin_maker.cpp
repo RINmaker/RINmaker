@@ -35,27 +35,24 @@ using rin::parameters, prelude::interval;
 struct rin::maker::impl
 {
 public:
-    vector<aminoacid const*> aminoacids;
+    vector<aminoacid> aminoacids;
 
     kdtree<atom, 3> hdonor_tree, vdw_tree;
-    vector<atom const*> hacceptor_vector, vdw_vector, cation_vector;
+    vector<atom> hacceptor_vector, vdw_vector, cation_vector;
 
     kdtree<ring, 3> ring_tree, pication_ring_tree;
-    vector<ring const*> ring_vector, pication_ring_vector;
+    vector<ring> ring_vector, pication_ring_vector;
 
     kdtree<ionic_group, 3> positive_ion_tree;
-    vector<ionic_group const*> negative_ion_vector;
+    vector<ionic_group> negative_ion_vector;
 
     kdtree<atom, 3> alpha_carbon_tree, beta_carbon_tree;
-    vector<atom const*> alpha_carbon_vector, beta_carbon_vector;
+    vector<atom> alpha_carbon_vector, beta_carbon_vector;
 
     // ss bonds are directly parsed, not computed by us
     vector<shared_ptr<bond::ss const>> ss_bonds;
 
     string pdb_name;
-
-    ~impl()
-    { for (auto* res: aminoacids) delete res; }
 };
 
 vector<std::function<rin::maker(void)>> rin::maker::parse_models(fs::path const& pdb_path)
@@ -176,7 +173,6 @@ rin::maker::maker(string const& pdb_name,
     tmp_pimpl->pdb_name = pdb_name;
 
     vector<records::atom> tmp_atoms;
-    vector<aminoacid*> tmp_aminoacids;
 
     lm::main()->info("parsing pdb lines...");
 
@@ -184,7 +180,7 @@ rin::maker::maker(string const& pdb_name,
     {
         if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back()))
         {
-            tmp_aminoacids.emplace_back(new aminoacid(tmp_atoms, pdb_name));
+            tmp_pimpl->aminoacids.emplace_back(tmp_atoms, pdb_name);
             tmp_atoms.clear();
         }
 
@@ -192,7 +188,7 @@ rin::maker::maker(string const& pdb_name,
     }
 
     if (!tmp_atoms.empty())
-        tmp_aminoacids.emplace_back(new aminoacid(tmp_atoms, pdb_name));
+        tmp_pimpl->aminoacids.emplace_back(tmp_atoms, pdb_name);
 
     for (auto const& record: ssbond_records)
         tmp_pimpl->ss_bonds.emplace_back(make_shared<bond::ss>(record));
@@ -209,80 +205,76 @@ rin::maker::maker(string const& pdb_name,
 
     if (sheet_helper.size() != 0 || helix_helper.size() != 0)
     {
-        for (auto res: tmp_aminoacids)
+        for (auto& res: tmp_pimpl->aminoacids)
         {
-            res->make_secondary_structure();
+            res.make_secondary_structure();
 
-            auto sheet = sheet_helper.find(*res);
+            auto sheet = sheet_helper.find(res);
             if (sheet.has_value())
-                res->make_secondary_structure(sheet.value());
+                res.make_secondary_structure(sheet.value());
 
-            auto helix = helix_helper.find(*res);
+            auto helix = helix_helper.find(res);
             if (helix.has_value())
-                res->make_secondary_structure(helix.value());
+                res.make_secondary_structure(helix.value());
         }
     }
-
-    tmp_pimpl->aminoacids.reserve(tmp_aminoacids.size());
-    for (auto res: tmp_aminoacids)
-        tmp_pimpl->aminoacids.emplace_back(res);
 
     lm::main()->info("retrieving components from aminoacids...");
 
     // used only to build the corresponding kdtrees
-    vector<atom const*> hdonors;
-    vector<ionic_group const*> positives;
+    vector<atom> hdonors;
+    vector<ionic_group> positives;
 
-    for (auto const* res: tmp_pimpl->aminoacids)
+    for (auto const& res: tmp_pimpl->aminoacids)
     {
 
-        auto carbon = res->ca();
+        auto carbon = res.ca();
         if (carbon != nullptr)
-            tmp_pimpl->alpha_carbon_vector.push_back(carbon);
+            tmp_pimpl->alpha_carbon_vector.push_back(*carbon);
 
-        carbon = res->cb();
+        carbon = res.cb();
         if (carbon != nullptr)
-            tmp_pimpl->beta_carbon_vector.push_back(carbon);
+            tmp_pimpl->beta_carbon_vector.push_back(*carbon);
 
-        for (auto const* a: res->atoms())
+        for (auto const* a: res.atoms())
         {
             if (a->is_a_hydrogen_donor())
-                hdonors.push_back(a);
+                hdonors.push_back(*a);
 
             if (a->is_a_hydrogen_acceptor())
-                tmp_pimpl->hacceptor_vector.push_back(a);
+                tmp_pimpl->hacceptor_vector.push_back(*a);
 
             if (a->is_a_vdw_candidate())
-                tmp_pimpl->vdw_vector.push_back(a);
+                tmp_pimpl->vdw_vector.push_back(*a);
 
             if (a->is_a_cation())
-                tmp_pimpl->cation_vector.push_back(a);
+                tmp_pimpl->cation_vector.push_back(*a);
         }
 
-        auto const* group = res->positive_ionic_group();
+        auto const* group = res.positive_ionic_group();
         if (group != nullptr)
-            positives.push_back(group);
+            positives.push_back(*group);
 
-        group = res->negative_ionic_group();
+        group = res.negative_ionic_group();
         if (group != nullptr)
-            tmp_pimpl->negative_ion_vector.push_back(group);
+            tmp_pimpl->negative_ion_vector.push_back(*group);
 
-        auto const* ring = res->primary_ring();
+        auto const* ring = res.primary_ring();
         if (ring != nullptr)
         {
-            tmp_pimpl->ring_vector.push_back(ring);
+            tmp_pimpl->ring_vector.push_back(*ring);
 
             if (ring->is_a_pication_candidate())
-                tmp_pimpl->pication_ring_vector.push_back(ring);
+                tmp_pimpl->pication_ring_vector.push_back(*ring);
         }
 
-        ring = res->secondary_ring();
+        ring = res.secondary_ring();
         if (ring != nullptr)
         {
-            tmp_pimpl->ring_vector.push_back(ring);
+            tmp_pimpl->ring_vector.push_back(*ring);
 
             if (ring->is_a_pication_candidate())
-                tmp_pimpl->pication_ring_vector.push_back(ring);
+                tmp_pimpl->pication_ring_vector.push_back(*ring);
         }
     }
 
@@ -312,7 +304,7 @@ rin::maker::~maker() = default;
 
 template<typename Bond, typename Entity1, typename Entity2>
 vector<shared_ptr<Bond const>>
-find_bonds(vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double dist, parameters const& params)
+find_bonds(vector<Entity1> const& vec, kdtree<Entity2, 3> const& tree, double dist, parameters const& params)
 {
     static_assert(
             is_base_of<aminoacid::component, Entity1>::value,
@@ -324,12 +316,12 @@ find_bonds(vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, do
             is_base_of<bond::base, Bond>::value, "template typename Bond must inherit from type bond::base");
 
     vector<shared_ptr<Bond const>> bonds;
-    for (auto e1: vec)
+    for (auto const& e1 : vec)
     {
-        auto neighbors = tree.range_search(*e1, dist);
-        for (auto e2: neighbors)
+        auto neighbors = tree.range_search(e1, dist);
+        for (auto const& e2 : neighbors)
         {
-            auto bond = Bond::test(params, *e1, *e2);
+            auto bond = Bond::test(params, e1, e2);
             if (bond != nullptr)
                 bonds.emplace_back(bond);
         }

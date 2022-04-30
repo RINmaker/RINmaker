@@ -232,13 +232,13 @@ void edge::append_to(xml_node& rin, bool with_metadata)
 graph::graph(
         string const& name,
         parameters const& params,
-        vector<aminoacid const*> const& aminoacids,
+        vector<aminoacid> const& aminoacids,
         vector<std::shared_ptr<bond::base const>> const& bonds)
 {
     auto tmp_pimpl = std::make_shared<impl>(name, params);
     for (auto a: aminoacids)
     {
-        auto n = (rin::node) *a;
+        auto n = (rin::node) a;
         tmp_pimpl->nodes.insert({n.get_id(), n});
     }
 

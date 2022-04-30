@@ -22,7 +22,7 @@ public:
     kdtree(kdtree &&) noexcept;
 
     // balanced spatial O(n log^2 n)
-    explicit kdtree(std::vector<T const *> &network);
+    explicit kdtree(std::vector<T> &network);
 
     // empty spatial
     kdtree() : root(nullptr) {};
@@ -31,7 +31,7 @@ public:
     ~kdtree();
 
     // range search in a (2*range)-edged cube O(log n)
-    std::vector<T const *> range_search(kdpoint<K> const &test, double range) const;
+    std::vector<T> range_search(kdpoint<K> const &test, double range) const;
 
     node *get_root() const {
         return root;
@@ -42,7 +42,7 @@ template<class T, size_t K>
 class kdtree<T, K>::node {
 public:
     // what im holding
-    T const *element;
+    T element;
 
     // left child
     node *left;
@@ -51,13 +51,13 @@ public:
     node *right;
 
     // balanced make_instance O(n log^2 n)
-    node(std::vector<T const *> &network, size_t first, size_t last, size_t depth);
+    node(std::vector<T> &network, size_t first, size_t last, size_t depth);
 
     // destruct everything O(n)
     ~node();
 
     // range search in a (2*range)-edged cube O(log n)
-    void range_search(kdpoint<K> const &test, double range, size_t depth, std::vector<T const *> &neighbors) const;
+    void range_search(kdpoint<K> const &test, double range, size_t depth, std::vector<T> &neighbors) const;
 };
 
 template<class T, size_t K>
@@ -76,7 +76,7 @@ kdtree<T, K>::kdtree(kdtree<T, K> &&other) noexcept : root(other.root) {
 }
 
 template<class T, size_t K>
-kdtree<T, K>::kdtree(std::vector<T const *> &network) {
+kdtree<T, K>::kdtree(std::vector<T> &network) {
     root = network.empty() ? nullptr : new node(network, 0, network.size() - 1, 0);
 }
 
@@ -86,8 +86,8 @@ kdtree<T, K>::~kdtree() {
 }
 
 template<class T, size_t K>
-std::vector<T const *> kdtree<T, K>::range_search(kdpoint<K> const &test, double const range) const {
-    std::vector<T const *> neighbors;
+std::vector<T> kdtree<T, K>::range_search(kdpoint<K> const &test, double range) const {
+    std::vector<T> neighbors;
 
     if (root != nullptr) {
         root->range_search(test, range, 0, neighbors);
@@ -96,20 +96,25 @@ std::vector<T const *> kdtree<T, K>::range_search(kdpoint<K> const &test, double
     return neighbors;
 }
 
-template<class T, size_t K>
-kdtree<T, K>::node::node(std::vector<T const *> &network, size_t const first, size_t const last, size_t const depth) {
-    std::stable_sort(
-            network.begin() + first, network.begin() + last + 1, [depth](kdpoint<K> const *a, kdpoint<K> const *b) {
-                return (*a)[depth] < (*b)[depth];
-            }
-    );
+template <typename X>
+X const& sort_and_take_median(std::vector<X>& vec, size_t first, size_t last, size_t depth)
+{
+    auto const cmp = [depth](X const& a, X const& b)
+            { return a[depth] < b[depth]; };
 
+    std::stable_sort(vec.begin() + first, vec.begin() + last + 1, cmp);
+
+    return vec[(first + last) / 2];
+}
+
+template<class T, size_t K>
+kdtree<T, K>::node::node(std::vector<T>& vec, size_t first, size_t last, size_t depth)
+    : element{sort_and_take_median(vec, first, last, depth)}
+{
     size_t const median = (first + last) / 2;
 
-    element = network[median];
-
-    left = median - first == 0 ? nullptr : new node(network, first, median - 1, depth + 1);
-    right = last - median == 0 ? nullptr : new node(network, median + 1, last, depth + 1);
+    left = median - first == 0 ? nullptr : new node(vec, first, median - 1, depth + 1);
+    right = last - median == 0 ? nullptr : new node(vec, median + 1, last, depth + 1);
 }
 
 template<class T, size_t K>
@@ -119,13 +124,13 @@ kdtree<T, K>::node::~node() {
 }
 
 template<class T, size_t K>
-void kdtree<T, K>::node::range_search(kdpoint<K> const &test, double const range, size_t const depth,
-                                      std::vector<T const *> &neighbors) const {
-    if ((*element)[depth] < test[depth] - range) {
+void kdtree<T, K>::node::range_search(kdpoint<K> const& test, double range, size_t depth,
+                                      std::vector<T>& neighbors) const {
+    if (element[depth] < test[depth] - range) {
         if (right != nullptr) {
             right->range_search(test, range, depth + 1, neighbors);
         }
-    } else if ((*element)[depth] > test[depth] + range) {
+    } else if (element[depth] > test[depth] + range) {
         if (left != nullptr) {
             left->range_search(test, range, depth + 1, neighbors);
         }
@@ -138,7 +143,7 @@ void kdtree<T, K>::node::range_search(kdpoint<K> const &test, double const range
             right->range_search(test, range, depth + 1, neighbors);
         }
 
-        if (element->distance(test) <= range) {
+        if (element.distance(test) <= range) {
             neighbors.push_back(element);
         }
     }

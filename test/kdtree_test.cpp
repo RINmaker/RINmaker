@@ -52,21 +52,21 @@ MyKDTree* KDTreeTest::mykdtree = nullptr;
 
 TEST_F(KDTreeTest, BalancedTree) {
 
-	vector<const MyKDPoint<3>*> v1;
-	v1.push_back(new MyKDPoint<3>({ -1.857, 1.423, 0.039 }));
-	v1.push_back(new MyKDPoint<3>({ 0.209, -1.748, -0.613 }));
+	vector<MyKDPoint<3>> v1;
+	v1.push_back(MyKDPoint<3>({ -1.857, 1.423, 0.039 }));
+	v1.push_back(MyKDPoint<3>({ 0.209, -1.748, -0.613 }));
 	mykdtree = new MyKDTree(v1);
 	auto a = mykdtree->range_search(MyKDPoint<3>({ -3.870, 1.255, 0.155 }), 3.5);
 
-	vector<const MyKDPoint<3>*> vec;
-	vec.push_back(new MyKDPoint<3>({ 0, 0, 0 }));
-	vec.push_back(new MyKDPoint<3>({ 0, 0, 0 }));
-	vec.push_back(new MyKDPoint<3>({ 0, 1, 0 }));
-	vec.push_back(new MyKDPoint<3>({ 0, 1, 1 }));
-	vec.push_back(new MyKDPoint<3>({ 1, 0, 0 }));
-	vec.push_back(new MyKDPoint<3>({ 1, 0, 1 }));
-	vec.push_back(new MyKDPoint<3>({ 1, 1, 0 }));
-	vec.push_back(new MyKDPoint<3>({ 1, 1, 1 }));
+	vector<MyKDPoint<3>> vec;
+	vec.push_back(MyKDPoint<3>({ 0, 0, 0 }));
+	vec.push_back(MyKDPoint<3>({ 0, 0, 0 }));
+	vec.push_back(MyKDPoint<3>({ 0, 1, 0 }));
+	vec.push_back(MyKDPoint<3>({ 0, 1, 1 }));
+	vec.push_back(MyKDPoint<3>({ 1, 0, 0 }));
+	vec.push_back(MyKDPoint<3>({ 1, 0, 1 }));
+	vec.push_back(MyKDPoint<3>({ 1, 1, 0 }));
+	vec.push_back(MyKDPoint<3>({ 1, 1, 1 }));
 
 	KDTreeTest::shuffle(vec);
 
@@ -75,19 +75,19 @@ TEST_F(KDTreeTest, BalancedTree) {
 }
 
 TEST_F(KDTreeTest, DistanceOnPositiveQuotas) {
-	vector<const MyKDPoint<3>*> vec;
+	vector<MyKDPoint<3>> vec;
 	// 3 Node a distance 1 from (0,0,0)
-	vec.push_back(new MyKDPoint<3>({ 0, 0, 1 }));
-	vec.push_back(new MyKDPoint<3>({ 0, 1, 0 }));
-	vec.push_back(new MyKDPoint<3>({ 1, 0, 0 }));
+	vec.push_back(MyKDPoint<3>({ 0, 0, 1 }));
+	vec.push_back(MyKDPoint<3>({ 0, 1, 0 }));
+	vec.push_back(MyKDPoint<3>({ 1, 0, 0 }));
 
 	// 3 Node a distance sqrt(2) from (0,0,0)
-	vec.push_back(new MyKDPoint<3>({ 0, 1, 1 }));
-	vec.push_back(new MyKDPoint<3>({ 1, 1, 0 }));
-	vec.push_back(new MyKDPoint<3>({ 1, 0, 1 }));
+	vec.push_back(MyKDPoint<3>({ 0, 1, 1 }));
+	vec.push_back(MyKDPoint<3>({ 1, 1, 0 }));
+	vec.push_back(MyKDPoint<3>({ 1, 0, 1 }));
 
 	// 1 Node a distance sqrt(3) from (0,0,0)
-	vec.push_back(new MyKDPoint<3>({ 1, 1, 1 }));
+	vec.push_back(MyKDPoint<3>({ 1, 1, 1 }));
 
 	KDTreeTest::shuffle(vec);
 
@@ -98,44 +98,44 @@ TEST_F(KDTreeTest, DistanceOnPositiveQuotas) {
 }
 
 TEST_F(KDTreeTest, DistanceOnAllQuotas) {
-	vector<const MyKDPoint<3>*> vec;
+	vector<MyKDPoint<3>> vec;
 	// 6 Node a distance 1 from (0,0,0)
-	vec.push_back(new MyKDPoint<3>({ 0,  0,  1 }));
-	vec.push_back(new MyKDPoint<3>({ 0,  1,  0 }));
-	vec.push_back(new MyKDPoint<3>({ 1,  0,  0 }));
+	vec.push_back(MyKDPoint<3>({ 0,  0,  1 }));
+	vec.push_back(MyKDPoint<3>({ 0,  1,  0 }));
+	vec.push_back(MyKDPoint<3>({ 1,  0,  0 }));
 
-	vec.push_back(new MyKDPoint<3>({ 0,  0, -1 }));
-	vec.push_back(new MyKDPoint<3>({ 0, -1,  0 }));
-	vec.push_back(new MyKDPoint<3>({ -1,  0,  0 }));
+	vec.push_back(MyKDPoint<3>({ 0,  0, -1 }));
+	vec.push_back(MyKDPoint<3>({ 0, -1,  0 }));
+	vec.push_back(MyKDPoint<3>({ -1,  0,  0 }));
 
 	// 12 Node a distance sqrt(2) from (0,0,0)
-	vec.push_back(new MyKDPoint<3>({ 0,  1,  1 }));
-	vec.push_back(new MyKDPoint<3>({ 1,  1,  0 }));
-	vec.push_back(new MyKDPoint<3>({ 1,  0,  1 }));
+	vec.push_back(MyKDPoint<3>({ 0,  1,  1 }));
+	vec.push_back(MyKDPoint<3>({ 1,  1,  0 }));
+	vec.push_back(MyKDPoint<3>({ 1,  0,  1 }));
 
-	vec.push_back(new MyKDPoint<3>({ 0, -1,  1 }));
-	vec.push_back(new MyKDPoint<3>({ 0,  1, -1 }));
-	vec.push_back(new MyKDPoint<3>({ -1,  1,  0 }));
-	vec.push_back(new MyKDPoint<3>({ 1, -1,  0 }));
-	vec.push_back(new MyKDPoint<3>({ -1,  0,  1 }));
-	vec.push_back(new MyKDPoint<3>({ 1,  0, -1 }));
+	vec.push_back(MyKDPoint<3>({ 0, -1,  1 }));
+	vec.push_back(MyKDPoint<3>({ 0,  1, -1 }));
+	vec.push_back(MyKDPoint<3>({ -1,  1,  0 }));
+	vec.push_back(MyKDPoint<3>({ 1, -1,  0 }));
+	vec.push_back(MyKDPoint<3>({ -1,  0,  1 }));
+	vec.push_back(MyKDPoint<3>({ 1,  0, -1 }));
 
-	vec.push_back(new MyKDPoint<3>({ 0, -1, -1 }));
-	vec.push_back(new MyKDPoint<3>({ -1, -1,  0 }));
-	vec.push_back(new MyKDPoint<3>({ -1,  0, -1 }));
+	vec.push_back(MyKDPoint<3>({ 0, -1, -1 }));
+	vec.push_back(MyKDPoint<3>({ -1, -1,  0 }));
+	vec.push_back(MyKDPoint<3>({ -1,  0, -1 }));
 
 	// 8 Node a distance sqrt(3) from (0,0,0)
-	vec.push_back(new MyKDPoint<3>({ 1,  1,  1 }));
+	vec.push_back(MyKDPoint<3>({ 1,  1,  1 }));
 
-	vec.push_back(new MyKDPoint<3>({ 1,  1, -1 }));
-	vec.push_back(new MyKDPoint<3>({ 1, -1,  1 }));
-	vec.push_back(new MyKDPoint<3>({ -1,  1,  1 }));
+	vec.push_back(MyKDPoint<3>({ 1,  1, -1 }));
+	vec.push_back(MyKDPoint<3>({ 1, -1,  1 }));
+	vec.push_back(MyKDPoint<3>({ -1,  1,  1 }));
 
-	vec.push_back(new MyKDPoint<3>({ 1, -1, -1 }));
-	vec.push_back(new MyKDPoint<3>({ -1, -1,  1 }));
-	vec.push_back(new MyKDPoint<3>({ -1,  1, -1 }));
+	vec.push_back(MyKDPoint<3>({ 1, -1, -1 }));
+	vec.push_back(MyKDPoint<3>({ -1, -1,  1 }));
+	vec.push_back(MyKDPoint<3>({ -1,  1, -1 }));
 
-	vec.push_back(new MyKDPoint<3>({ -1, -1, -1 }));
+	vec.push_back(MyKDPoint<3>({ -1, -1, -1 }));
 
 	KDTreeTest::shuffle(vec);
 
