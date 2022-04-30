@@ -295,6 +295,11 @@ int32_t atom::atom_number() const
     return pimpl->record.serial();
 }
 
+
+[[nodiscard]]
+std::string atom::unique_id() const
+{ return res().id() + ":" + name() + std::to_string(atom_number()); }
+
 double atom::mass() const
 {
     auto element = symbol();

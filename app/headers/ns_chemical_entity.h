@@ -172,6 +172,9 @@ public:
 
     [[nodiscard]]
     int32_t atom_number() const;
+
+    [[nodiscard]]
+    std::string unique_id() const;
 };
 
 class ring final : public kdpoint<3>, public aminoacid::component
