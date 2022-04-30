@@ -8,7 +8,7 @@
 #include <filesystem>
 
 #include "rin_graph.h"
-#include "pdb_records.h"
+#include "ns_record.h"
 
 namespace rin
 {

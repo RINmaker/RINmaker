@@ -6,7 +6,7 @@
 #include "prelude.h"
 
 #include "rin_graph.h"
-#include "pdb_records.h"
+#include "ns_record.h"
 
 #include "ns_chemical_entity.h"
 

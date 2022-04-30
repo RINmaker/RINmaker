@@ -1,6 +1,6 @@
 #include "secondary_structures.h"
 
-#include "pdb_records.h"
+#include "ns_record.h"
 #include "ns_chemical_entity.h"
 
 using namespace structure;

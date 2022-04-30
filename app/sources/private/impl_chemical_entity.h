@@ -7,7 +7,7 @@
 #include <vector>
 #include <array>
 
-#include "pdb_records.h"
+#include "ns_record.h"
 #include "secondary_structures.h"
 
 struct chemical_entity::aminoacid::impl final

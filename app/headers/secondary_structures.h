@@ -2,7 +2,7 @@
 
 #include <string>
 #include <utility>
-#include "pdb_records.h"
+#include "ns_record.h"
 
 namespace chemical_entity
 {

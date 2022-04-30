@@ -9,7 +9,7 @@
 #include "config.h"
 
 #include "rin_graph.h"
-#include "pdb_records.h"
+#include "ns_record.h"
 #include "secondary_structures.h"
 
 #include "spatial/kdpoint.h"
