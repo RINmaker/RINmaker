@@ -12,7 +12,7 @@
 using std::vector, std::array, std::string, std::unique_ptr, std::make_unique, std::to_string, std::invalid_argument;
 
 using chemical_entity::aminoacid, chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group,
-        structure::helix, structure::loop, structure::sheet_piece;
+        secondary_structure::helix, secondary_structure::loop, secondary_structure::sheet_piece;
 
 string getNameFromAtoms(vector<atom const*> const& atoms, string const& delimiter = ":")
 {
@@ -95,17 +95,17 @@ aminoacid::operator rin::node() const
 
 void aminoacid::make_secondary_structure()
 {
-    pimpl->secondary_structure = std::make_unique<structure::loop>();
+    pimpl->secondary_structure = std::make_unique<secondary_structure::loop>();
 }
 
 void aminoacid::make_secondary_structure(record::helix const& record)
 {
-    pimpl->secondary_structure = std::make_unique<structure::helix>(record, *this);
+    pimpl->secondary_structure = std::make_unique<secondary_structure::helix>(record, *this);
 }
 
 void aminoacid::make_secondary_structure(const record::sheet_piece& record)
 {
-    pimpl->secondary_structure = std::make_unique<structure::sheet_piece>(record, *this);
+    pimpl->secondary_structure = std::make_unique<secondary_structure::sheet_piece>(record, *this);
 }
 
 string aminoacid::secondary_structure_id() const

@@ -18,7 +18,7 @@ public:
     std::unique_ptr<chemical_entity::ring const> primary_ring, secondary_ring;
     std::unique_ptr<chemical_entity::ionic_group const> positive_ionic_group, negative_ionic_group;
 
-    std::unique_ptr<structure::base> secondary_structure{std::make_unique<structure::base>()};
+    std::unique_ptr<secondary_structure::base> secondary_structure{std::make_unique<secondary_structure::base>()};
 
     chemical_entity::atom const* alpha_carbon = nullptr;
     chemical_entity::atom const* beta_carbon = nullptr;

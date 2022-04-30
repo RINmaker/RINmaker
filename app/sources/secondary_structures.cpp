@@ -3,7 +3,7 @@
 #include "ns_record.h"
 #include "ns_chemical_entity.h"
 
-using namespace structure;
+using namespace secondary_structure;
 
 std::string sheet_piece::pretty() const
 {

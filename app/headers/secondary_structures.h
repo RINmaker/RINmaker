@@ -9,7 +9,7 @@ namespace chemical_entity
 class aminoacid;
 }
 
-namespace structure
+namespace secondary_structure
 {
 class base
 {
