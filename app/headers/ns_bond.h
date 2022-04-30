@@ -8,7 +8,7 @@
 #include "rin_graph.h"
 #include "pdb_records.h"
 
-#include "chemical_entity.h"
+#include "ns_chemical_entity.h"
 
 #include "energy.h"
 #include "rin_params.h"

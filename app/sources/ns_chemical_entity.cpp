@@ -1,4 +1,4 @@
-#include "chemical_entity.h"
+#include "ns_chemical_entity.h"
 
 #include <memory>
 

@@ -14,7 +14,7 @@
 #include <utility>
 
 #include "ns_bond.h"
-#include "chemical_entity.h"
+#include "ns_chemical_entity.h"
 
 #include "rin_params.h"
 #include "log_manager.h"

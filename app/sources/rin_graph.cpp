@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <utility>
 
-#include "chemical_entity.h"
+#include "ns_chemical_entity.h"
 #include "ns_bond.h"
 
 #include "config.h"

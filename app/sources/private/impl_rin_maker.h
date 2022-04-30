@@ -6,7 +6,7 @@
 #include <vector>
 #include <string>
 
-#include "chemical_entity.h"
+#include "ns_chemical_entity.h"
 
 struct rin::maker::impl
 {

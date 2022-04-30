@@ -1,6 +1,6 @@
 #pragma once
 
-#include "chemical_entity.h"
+#include "ns_chemical_entity.h"
 
 #include <string>
 #include <memory>
