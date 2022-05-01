@@ -97,7 +97,7 @@ X const& sort_and_take_median(std::vector<X>& vec, size_t first, size_t last, si
     auto const cmp = [depth](X const& a, X const& b)
     { return a[depth] < b[depth]; };
 
-    std::stable_sort(vec.begin() + first, vec.begin() + last + 1, cmp);
+    std::sort(vec.begin() + first, vec.begin() + last + 1, cmp);
 
     return vec[(first + last) / 2];
 }
