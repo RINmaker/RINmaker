@@ -206,13 +206,13 @@ rin::maker::maker(string const& pdb_name,
     for (auto const& res: tmp_pimpl->aminoacids)
     {
 
-        auto const& ca = res.ca();
+        auto const ca = res.ca();
         if (ca.has_value())
-            tmp_pimpl->alpha_carbon_vector.push_back(ca.value());
+            tmp_pimpl->alpha_carbon_vector.push_back(*ca);
 
-        auto const& cb = res.cb();
+        auto const cb = res.cb();
         if (cb.has_value())
-            tmp_pimpl->beta_carbon_vector.push_back(cb.value());
+            tmp_pimpl->beta_carbon_vector.push_back(*cb);
 
         for (auto const& a : res.atoms())
         {
@@ -229,23 +229,22 @@ rin::maker::maker(string const& pdb_name,
                 tmp_pimpl->cation_vector.push_back(a);
         }
 
-        auto const& pos_group = res.positive_ionic_group();
+        auto const pos_group = res.positive_ionic_group();
         if (pos_group.has_value())
-            positives.push_back(pos_group.value());
+            positives.push_back(*pos_group);
 
-        auto const& neg_group = res.negative_ionic_group();
+        auto const neg_group = res.negative_ionic_group();
         if (neg_group.has_value())
-            tmp_pimpl->negative_ion_vector.push_back(neg_group.value());
+            tmp_pimpl->negative_ion_vector.push_back(*neg_group);
 
-        auto const ring_setup = [&](std::optional<ring> const& ropt)
+        auto const ring_setup = [&](std::optional<ring> const& ring)
         {
-            if (ropt.has_value())
+            if (ring.has_value())
             {
-                auto const& ring = ropt.value();
-                tmp_pimpl->ring_vector.push_back(ring);
+                tmp_pimpl->ring_vector.push_back(*ring);
 
-                if (ring.is_a_pication_candidate())
-                    tmp_pimpl->pication_ring_vector.push_back(ring);
+                if (ring->is_a_pication_candidate())
+                    tmp_pimpl->pication_ring_vector.push_back(*ring);
             }
         };
 
