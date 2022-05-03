@@ -84,7 +84,10 @@ vector<std::function<rin::maker(void)>> rin::maker::parse_models(fs::path const&
             ssbond_records.emplace_back(line_str, line_num);
 
         else if (record_type == "ENDMDL")
+        {
             models.push_back(tmp_model);
+            tmp_model.clear();
+        }
 
         // else if (record_type == "MODEL");
     }
