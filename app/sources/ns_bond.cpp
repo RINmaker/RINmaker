@@ -30,7 +30,7 @@ pair<Entity const*, Entity const*> sort_by_res_id(Entity const& a, Entity const&
 { return a.res().id() < b.res().id() ? make_pair(&a, &b) : make_pair(&b, &a); }
 
 generic_bond::generic_bond(parameters const& params, atom const& a, atom const& b) :
-        base(a.res().distance(b.res()), 0), // TODO
+        base(geom::distance(a.res().position(), b.res().position()), 0), // TODO
         _source(*sort_by_res_id(a, b).first),
         _target(*sort_by_res_id(a, b).second)
 {}
