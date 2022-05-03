@@ -94,17 +94,17 @@ void aminoacid::set_loop()
 
 void aminoacid::set_helix(record::helix const& record)
 {
-    pimpl->secondary_structure = std::make_unique<secondary_structure::helix>(record, *this);
+    pimpl->secondary_structure = std::make_unique<secondary_structure::helix>(record);
 }
 
 void aminoacid::set_sheet(const record::sheet_piece& record)
 {
-    pimpl->secondary_structure = std::make_unique<secondary_structure::sheet_piece>(record, *this);
+    pimpl->secondary_structure = std::make_unique<secondary_structure::sheet_piece>(record);
 }
 
 string aminoacid::secondary_structure_id() const
 {
-    return pimpl->secondary_structure->pretty();
+    return pimpl->secondary_structure->pretty_with(*this);
 }
 
 array<double, 3> centre_of_mass(vector<atom> const& atoms)

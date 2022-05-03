@@ -15,39 +15,37 @@ class base
 {
 public:
     [[nodiscard]]
-    virtual std::string pretty() const;
+    virtual std::string pretty_with(chemical_entity::aminoacid const&) const;
 };
 
 class loop : public base
 {
 public:
     [[nodiscard]]
-    std::string pretty() const override;
+    std::string pretty_with(chemical_entity::aminoacid const&) const override;
 };
 
 class sheet_piece : public base
 {
 private:
     record::sheet_piece const _record;
-    std::string const _sheet_id, _seq_dist;
 
 public:
-    sheet_piece(record::sheet_piece const& record, chemical_entity::aminoacid const& res);
+    explicit sheet_piece(record::sheet_piece const& record);
 
     [[nodiscard]]
-    std::string pretty() const override;
+    std::string pretty_with(chemical_entity::aminoacid const&) const override;
 };
 
 class helix : public base
 {
 private:
     record::helix const _record;
-    std::string const _helix_serial, _seq_dist;
 
 public:
-    helix(record::helix const& record, chemical_entity::aminoacid const& res);
+    explicit helix(record::helix const& record);
 
     [[nodiscard]]
-    std::string pretty() const override;
+    std::string pretty_with(chemical_entity::aminoacid const&) const override;
 };
 }

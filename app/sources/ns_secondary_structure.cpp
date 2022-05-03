@@ -5,30 +5,30 @@
 
 using namespace secondary_structure;
 
-sheet_piece::sheet_piece(record::sheet_piece const& record, chemical_entity::aminoacid const& res) :
-    base(),
-    _record(record),
-    _sheet_id{record.get_id()},
-    _seq_dist{std::to_string(1 + res.sequence_number() - record.init_seq_number())}
+sheet_piece::sheet_piece(record::sheet_piece const& record) :
+        base(), _record(record)
 {}
 
-helix::helix(record::helix const& record, chemical_entity::aminoacid const& res) :
-    base(),
-    _record(record),
-    _helix_serial{std::to_string(record.serial())},
-    _seq_dist{std::to_string(1 + res.sequence_number() - record.init_seq_number())}
+helix::helix(record::helix const& record) :
+        base(), _record(record)
 {}
 
-std::string sheet_piece::pretty() const
+std::string sheet_piece::pretty_with(chemical_entity::aminoacid const& res) const
 {
-    return "SHEET:" + _sheet_id + ":" + _seq_dist;
+    return "SHEET:" +
+           _record.get_id() + ":" +
+           std::to_string(1 + res.sequence_number() - _record.init_seq_number());
 }
 
-std::string helix::pretty() const
+std::string helix::pretty_with(chemical_entity::aminoacid const& res) const
 {
-    return "HELIX:" + _helix_serial + ":" + _seq_dist;
+    return "HELIX:" +
+           std::to_string(_record.serial()) + ":" +
+           std::to_string(1 + res.sequence_number() - _record.init_seq_number());
 }
 
-std::string loop::pretty() const { return "LOOP"; } // TODO config
+std::string loop::pretty_with(chemical_entity::aminoacid const&) const
+{ return "LOOP"; } // TODO config
 
-std::string base::pretty() const { return "NONE"; } // TODO config
+std::string base::pretty_with(chemical_entity::aminoacid const&) const
+{ return "NONE"; } // TODO config
