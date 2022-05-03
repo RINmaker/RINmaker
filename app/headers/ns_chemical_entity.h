@@ -22,7 +22,7 @@ class ring;
 
 class ionic_group;
 
-class aminoacid : public kdpoint<3>
+class aminoacid
 {
 private:
     struct impl;
@@ -106,6 +106,9 @@ public:
 
     [[nodiscard]]
     std::string secondary_structure_id() const;
+
+    [[nodiscard]]
+    std::array<double, 3> const& position() const;
 };
 
 class atom final : public kdpoint<3>, public aminoacid::component

@@ -33,15 +33,16 @@ public:
     std::string id;
 
     std::string pdb_name;
+
+    std::array<double, 3> pos;
 };
 
 struct chemical_entity::aminoacid::component::impl final
 {
 public:
     std::weak_ptr<aminoacid::impl> res_impl;
-    std::array<double, 3> res_pos;
 
-    explicit impl(aminoacid const& res) : res_impl{res.pimpl}, res_pos{(std::array<double, 3>) res}
+    explicit impl(aminoacid const& res) : res_impl{res.pimpl}
     {}
 };
 

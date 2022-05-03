@@ -138,8 +138,7 @@ void assert_ring_correctness(
     }
 };
 
-aminoacid::aminoacid(vector<record::atom> const& records, string const& pdb_name) :
-        kdpoint<3>({0, 0, 0}), pimpl{new impl()}
+aminoacid::aminoacid(vector<record::atom> const& records, string const& pdb_name) : pimpl{new impl()}
 {
     if (records.empty())
         throw std::invalid_argument("it's not possible to construct an aminoacid without record");
@@ -204,7 +203,7 @@ aminoacid::aminoacid(vector<record::atom> const& records, string const& pdb_name
             negative.push_back(a);
     }
 
-    _position = centre_of_mass(atoms());
+    pimpl->pos = centre_of_mass(atoms());
 
     if (n_of_rings >= 1)
     {
@@ -231,25 +230,25 @@ aminoacid aminoacid::component::res() const
     aminoacid res;
 
     // restore all of its information
-    res._position = pimpl->res_pos;
-
     // TODO check and throw exception?
     // to me it is redundant.
     res.pimpl = pimpl->res_impl.lock();
-
-    // return value
     return res;
 }
 
 
-aminoacid::aminoacid() : kdpoint<3>({0, 0, 0})
-{}
+aminoacid::aminoacid() = default;
+
 
 aminoacid::component::component(aminoacid const& res) : pimpl{std::make_shared<component::impl>(res)}
 {}
 
 aminoacid::~aminoacid() = default;
 
+std::array<double, 3> const& chemical_entity::aminoacid::position() const
+{
+    return pimpl->pos;
+}
 
 atom::atom(record::atom const& record, aminoacid const& res) :
         kdpoint<3>({record.x(), record.y(), record.z()}), component(res), pimpl{new impl{record}}
