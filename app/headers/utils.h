@@ -21,8 +21,6 @@ struct arguments final
 
 std::optional<arguments> read_args(int argc, const char* argv[]);
 
-std::vector<std::pair<uint32_t, std::string>> read_lines(std::filesystem::path const& file_path);
-
 std::string app_full_name();
 
 string joinStrings(std::vector<std::string> const& values, string const& delimiter);

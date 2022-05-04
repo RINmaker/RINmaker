@@ -199,25 +199,6 @@ optional<arguments> read_args(int argc, const char* argv[])
     return arguments{params, pdb_path, out_path, log_dir};
 }
 
-std::vector<std::pair<uint32_t, std::string>> read_lines(std::filesystem::path const& file_path)
-{
-    std::ifstream file;
-    file.open(file_path);
-
-    // might throw
-    if (!file.is_open())
-        throw std::runtime_error("could not open " + file_path.string() + "\n");
-
-    string line;
-    uint32_t line_number = 0;
-    std::vector<std::pair<uint32_t, std::string>> result;
-    while (getline(file, line))
-        result.emplace_back(line_number++, line);
-
-    file.close();
-    return result;
-}
-
 string joinStrings(std::vector<std::string> const& values, string const& delimiter)
 {
     string out;
