@@ -16,7 +16,7 @@
 struct arguments final
 {
     rin::parameters params;
-    std::filesystem::path pdb_path, out_path, log_path;
+    std::filesystem::path pdb_path, out_dir, log_dir;
 };
 
 std::optional<arguments> read_args(int argc, const char* argv[]);

@@ -194,9 +194,8 @@ optional<arguments> read_args(int argc, const char* argv[])
     auto params = pcfg.build();
 
     fs::create_directory(out_dir);
-    auto out_path = out_dir / pdb_path.filename().replace_extension(".graphml");
 
-    return arguments{params, pdb_path, out_path, log_dir};
+    return arguments{params, pdb_path, out_dir, log_dir};
 }
 
 string joinStrings(std::vector<std::string> const& values, string const& delimiter)
