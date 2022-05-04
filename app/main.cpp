@@ -12,7 +12,7 @@ int main(int argc, const char* argv[])
         optional<arguments> maybe_args = read_args(argc, argv);
         if (maybe_args.has_value())
         {
-            auto const parsed_args = maybe_args.value();
+            auto const parsed_args = *maybe_args;
 
             lm::main()->debug("path to PDB input file: " + parsed_args.pdb_path.string());
             lm::main()->debug("path to output xml file: " + parsed_args.out_dir.string());
