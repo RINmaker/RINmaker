@@ -43,27 +43,31 @@ vector<std::function<rin::maker(void)>> rin::maker::parse_models(fs::path const&
     if (!pdb_file.is_open())
         throw runtime_error("could not open " + pdb_path.string() + "\n");
 
-    string ls;
-    uint32_t ln = 0;
-    vector<pair<uint32_t, string>> numbered_lines;
-    while (getline(pdb_file, ls))
-        numbered_lines.emplace_back(ln++, ls);
-    pdb_file.close();
+    auto const pdb_name = pdb_path.stem().string();
 
     // atom record are split in MODEL sections
-    vector<vector<record::atom>> models;
+    vector<record::atom> tmp_atoms;
 
     // other record are in global sections
     vector<record::ss> ssbond_records;
     vector<record::helix> helix_records;
     vector<record::sheet_piece> sheet_records;
 
-    vector<record::atom> tmp_model;
-    for (auto const& line: numbered_lines)
+    vector<std::function<rin::maker(void)>> rin_makers;
+    auto const emplace_lazy_rin_maker = [&]()
     {
-        auto const& line_str = line.second;
-        auto const& line_num = line.first;
+        rin_makers.emplace_back(
+                [=]()
+                {
+                    return rin::maker{
+                            pdb_name, tmp_atoms, ssbond_records, helix_records, sheet_records};
+                });
+    };
 
+    string line_str;
+    uint32_t line_num = 0;
+    while (getline(pdb_file, line_str))
+    {
         auto const record_type = prelude::trim(line_str.substr(0, 6));
 
         // TODO exception
@@ -72,7 +76,7 @@ vector<std::function<rin::maker(void)>> rin::maker::parse_models(fs::path const&
         // but there can be 0 MODEL and 0 ENDMDL
 
         if (record_type == "ATOM")
-            tmp_model.emplace_back(line_str, line_num);
+            tmp_atoms.emplace_back(line_str, line_num);
 
         else if (record_type == "HELIX")
             helix_records.emplace_back(line_str, line_num);
@@ -85,23 +89,20 @@ vector<std::function<rin::maker(void)>> rin::maker::parse_models(fs::path const&
 
         else if (record_type == "ENDMDL")
         {
-            models.push_back(tmp_model);
-            tmp_model.clear();
+            emplace_lazy_rin_maker();
+            tmp_atoms.clear();
         }
 
         // else if (record_type == "MODEL");
+
+        ++line_num;
     }
 
     // TODO this can only happen when no MODEL/ENDMDL is specified
-    if (!tmp_model.empty())
-        models.push_back(tmp_model);
+    if (!tmp_atoms.empty())
+        emplace_lazy_rin_maker();
 
-    auto const pdb_name = pdb_path.stem().string();
-    vector<std::function<rin::maker(void)>> rin_makers;
-    for (auto const& model: models)
-        rin_makers.emplace_back(
-                [=]()
-                { return rin::maker{pdb_name, model, ssbond_records, helix_records, sheet_records}; });
+    pdb_file.close();
 
     return rin_makers;
 }
