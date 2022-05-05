@@ -72,9 +72,11 @@ pair<double, double> hydrogen::getSigmaEpsilon(atom const& donor, atom const& ac
     if (compare("N", 1, "O", -1)) return std::make_pair(1.89, -7.00);
     if (compare("O", 0, "O", -1)) return std::make_pair(1.79, -6.375);
 
-    string donor_repr = donor.name() + "(" + std::to_string(donor.charge()) + ")";
-    string acceptor_repr = acceptor.name() + "(" + std::to_string(acceptor.charge()) + ")";
-    throw std::invalid_argument("hydrogen::getSigmaEpsilon: donor " + donor_repr + ", acceptor " + acceptor_repr + " unsupported");
+    return std::make_pair(1.79, -4.25); //Default value (is valid for all MC_MC bond)
+
+//    string donor_repr = donor.name() + "(" + std::to_string(donor.charge()) + ")";
+//    string acceptor_repr = acceptor.name() + "(" + std::to_string(acceptor.charge()) + ")";
+//    throw std::invalid_argument("hydrogen::getSigmaEpsilon: donor " + donor_repr + ", acceptor " + acceptor_repr + " unsupported");
 }
 
 double hydrogen::energy(atom const& donor, atom const& acceptor, atom const& hydrogen)
