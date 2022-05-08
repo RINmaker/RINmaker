@@ -67,27 +67,28 @@ optional<arguments> read_args(int argc, const char* argv[])
     app.add_option("--seq-sep", sequence_separation, "Minimum sequence separation")
        ->default_val(cfg::params::seq_sep);
 
-    string network_policy;
-    app.add_option("--network-policy", network_policy, "Available options: all, multiple, one")
-       ->default_val("all")
-       ->check(
-               [](string const& str)->string
-               {
-                   return str != "all" && str != "multiple" && str != "one"
-                          ? string(R"(must be "all", "multiple" or "one" but you entered ")" + str + "\"")
-                          : "";
-               });
+    auto network_policy = rin::parameters::network_policy_t::ALL;
+    std::map<std::string, rin::parameters::network_policy_t> netp_map{
+            {"all", rin::parameters::network_policy_t::ALL},
+            {"ca", rin::parameters::network_policy_t::BEST_ONE},
+            {"cb", rin::parameters::network_policy_t::BEST_PER_TYPE}};
 
-    string interaction_type;
-    app.add_option("--interaction-type", interaction_type, "Available options: closest, ca, cb")
-       ->default_val("closest")
-       ->check(
-               [](string const& str)->string
-               {
-                   return str != "closest" && str != "ca" && str != "cb"
-                          ? string(R"(must be "closest", "ca" or "cb" but you entered ")" + str + "\"")
-                          : "";
-               });
+    app.add_option(
+            "--network-policy", network_policy, "Available options: all, multiple, one")
+            ->transform(CLI::CheckedTransformer(netp_map, CLI::ignore_case)
+            .description(CLI::detail::generate_map(CLI::detail::smart_deref(netp_map), true)))
+            ->default_val("all");
+
+    auto interaction_type = rin::parameters::interaction_type_t::NONCOVALENT_BONDS;
+    std::map<std::string, rin::parameters::interaction_type_t> intt_map{
+        {"closest", rin::parameters::interaction_type_t::NONCOVALENT_BONDS},
+        {"ca", rin::parameters::interaction_type_t::GENERIC_ALPHA},
+        {"cb", rin::parameters::interaction_type_t::GENERIC_BETA}};
+
+    app.add_option(
+            "--interaction-type", interaction_type, "Available options: closest, ca, cb")
+            ->transform(CLI::CheckedTransformer(intt_map, CLI::ignore_case).description(CLI::detail::generate_map(CLI::detail::smart_deref(intt_map), true)))
+            ->default_val("closest");
 
     auto positive_check = [](string const& str)->string
     {
@@ -170,23 +171,8 @@ optional<arguments> read_args(int argc, const char* argv[])
             .set_sequence_separation(sequence_separation)
             .set_hbond_realistic(hbond_realistic_flag);
 
-    if (network_policy == "all")
-        pcfg.set_network_policy(rin::parameters::network_policy_t::ALL);
-    else if (network_policy == "multiple")
-        pcfg.set_network_policy(rin::parameters::network_policy_t::BEST_PER_TYPE);
-    else if (network_policy == "one")
-        pcfg.set_network_policy(rin::parameters::network_policy_t::BEST_ONE);
-    else
-        throw std::runtime_error("incorret network policy argument: \"" + network_policy + "\"");
-
-    if (interaction_type == "ca")
-        pcfg.set_interaction_type(rin::parameters::interaction_type_t::GENERIC_ALPHA);
-    else if (interaction_type == "cb")
-        pcfg.set_interaction_type(rin::parameters::interaction_type_t::GENERIC_BETA);
-    else if (interaction_type == "closest")
-        pcfg.set_interaction_type(rin::parameters::interaction_type_t::NONCOVALENT_BONDS);
-    else
-        throw runtime_error("incorrect interaction type argument: \"" + interaction_type + "\"");
+            .set_network_policy(network_policy)
+            .set_interaction_type(interaction_type);
 
     fs::create_directory(log_dir);
     log_manager::initialize(log_dir);
