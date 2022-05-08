@@ -48,7 +48,7 @@ optional<arguments> read_args(int argc, const char* argv[])
     }
 
     CLI::App app(app_full_name());
-    app.get_formatter()->column_width(48);
+    app.get_formatter()->column_width(64);
 
     filesystem::path pdb_path;
     app.add_option("pdb", pdb_path, "Path to PDB file (.pdb)")
