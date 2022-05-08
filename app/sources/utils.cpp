@@ -63,7 +63,7 @@ optional<arguments> read_args(int argc, const char* argv[])
     app.add_option("-o,--out-dir", out_dir, "Output directory")
         ->default_str(cfg::graphml::default_dirname);
 
-    int sequence_separation;
+    uint32_t sequence_separation;
     app.add_option("--seq-sep", sequence_separation, "Minimum sequence separation")
        ->default_val(cfg::params::seq_sep);
 
