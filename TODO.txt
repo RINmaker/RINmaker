@@ -7,14 +7,12 @@ TODO:
 - SHEET Specificare che usiamo il calcolo di giacometti e non le info nel pdb (Nella documentazione)
 - Scrivere un readme documentativo con la descrizione di cosa fa il programma
 - Documentare la modalità test nel readme principale, e specificare i due target di cmake
-- Rivedere costanti di energia (Jacopo)
 - mancano unita di misura sulla ui (Francesco)
-- Aprire qualche issue
 - Controllare che le formule dell'energia diano i risultati tutti nella stessa U.M. (kj o kcal)
 - UI avere la conversione tra kj e kcal
 
 WIP:
-- implementare il nuovo calcolo dell'energia per Pication e Pipi (lore)
+- Rivedere costanti di energia (Jacopo)
 - Documento contenete la lista e il risultato atteso dei test (Jacopo)
 
 DONE:
@@ -31,3 +29,4 @@ DONE:
 - cambiare estensione di output e mettere output di default se non viene specificato
 - "model" multipli => multiple run
 - Lanciare eccezione in casi unexpected (Ad esempio nei ring accediamo con [0] [1])
+- implementare il nuovo calcolo dell'energia per Pication e Pipi
