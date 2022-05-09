@@ -219,6 +219,12 @@ public:
 
     [[nodiscard]]
     std::string get_id_simple() const override;
+
+    static double getKappa(const chemical_entity::atom &cation);
+
+    static double getAlpha(const chemical_entity::ring &ring);
+
+    static double energy(const chemical_entity::ring &ring, const chemical_entity::atom &cation);
 };
 
 class pipistack final : public base

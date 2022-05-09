@@ -137,8 +137,39 @@ string ionic::get_interaction() const
 string ionic::get_type() const
 { return "ionic"; }
 
+double pication::getKappa(atom const& cation)
+{
+    string res_name = cation.res().name();
+
+    if (res_name == "LYS" || res_name == "HIS") return 1.00;
+    if (res_name == "ARG") return 0.25;
+
+    throw std::invalid_argument("pication::getKappa: cation res name " + res_name + " unsupported");
+}
+
+double pication::getAlpha(ring const& ring)
+{
+    string res_name = ring.res().name();
+
+    if (res_name == "PHE" || res_name == "TYR") return 190;
+    if (res_name == "TRP") return 150;
+
+    throw std::invalid_argument("pication::getAlpha: ring res name " + res_name + " unsupported");
+}
+
+double pication::energy(ring const& ring, atom const& cation)
+{
+    double distance = ring.distance(cation);
+    double kappa = getKappa(cation);
+    double alpha = getAlpha(ring);
+
+
+    double energy = -(kappa*alpha)/pow(distance, 4);
+    return energy;
+}
+
 pication::pication(ring const& ring, atom const& cation, double angle) :
-        base(ring.distance(cation), 9.6),// TODO add formula
+        base(ring.distance(cation), energy(ring, cation)),
         _cation(cation),
         _ring(ring),
         _angle(angle)
