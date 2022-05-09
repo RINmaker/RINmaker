@@ -487,27 +487,29 @@ rin::graph rin::maker::operator()(parameters const& params) const
         break;
     }
 
-    case parameters::interaction_type_t::GENERIC_ALPHA:
+    case parameters::interaction_type_t::CONTACT_MAP:
     {
-        auto alpha_bonds = find_bonds<bond::generic_bond>(
-                pimpl->alpha_carbon_vector,
-                pimpl->alpha_carbon_tree,
-                params.query_dist_alpha(),
-                params);
+        vector<shared_ptr<bond::generic_bond const>> generic_bonds;
+        switch (params.cmap_type())
+        {
+        case rin::parameters::contact_map_type_t::ALPHA:
+            generic_bonds = find_bonds<bond::generic_bond>(
+                    pimpl->alpha_carbon_vector,
+                    pimpl->alpha_carbon_tree,
+                    params.query_dist_cmap(),
+                    params);
+            break;
 
-        append(results, filter_best(alpha_bonds));
-        break;
-    }
+        case rin::parameters::contact_map_type_t::BETA:
+            generic_bonds = find_bonds<bond::generic_bond>(
+                    pimpl->beta_carbon_vector,
+                    pimpl->beta_carbon_tree,
+                    params.query_dist_cmap(),
+                    params);
+            break;
+        }
 
-    case parameters::interaction_type_t::GENERIC_BETA:
-    {
-        auto beta_bonds = find_bonds<bond::generic_bond>(
-                pimpl->beta_carbon_vector,
-                pimpl->beta_carbon_tree,
-                params.query_dist_beta(),
-                params);
-
-        append(results, filter_best(beta_bonds));
+        append(results, filter_best(generic_bonds));
         break;
     }
     }

@@ -88,10 +88,12 @@ protected:
     {
         string exePath = running_path.string();
         string pdbPath = (running_folder / test_case_folder / filename).string();
-        const char* args[2] = { exePath.c_str(), pdbPath.c_str() };
+
+        // RINmaker -i filename rin
+        const char* args[4] = { exePath.c_str(), "-i", pdbPath.c_str(), "rin"};
 
         std::optional<arguments> maybe_args;
-        maybe_args = read_args(2, args);
+        maybe_args = read_args(4, args);
         // won't throw std::bad_optional because args are hand crafted above
         auto const parsed_args = maybe_args.value();
         auto const models = rin::maker::parse_models(parsed_args.pdb_path);

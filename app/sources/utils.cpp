@@ -48,107 +48,116 @@ optional<arguments> read_args(int argc, const char* argv[])
     }
 
     CLI::App app(app_full_name());
+    app.set_help_all_flag("-H,--help-expanded", "Print this help message (expanded) and exit");
     app.get_formatter()->column_width(64);
 
     filesystem::path pdb_path;
-    app.add_option("pdb", pdb_path, "Path to PDB file (.pdb)")
-       ->required()
-       ->check(CLI::ExistingFile);
+    app.add_option("-i, --input", pdb_path, "Path to PDB file (.pdb)")
+        ->required()
+        ->check(CLI::ExistingFile);
 
     filesystem::path log_dir = cfg::log::default_dirname;
-    app.add_option("-l,--log-dir", log_dir, "Log directory")
-       ->default_str(cfg::log::default_dirname);
+    app.add_option("-l,--log-directory", log_dir, "Log directory")
+        ->default_str(cfg::log::default_dirname);
 
     filesystem::path out_dir = cfg::graphml::default_dirname;
-    app.add_option("-o,--out-dir", out_dir, "Output directory")
+    app.add_option("-o,--out-directory", out_dir, "Output directory")
         ->default_str(cfg::graphml::default_dirname);
 
     uint32_t sequence_separation;
-    app.add_option("--seq-sep", sequence_separation, "Minimum sequence separation")
-       ->default_val(cfg::params::seq_sep);
+    app.add_option("-s,--sequence-separation", sequence_separation, "Minimum sequence separation")
+        ->default_val(cfg::params::seq_sep)
+        ->check(CLI::PositiveNumber);
+
+    // rin subcommand
+    auto rin_app = app.add_subcommand(
+            "rin", "Compute the residue interaction network");
 
     auto network_policy = rin::parameters::network_policy_t::ALL;
     std::map<std::string, rin::parameters::network_policy_t> netp_map{
             {"all", rin::parameters::network_policy_t::ALL},
-            {"ca", rin::parameters::network_policy_t::BEST_ONE},
-            {"cb", rin::parameters::network_policy_t::BEST_PER_TYPE}};
+            {"one", rin::parameters::network_policy_t::BEST_ONE},
+            {"multiple", rin::parameters::network_policy_t::BEST_PER_TYPE}};
 
-    app.add_option(
-            "--network-policy", network_policy, "Available options: all, multiple, one")
-            ->transform(CLI::CheckedTransformer(netp_map, CLI::ignore_case)
-            .description(CLI::detail::generate_map(CLI::detail::smart_deref(netp_map), true)))
+    rin_app->add_option(
+            "--policy", network_policy, "Affects which edges are kept per pair of aminoacids")
+            ->transform(
+                    CLI::CheckedTransformer(netp_map, CLI::ignore_case).description(
+                            CLI::detail::generate_map(CLI::detail::smart_deref(netp_map), true)))
             ->default_val("all");
 
-    auto interaction_type = rin::parameters::interaction_type_t::NONCOVALENT_BONDS;
-    std::map<std::string, rin::parameters::interaction_type_t> intt_map{
-        {"closest", rin::parameters::interaction_type_t::NONCOVALENT_BONDS},
-        {"ca", rin::parameters::interaction_type_t::GENERIC_ALPHA},
-        {"cb", rin::parameters::interaction_type_t::GENERIC_BETA}};
-
-    app.add_option(
-            "--interaction-type", interaction_type, "Available options: closest, ca, cb")
-            ->transform(CLI::CheckedTransformer(intt_map, CLI::ignore_case).description(CLI::detail::generate_map(CLI::detail::smart_deref(intt_map), true)))
-            ->default_val("closest");
-
-    auto positive_check = [](string const& str)->string
-    {
-        double val = stod(str);
-        return val <= 0 ? "must be > 0" : "";
-    };
-
     double h_distance;
-    app.add_option("--hydrogen-bond", h_distance, "Query distance for hydrogen bonds")
+    rin_app->add_option("--hydrogen-bond", h_distance, "Query distance for hydrogen bonds")
        ->default_val(cfg::params::query_dist_hbond)
-       ->check(positive_check);
+       ->check(CLI::PositiveNumber);
 
     double vdw_distance;
-    app.add_option("--vdw-bond", vdw_distance, "Surface distance for vdw bonds")
+    rin_app->add_option("--vdw-bond", vdw_distance, "Surface distance for vdw bonds")
        ->default_val(cfg::params::surface_dist_vdw)
-       ->check(positive_check);
+       ->check(CLI::PositiveNumber);
 
     double ionic_distance;
-    app.add_option("--ionic-bond", ionic_distance, "Query distance for ionic bonds")
+    rin_app->add_option("--ionic-bond", ionic_distance, "Query distance for ionic bonds")
        ->default_val(cfg::params::query_dist_ionic)
-       ->check(positive_check);
-
-    double generic_distance;
-    app.add_option("--generic-bond", generic_distance, "Query distance for generic bonds")
-       ->default_val(cfg::params::query_dist_alpha)
-       ->check(positive_check);
+       ->check(CLI::PositiveNumber);
 
     double pication_distance;
-    app.add_option("--pication-bond", pication_distance, "Query distance for cation-pi bonds")
+    rin_app->add_option("--pication-bond", pication_distance, "Query distance for cation-pi bonds")
        ->default_val(cfg::params::query_dist_pica)
-       ->check(positive_check);
+       ->check(CLI::PositiveNumber);
 
     double pipistack_distance;
-    app.add_option("--pipistack-bond", pipistack_distance, "Query distance for pi-pi stackings")
+    rin_app->add_option("--pipistack-bond", pipistack_distance, "Query distance for pi-pi stackings")
        ->default_val(cfg::params::query_dist_pipi)
-       ->check(positive_check);
+       ->check(CLI::PositiveNumber);
 
     bool hbond_realistic_flag = false;
-    app.add_flag("--h-bond-realistic", hbond_realistic_flag, "filter hydrogen bonds limiting bond per atom");
+    rin_app->add_flag("--h-bond-realistic", hbond_realistic_flag, "filter hydrogen bonds limiting bond per atom");
 
     // advanced params
     double hbond_angle;
-    app.add_option("--h-bond-angle", hbond_angle, "Angle for hydrogen bonds")
+    rin_app->add_option("--h-bond-angle", hbond_angle, "Angle for hydrogen bonds")
        ->default_val(cfg::params::hbond_angle)
-       ->check(positive_check);
+       ->check(CLI::PositiveNumber);
 
     double pication_angle;
-    app.add_option("--pication-angle", pication_angle, "Angle for cation-pi bonds")
-       ->default_val(cfg::params::pication_angle)
-       ->check(positive_check);
+    rin_app->add_option("--pication-angle", pication_angle, "Angle for cation-pi bonds")
+        ->default_val(cfg::params::pication_angle)
+        ->check(CLI::PositiveNumber);
 
     double pipistack_normal_normal_angle_range;
-    app.add_option("--pipistack-normal-normal", pipistack_normal_normal_angle_range, "Angle range from normal to normal for pi-pi stackings")
+    rin_app->add_option("--pipistack-normal-normal", pipistack_normal_normal_angle_range, "Angle range from normal to normal for pi-pi stackings")
        ->default_val(cfg::params::pipistack_normal_normal_angle_range)
-       ->check(positive_check);
+       ->check(CLI::PositiveNumber);
 
     double pipistack_normal_centre_angle_range;
-    app.add_option("--pipistack-normal-centre", pipistack_normal_centre_angle_range, "Angle range from normal to centre for pi-pi stackings")
+    rin_app->add_option("--pipistack-normal-centre", pipistack_normal_centre_angle_range, "Angle range from normal to centre for pi-pi stackings")
        ->default_val(cfg::params::pipistack_normal_centre_angle_range)
-       ->check(positive_check);
+       ->check(CLI::PositiveNumber);
+
+    // contact map subcommand
+    auto cmap_app = app.add_subcommand(
+            "cmap", "Compute the contact map of the protein");
+
+    auto cmap_type = rin::parameters::contact_map_type_t::ALPHA;
+    std::map<std::string, rin::parameters::contact_map_type_t> cmt_map{
+            {"ca", rin::parameters::contact_map_type_t::ALPHA},
+            {"cb", rin::parameters::contact_map_type_t::BETA}};
+
+    cmap_app->add_option(
+                    "--type", cmap_type, "Type of contact map (alpha/beta carbon)")
+            ->transform(
+                    CLI::CheckedTransformer(cmt_map, CLI::ignore_case).description(
+                            CLI::detail::generate_map(CLI::detail::smart_deref(cmt_map), true)))
+            ->default_val("ca");
+
+    double generic_distance;
+    cmap_app->add_option("--distance", generic_distance, "Query distance between alpha/beta carbons")
+            ->default_val(cfg::params::query_dist_alpha)
+            ->check(CLI::PositiveNumber);
+
+    // rin XOR cmap REQUIRED
+    app.require_subcommand(1, 1);
 
     //CLI11_PARSE(app, argc, argv);
     try {
@@ -159,8 +168,7 @@ optional<arguments> read_args(int argc, const char* argv[])
     }
 
     auto pcfg = rin::parameters::configurator()
-            .set_query_dist_alpha(generic_distance)
-            .set_query_dist_beta(generic_distance)
+            .set_query_dist_cmap(generic_distance)
 
             .set_query_dist_hbond(h_distance)
             .set_surface_dist_vdw(vdw_distance)
@@ -169,10 +177,16 @@ optional<arguments> read_args(int argc, const char* argv[])
             .set_query_dist_pipi(pipistack_distance)
 
             .set_sequence_separation(sequence_separation)
-            .set_hbond_realistic(hbond_realistic_flag);
+            .set_hbond_realistic(hbond_realistic_flag)
 
             .set_network_policy(network_policy)
-            .set_interaction_type(interaction_type);
+            .set_cmap_type(cmap_type);
+
+    if(rin_app->parsed())
+        pcfg.set_interaction_type(rin::parameters::interaction_type_t::NONCOVALENT_BONDS);
+
+    else //if(cmap_app->parsed())
+        pcfg.set_interaction_type(rin::parameters::interaction_type_t::CONTACT_MAP);
 
     fs::create_directory(log_dir);
     log_manager::initialize(log_dir);
