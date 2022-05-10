@@ -221,6 +221,8 @@ aminoacid::aminoacid(vector<record::atom> const& records, string const& pdb_name
 
     if (!negative.empty())
         pimpl->negative_ionic_group = ionic_group(negative, -1, *this);
+
+    pimpl->pdb_name = pdb_name;
 }
 
 [[nodiscard]]
