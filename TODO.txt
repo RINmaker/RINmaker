@@ -6,16 +6,19 @@ TODO:
 - Se l'occupancy è < 1 loggare che non è supportata e return -1
 - SHEET Specificare che usiamo il calcolo di giacometti e non le info nel pdb (Nella documentazione)
 - Scrivere un readme documentativo con la descrizione di cosa fa il programma
-- Documentare la modalità test nel readme principale, e specificare i due target di cmake
+- Documentare la modalità test nel readme principale
+
 - mancano unita di misura sulla ui (Francesco)
 - Controllare che le formule dell'energia diano i risultati tutti nella stessa U.M. (kj o kcal)
 - UI avere la conversione tra kj e kcal
 
 WIP:
+- implementare hydrophobic interaction
 - Rivedere costanti di energia (Jacopo)
 - Documento contenete la lista e il risultato atteso dei test (Jacopo)
 
 DONE:
+- specificare i due target di cmake
 - Cambiare nome ai file dei test
 - Trasferire la ownership della repo di Francesco sotto l'organizzazione
 - UI mostrare somma energie
