@@ -23,5 +23,5 @@ std::optional<arguments> read_args(int argc, const char* argv[]);
 
 std::string app_full_name();
 
-string joinStrings(std::vector<std::string> const& values, string const& delimiter);
+std::string joinStrings(std::vector<std::string> const& values, std::string const& delimiter);
 
