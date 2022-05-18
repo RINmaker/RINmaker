@@ -12,16 +12,12 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/sinks/rotating_file_sink.h>
 
-using std::string;
-
 class log_manager {
 private:
     //std::unordered_map<string, std::shared_ptr<spdlog::logger>> loggers;
-    std::shared_ptr<spdlog::logger> console_logger;
-    std::shared_ptr<spdlog::logger> file_logger;
-    std::shared_ptr<spdlog::logger> main_logger;
-
-    //std::filesystem::path log_directory;
+    std::shared_ptr<spdlog::logger> console_logger = nullptr;
+    std::shared_ptr<spdlog::logger> file_logger = nullptr;
+    std::shared_ptr<spdlog::logger> main_logger = nullptr;
 
     log_manager() = default;
 
@@ -38,8 +34,6 @@ public:
     //static std::shared_ptr<spdlog::logger> get_default();
     //static std::shared_ptr<spdlog::logger> get(string const& key);
     //static std::vector<string> get_ids();
-
-    static void mirror_in_stdout(bool b);
 
     static std::shared_ptr<spdlog::logger> main() { return instance().main_logger; }
 
