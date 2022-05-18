@@ -112,7 +112,7 @@ optional<arguments> read_args(int argc, const char* argv[])
        ->check(CLI::PositiveNumber);
 
     bool hbond_realistic_flag = false;
-    rin_app->add_flag("--h-bond-realistic", hbond_realistic_flag, "filter hydrogen bonds limiting bond per atom");
+    rin_app->add_flag("--h-bond-realistic", hbond_realistic_flag, "Keep only MC-MC hydrogen bonds with minimum energy");
 
     // advanced params
     double hbond_angle;
