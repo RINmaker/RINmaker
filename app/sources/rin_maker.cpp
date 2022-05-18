@@ -34,77 +34,108 @@ using std::vector, std::string, std::list, std::set, std::map, std::unordered_ma
 
 using rin::parameters, prelude::interval;
 
-vector<std::function<rin::maker(void)>> rin::maker::parse_models(fs::path const& pdb_path)
+function<rin::maker(void)> lazy(
+        fs::path const& pdb_path,
+
+        uint32_t line_number,
+        std::ios::pos_type begin_stream,
+
+        shared_ptr<vector<record::ss> const> const& ssbond_records,
+        shared_ptr<vector<record::helix> const> const& helix_records,
+        shared_ptr<vector<record::sheet_piece> const> const& sheet_records)
 {
-    ifstream pdb_file;
-    pdb_file.open(pdb_path);
-
-    // might throw
-    if (!pdb_file.is_open())
-        throw runtime_error("could not open " + pdb_path.string() + "\n");
-
-    auto const pdb_name = pdb_path.stem().string();
-
-    // atom record are split in MODEL sections
-    vector<record::atom> tmp_atoms;
-
-    // other record are in global sections
-    vector<record::ss> ssbond_records;
-    vector<record::helix> helix_records;
-    vector<record::sheet_piece> sheet_records;
-
-    vector<std::function<rin::maker(void)>> rin_makers;
-    auto const emplace_lazy_rin_maker = [&]()
+    return [=]()
     {
-        rin_makers.emplace_back(
-                [=]()
-                {
-                    return rin::maker{
-                            pdb_name, tmp_atoms, ssbond_records, helix_records, sheet_records};
-                });
-    };
+        // open stream
+        ifstream spdb{pdb_path, std::ios::binary};
+        if (!spdb.is_open())
+            throw runtime_error("could not open " + pdb_path.string());
 
-    string line_str;
-    uint32_t line_num = 0;
-    while (getline(pdb_file, line_str))
-    {
-        auto const record_type = prelude::trim(line_str.substr(0, 6));
+        vector<record::atom> atom_records;
 
-        // TODO exception
-        // MODEL should always balance ENDMDL
-        // and there cannot be 2 consecutive MODEL or 2 consecutive ENDMDL
-        // but there can be 0 MODEL and 0 ENDMDL
+        // move stream
+        spdb.seekg(begin_stream, std::ios::beg);
+        string line, record_type; uint32_t num = line_number;
 
-        if (record_type == "ATOM")
-            tmp_atoms.emplace_back(line_str, line_num);
+        //log_manager::main()->info("begin model at line {}", num);
 
-        else if (record_type == "HELIX")
-            helix_records.emplace_back(line_str, line_num);
-
-        else if (record_type == "SHEET")
-            sheet_records.emplace_back(line_str, line_num);
-
-        else if (record_type == "SSBOND")
-            ssbond_records.emplace_back(line_str, line_num);
-
-        else if (record_type == "ENDMDL")
+        // loop until EOF or "ENDMDL" parsing only "ATOM" records
+        while (getline(spdb, line) && (record_type = prelude::trim(line.substr(0, 6))) != "ENDMDL")
         {
-            emplace_lazy_rin_maker();
-            tmp_atoms.clear();
+            if (record_type == "ATOM")
+                atom_records.emplace_back(line, num);
+            ++num;
         }
 
-        // else if (record_type == "MODEL");
+        //log_manager::main()->info("end model at line {}", num+1);
 
-        ++line_num;
+        // close stream
+        spdb.close();
+
+        // return rin maker
+        return rin::maker{
+            pdb_path.stem(),
+            atom_records,
+            *ssbond_records,
+            *helix_records,
+            *sheet_records};
+    };
+}
+
+vector<std::function<rin::maker(void)>> rin::maker::parse_models(fs::path const& pdb_path)
+{
+    ifstream spdb{pdb_path};
+    if (!spdb.is_open())
+        throw runtime_error("could not open " + pdb_path.string() + "\n");
+
+    // these records are in global sections and shared by every model
+    // they can be kept in memory as they are present only once
+    auto ssbond_records = make_shared<vector<record::ss>>();
+    auto helix_records = make_shared<vector<record::helix>>();
+    auto sheet_records = make_shared<vector<record::sheet_piece>>();
+
+    vector<function<rin::maker(void)>> results;
+
+    string line; uint32_t num = 0;
+    bool multi_model = false;
+    while (getline(spdb, line))
+    {
+        auto const record_type = prelude::trim(line.substr(0, 6));
+
+        if (record_type == "HELIX")
+            helix_records->emplace_back(line, num);
+
+        else if (record_type == "SHEET")
+            sheet_records->emplace_back(line, num);
+
+        else if (record_type == "SSBOND")
+            ssbond_records->emplace_back(line, num);
+
+        else if (record_type == "MODEL")
+        {
+            multi_model = true;
+
+            // emplace back the beginning of the model
+            results.emplace_back(
+                    lazy(
+                            pdb_path,
+                            num,
+                            spdb.tellg(),
+                            ssbond_records,
+                            helix_records,
+                            sheet_records));
+        }
+
+        ++num;
     }
 
-    // TODO this can only happen when no MODEL/ENDMDL is specified
-    if (!tmp_atoms.empty())
-        emplace_lazy_rin_maker();
+    // if no MODEL/ENDMDL was specified then guard evaluates to true
+    if (!multi_model)
+        results.emplace_back(lazy(pdb_path, 0, 0, ssbond_records, helix_records, sheet_records));
 
-    pdb_file.close();
+    spdb.close();
 
-    return rin_makers;
+    return results;
 }
 
 template<typename Record>
