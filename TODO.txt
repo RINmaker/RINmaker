@@ -13,8 +13,10 @@ TODO:
 - UI avere la conversione tra kj e kcal
 
 URGENT:
-- use a proper parsing library for pdb (maybe victor?) and pdbx/mmcif (objparse-mmcif)
+- use a proper parsing library for pdb and pdbx/mmcif (candidate: libcifpp for both)
 - implementare hydrophobic interaction
+- probabilistic rin in case of multiple models (server side)
+    * use graph analysis tools (e.g. networkx, igraph)
 
 WIP:
 - Rivedere costanti di energia (Jacopo)
