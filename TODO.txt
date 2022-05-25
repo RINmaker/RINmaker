@@ -12,8 +12,11 @@ TODO:
 - Controllare che le formule dell'energia diano i risultati tutti nella stessa U.M. (kj o kcal)
 - UI avere la conversione tra kj e kcal
 
-WIP:
+URGENT:
+- use a proper parsing library for pdb (maybe victor?) and pdbx/mmcif (objparse-mmcif)
 - implementare hydrophobic interaction
+
+WIP:
 - Rivedere costanti di energia (Jacopo)
 - Documento contenete la lista e il risultato atteso dei test (Jacopo)
 
