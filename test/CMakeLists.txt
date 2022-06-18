@@ -13,7 +13,7 @@ file(GLOB SRCS ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 file(GLOB APP_SRCS ${CMAKE_CURRENT_SOURCE_DIR}/../app/sources/*.cpp)
 add_executable(RINmaker_test ${SRCS} ${APP_SRCS})
 
-target_include_directories(RINmaker_test PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../app/headers")
+target_include_directories(RINmaker_test PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../app/include")
 target_link_libraries(RINmaker_test PRIVATE gtest spdlog pugixml CLI11)
 
 # copy test_case folder near target executable
