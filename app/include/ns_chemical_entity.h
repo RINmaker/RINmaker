@@ -1,5 +1,11 @@
 #pragma once
 
+#pragma warning(push, 0)
+
+#include <gemmi/pdb.hpp>
+
+#pragma warning(pop)
+
 #include <string>
 #include <vector>
 #include <array>

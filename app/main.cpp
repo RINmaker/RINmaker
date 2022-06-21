@@ -1,3 +1,9 @@
+#pragma warning(push, 0)
+
+#include <gemmi/pdb.hpp>
+
+#pragma warning(pop)
+
 #include "utils.h"
 
 #include "rin_maker.h"
