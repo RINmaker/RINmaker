@@ -1,14 +1,17 @@
 #pragma once
 
+#pragma warning(push, 0)
+
+#include <CLI/CLI.hpp>
+
+#pragma warning(pop)
+
 #include <iostream>
 #include <string>
 #include <vector>
 #include <utility>
 #include <optional>
 #include <filesystem>
-
-#include <spdlog/spdlog.h>
-#include <CLI/CLI.hpp>
 
 #include "rin_params.h"
 #include "log_manager.h"
