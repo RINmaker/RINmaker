@@ -1,11 +1,16 @@
 #pragma once
 
+#pragma warning(push, 0)
+
+#include <pugixml.hpp>
+
+#pragma warning(pop)
+
 #include <string>
 #include <vector>
 #include <memory>
 #include <filesystem>
 #include <unordered_map>
-#include <pugixml.hpp>
 
 #include "rin_params.h"
 
