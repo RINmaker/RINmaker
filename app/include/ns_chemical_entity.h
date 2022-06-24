@@ -64,7 +64,7 @@ public:
     std::vector<atom> const& get_atoms() const;
 
     [[nodiscard]]
-    std::string const& pdb_name() const;
+    std::string const& get_protein_name() const;
 
     [[nodiscard]]
     std::optional<atom> const& ca() const;

@@ -29,7 +29,7 @@ vector<atom> const& aminoacid::get_atoms() const
     return pimpl->_atoms;
 }
 
-string const& aminoacid::pdb_name() const
+string const& aminoacid::get_protein_name() const
 { return pimpl->pdb_name; }
 
 std::optional<atom> const& aminoacid::ca() const
