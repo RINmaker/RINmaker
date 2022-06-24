@@ -32,6 +32,8 @@ private:
     struct impl;
     std::shared_ptr<impl> pimpl;
 
+    aminoacid();
+
 public:
     class component
     {
@@ -47,9 +49,7 @@ public:
         aminoacid res() const;
     };
 
-    friend class component;
-
-    aminoacid();
+    friend class aminoacid::component;
 
 public:
     aminoacid(
