@@ -15,8 +15,6 @@
 #include "config.h"
 
 #include "rin_graph.h"
-#include "ns_record.h"
-#include "ns_secondary_structure.h"
 
 #include "spatial/kdpoint.h"
 
@@ -54,7 +52,11 @@ public:
     aminoacid();
 
 public:
-    aminoacid(std::vector<record::atom> const& records, std::string const& pdb_name);
+    aminoacid(
+        gemmi::Residue const& residue,
+        gemmi::Chain const& chain,
+        gemmi::Model const& model,
+        gemmi::Structure const& protein);
 
     ~aminoacid();
 
@@ -104,12 +106,6 @@ public:
     [[nodiscard]]
     explicit operator rin::node() const;
 
-    void set_loop();
-
-    void set_helix(record::helix const& record);
-
-    void set_sheet(record::sheet_piece const& record);
-
     [[nodiscard]]
     std::string secondary_structure_id() const;
 
@@ -124,7 +120,7 @@ private:
     std::shared_ptr<impl const> pimpl;
 
 public:
-    atom(record::atom const& record, aminoacid const& res);
+    atom(gemmi::Atom const& record, aminoacid const& res);
 
     ~atom();
 
@@ -132,7 +128,7 @@ public:
     std::string const& name() const;
 
     [[nodiscard]]
-    std::string const& symbol() const;
+    std::string symbol() const;
 
     [[nodiscard]]
     double temp_factor() const;
@@ -141,19 +137,19 @@ public:
     int charge() const;
 
     [[nodiscard]]
-    bool is_in_a_positive_ionic_group() const;
+    bool in_positive_ionic_group() const;
 
     [[nodiscard]]
-    bool is_in_a_negative_ionic_group() const;
+    bool in_negative_ionic_group() const;
 
     [[nodiscard]]
-    bool is_a_hydrogen_donor() const;
+    bool is_hydrogen_donor() const;
 
     [[nodiscard]]
     int how_many_hydrogen_can_donate() const;
 
     [[nodiscard]]
-    bool is_a_hydrogen_acceptor() const;
+    bool is_hydrogen_acceptor() const;
 
     [[nodiscard]]
     int how_many_hydrogen_can_accept() const;
@@ -162,7 +158,7 @@ public:
     std::vector<atom> attached_hydrogens() const;
 
     [[nodiscard]]
-    bool is_a_vdw_candidate() const;
+    bool is_vdw_candidate() const;
 
     [[nodiscard]]
     double vdw_radius() const;
@@ -171,19 +167,15 @@ public:
     double mass() const;
 
     [[nodiscard]]
-    bool is_a_hydrogen() const;
+    bool is_hydrogen() const;
 
     [[nodiscard]]
-    bool is_a_cation() const;
+    bool is_cation() const;
 
     [[nodiscard]]
     bool is_main_chain() const;
 
-    [[nodiscard]]
-    int32_t atom_number() const;
-
-    [[nodiscard]]
-    std::string unique_id() const;
+    [[nodiscard]] int32_t atom_number() const;
 };
 
 class ring final : public kdpoint<3>, public aminoacid::component

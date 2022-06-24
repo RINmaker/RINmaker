@@ -1,12 +1,17 @@
 #pragma once
 
+#pragma warning(push, 0)
+
+#include <gemmi/pdb.hpp>
+
+#pragma warning(pop)
+
 #include <string>
 #include <memory>
 
 #include "prelude.h"
 
 #include "rin_graph.h"
-#include "ns_record.h"
 
 #include "ns_chemical_entity.h"
 
@@ -281,7 +286,16 @@ private:
     std::string const _target_name;
 
 public:
-    explicit ss(record::ss const& record);
+    explicit ss(gemmi::Connection const& connection) :
+        base(connection.reported_distance, 167),
+        _source_seq{connection.partner1.res_id.seqid.num.value},
+        _source_name{connection.partner1.res_id.name},
+        _source_chain{connection.partner1.chain_name},
+
+        _target_seq{connection.partner2.res_id.seqid.num.value},
+        _target_name{connection.partner2.res_id.name},
+        _target_chain{connection.partner2.chain_name}
+    {}
 
     [[nodiscard]]
     std::string source_id() const;

@@ -34,207 +34,27 @@ using std::vector, std::string, std::list, std::set, std::map, std::unordered_ma
 
 using rin::parameters, prelude::interval;
 
-function<rin::maker(void)> lazy(
-        fs::path const& pdb_path,
 
-        uint32_t line_number,
-        std::ios::pos_type begin_stream,
-
-        shared_ptr<vector<record::ss> const> const& ssbond_records,
-        shared_ptr<vector<record::helix> const> const& helix_records,
-        shared_ptr<vector<record::sheet_piece> const> const& sheet_records)
-{
-    return [=]()
-    {
-        // open stream
-        ifstream spdb{pdb_path, std::ios::binary};
-        if (!spdb.is_open())
-            throw runtime_error("could not open " + pdb_path.string());
-
-        vector<record::atom> atom_records;
-
-        // move stream
-        spdb.seekg(begin_stream, std::ios::beg);
-        string line, record_type; uint32_t num = line_number;
-
-        //log_manager::main()->info("begin model at line {}", num);
-
-        // loop until EOF or "ENDMDL" parsing only "ATOM" records
-        while (getline(spdb, line) && (record_type = prelude::trim(line.substr(0, 6))) != "ENDMDL")
-        {
-            if (record_type == "ATOM")
-                atom_records.emplace_back(line, num);
-            ++num;
-        }
-
-        //log_manager::main()->info("end model at line {}", num+1);
-
-        // close stream
-        spdb.close();
-
-        // return rin maker
-        return rin::maker{
-            pdb_path.stem(),
-            atom_records,
-            *ssbond_records,
-            *helix_records,
-            *sheet_records};
-    };
-}
-
-vector<std::function<rin::maker(void)>> rin::maker::parse_models(fs::path const& pdb_path)
-{
-    ifstream spdb{pdb_path};
-    if (!spdb.is_open())
-        throw runtime_error("could not open " + pdb_path.string() + "\n");
-
-    // these records are in global sections and shared by every model
-    // they can be kept in memory as they are present only once
-    auto ssbond_records = make_shared<vector<record::ss>>();
-    auto helix_records = make_shared<vector<record::helix>>();
-    auto sheet_records = make_shared<vector<record::sheet_piece>>();
-
-    vector<function<rin::maker(void)>> results;
-
-    string line; uint32_t num = 0;
-    bool multi_model = false;
-    while (getline(spdb, line))
-    {
-        auto const record_type = prelude::trim(line.substr(0, 6));
-
-        if (record_type == "HELIX")
-            helix_records->emplace_back(line, num);
-
-        else if (record_type == "SHEET")
-            sheet_records->emplace_back(line, num);
-
-        else if (record_type == "SSBOND")
-            ssbond_records->emplace_back(line, num);
-
-        else if (record_type == "MODEL")
-        {
-            multi_model = true;
-
-            // emplace back the beginning of the model
-            results.emplace_back(
-                    lazy(
-                            pdb_path,
-                            num,
-                            spdb.tellg(),
-                            ssbond_records,
-                            helix_records,
-                            sheet_records));
-        }
-
-        ++num;
-    }
-
-    // if no MODEL/ENDMDL was specified then guard evaluates to true
-    if (!multi_model)
-        results.emplace_back(lazy(pdb_path, 0, 0, ssbond_records, helix_records, sheet_records));
-
-    spdb.close();
-
-    return results;
-}
-
-template<typename Record>
-class secondary_structure_helper final
-{
-private:
-    unordered_map<string, map<interval<int>, Record, interval<int>::less>> _map;
-
-public:
-    void insert(Record const& record)
-    {
-        auto chain = _map.find(record.init_chain_id());
-        if (chain == _map.end())
-        {
-            map<interval<int>, Record, interval<int>::less> new_chain;
-            new_chain.insert({record.range(), record});
-            _map.insert({record.init_chain_id(), new_chain});
-        }
-        else
-        { chain->second.insert({record.range(), record}); }
-    }
-
-    [[nodiscard]]
-    size_t size() const
-    { return _map.size(); }
-
-    optional<Record> find(aminoacid const& res) const
-    {
-        auto chain = _map.find(res.chain_id());
-        if (chain != _map.end())
-        {
-            auto kv = chain->second.find(interval<int>(res.sequence_number(), res.sequence_number()));
-            if (kv != chain->second.end())
-                return kv->second;
-        }
-
-        return nullopt;
-    }
-};
-
-rin::maker::maker(string const& pdb_name,
+/*rin::maker::maker(string const& pdb_name,
                   vector<record::atom> const& atom_records,
                   vector<record::ss> const& ssbond_records,
                   vector<record::helix> const& helix_records,
-                  vector<record::sheet_piece> const& sheet_records)
+                  vector<record::sheet_piece> const& sheet_records)*/
+rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& structure)
 {
-    auto tmp_pimpl = make_shared<impl>();
-    tmp_pimpl->pdb_name = pdb_name;
+    // we are filling the private implementation piece-by-piece, so we need a non-const temporary here
+    // at the end of the constructor we will store it in the private member pimpl, which is a const*
+    auto tmp_pimpl = make_shared<rin::maker::impl>();
 
-    vector<record::atom> tmp_atoms;
-
-    lm::main()->info("parsing pdb lines...");
-
-    for (auto const& record: atom_records)
-    {
-        if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back()))
-        {
-            tmp_pimpl->aminoacids.emplace_back(tmp_atoms, pdb_name);
-            tmp_atoms.clear();
-        }
-
-        tmp_atoms.push_back(record);
-    }
-
-    if (!tmp_atoms.empty())
-        tmp_pimpl->aminoacids.emplace_back(tmp_atoms, pdb_name);
-
-    for (auto const& record: ssbond_records)
-        tmp_pimpl->ss_bonds.emplace_back(make_shared<bond::ss>(record));
-
-    auto sheet_helper = secondary_structure_helper<record::sheet_piece>();
-    for (auto const& record: sheet_records)
-        sheet_helper.insert(record);
-
-    auto helix_helper = secondary_structure_helper<record::helix>();
-    for (auto const& record: helix_records)
-        helix_helper.insert(record);
-
-    lm::main()->info("finding the appropriate secondary structure for each aminoacid...");
-
-    if (sheet_helper.size() != 0 || helix_helper.size() != 0)
-    {
-        for (auto& res: tmp_pimpl->aminoacids)
-        {
-            res.set_loop();
-
-            auto sheet = sheet_helper.find(res);
-            if (sheet.has_value())
-                res.set_sheet(sheet.value());
-
-            auto helix = helix_helper.find(res);
-            if (helix.has_value())
-                res.set_helix(helix.value());
-        }
-    }
+    // GEMMI already parses all records and then groups atoms together in the respective residues
+    // so all information is already here. We will just need to rebuild rings and ionic groups
+    for (auto const& chain : model.chains)
+        for (auto const& residue : chain.residues)
+            tmp_pimpl->aminoacids.emplace_back(residue, chain, model, structure);
 
     lm::main()->info("retrieving components from aminoacids...");
 
-    // used only to build the corresponding kdtrees
+    // these are used only to build the corresponding kdtrees
     vector<atom> hdonors;
     vector<ionic_group> positives;
 
@@ -251,16 +71,16 @@ rin::maker::maker(string const& pdb_name,
 
         for (auto const& a : res.atoms())
         {
-            if (a.is_a_hydrogen_donor())
+            if (a.is_hydrogen_donor())
                 hdonors.push_back(a);
 
-            if (a.is_a_hydrogen_acceptor())
+            if (a.is_hydrogen_acceptor())
                 tmp_pimpl->hacceptor_vector.push_back(a);
 
-            if (a.is_a_vdw_candidate())
+            if (a.is_vdw_candidate())
                 tmp_pimpl->vdw_vector.push_back(a);
 
-            if (a.is_a_cation())
+            if (a.is_cation())
                 tmp_pimpl->cation_vector.push_back(a);
         }
 
@@ -305,6 +125,10 @@ rin::maker::maker(string const& pdb_name,
 
     tmp_pimpl->alpha_carbon_tree = kdtree<atom, 3>(tmp_pimpl->alpha_carbon_vector);
     tmp_pimpl->beta_carbon_tree = kdtree<atom, 3>(tmp_pimpl->beta_carbon_vector);
+
+    for (auto const& connection : structure.connections)
+        if (connection.type == gemmi::Connection::Type::Disulf)
+            tmp_pimpl->ss_bonds.push_back(std::make_shared<bond::ss>(connection));
 
     pimpl = tmp_pimpl;
 }

@@ -208,16 +208,6 @@ string pipistack::get_interaction() const
 string pipistack::get_type() const
 { return "pipistack"; }
 
-ss::ss(record::ss const& record) :
-        base(record.length(), 167), // TODO config
-        _source_name(record.name_1()),
-        _target_name(record.name_2()),
-        _source_chain(record.chain_id_1()),
-        _target_chain(record.chain_id_2()),
-        _source_seq(record.seq_num_1()),
-        _target_seq(record.seq_num_2())
-{}
-
 string ss::source_id() const
 { return _source_chain + ":" + std::to_string(_source_seq) + ":_:" + _source_name; }
 

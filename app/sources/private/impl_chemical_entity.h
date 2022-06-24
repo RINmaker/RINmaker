@@ -8,9 +8,6 @@
 #include <optional>
 #include <array>
 
-#include "ns_record.h"
-#include "ns_secondary_structure.h"
-
 struct chemical_entity::aminoacid::impl final
 {
 public:
@@ -19,7 +16,7 @@ public:
     std::optional<chemical_entity::ring> primary_ring = std::nullopt, secondary_ring = std::nullopt;
     std::optional<chemical_entity::ionic_group> positive_ionic_group = std::nullopt, negative_ionic_group = std::nullopt;
 
-    std::unique_ptr<secondary_structure::base> secondary_structure{std::make_unique<secondary_structure::base>()};
+    std::string secondary_structure_name;
 
     std::optional<chemical_entity::atom> alpha_carbon = std::nullopt;
     std::optional<chemical_entity::atom> beta_carbon = std::nullopt;
@@ -49,7 +46,7 @@ public:
 struct chemical_entity::atom::impl final
 {
 public:
-    record::atom record;
+    gemmi::Atom record;
 };
 
 struct chemical_entity::ring::impl final

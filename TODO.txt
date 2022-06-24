@@ -13,12 +13,15 @@ TODO:
 - UI avere la conversione tra kj e kcal
 
 URGENT:
-- use a proper parsing library for pdb and pdbx/mmcif (candidate: libcifpp for both)
 - implementare hydrophobic interaction
 - probabilistic rin in case of multiple models (server side)
     * use graph analysis tools (e.g. networkx, igraph)
 
 WIP:
+- use a proper parsing library for pdb and pdbx/mmcif: GEMMI
+    - [x] integration
+    - [x] tests are green
+    - [ ] (of minor importance) retrieve information about helix/sheet from gemmi
 - Rivedere costanti di energia (Jacopo)
 - Documento contenete la lista e il risultato atteso dei test (Jacopo)
 

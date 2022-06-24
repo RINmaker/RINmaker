@@ -27,16 +27,14 @@ int main(int argc, const char* argv[])
             // does this hold? --lore
             lm::main()->info("params summary: " + parsed_args.params.pretty());
 
-            auto const models = rin::maker::parse_models(parsed_args.pdb_path);
+            auto protein_structure = gemmi::read_pdb_file(parsed_args.pdb_path);
 
-            for (size_t i = 0; i < models.size(); ++i)
+            for (auto const& model: protein_structure.models)
             {
-                auto out_file = parsed_args.pdb_path.filename();
-                out_file.replace_filename(out_file.stem().string() + "_" + to_string(i+1));
-                out_file.replace_extension(".graphml");
+                std::filesystem::path out_file = protein_structure.name + "_" + model.name + ".graphml";
 
                 // create rin::maker, create graph and write to graphml
-                models[i]()(parsed_args.params).write_to_file(parsed_args.out_dir / out_file);
+                rin::maker{model, protein_structure}(parsed_args.params).write_to_file(parsed_args.out_dir / out_file);
             }
 
 #           if _MSC_VER
