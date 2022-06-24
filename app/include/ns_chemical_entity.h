@@ -61,7 +61,7 @@ public:
     ~aminoacid();
 
     [[nodiscard]]
-    std::vector<atom> const& atoms() const;
+    std::vector<atom> const& get_atoms() const;
 
     [[nodiscard]]
     std::string const& pdb_name() const;

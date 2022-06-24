@@ -69,7 +69,7 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& structure)
         if (cb.has_value())
             tmp_pimpl->beta_carbon_vector.push_back(*cb);
 
-        for (auto const& a : res.atoms())
+        for (auto const& a : res.get_atoms())
         {
             if (a.is_hydrogen_donor())
                 hdonors.push_back(a);

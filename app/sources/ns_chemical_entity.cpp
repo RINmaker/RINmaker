@@ -24,7 +24,7 @@ string getNameFromAtoms(vector<atom> const& atoms, string const& delimiter = ":"
     return joinStrings(atoms_name, delimiter);
 }
 
-vector<atom> const& aminoacid::atoms() const
+vector<atom> const& aminoacid::get_atoms() const
 {
     return pimpl->_atoms;
 }
@@ -188,7 +188,7 @@ chemical_entity::aminoacid::aminoacid(
             negative.push_back(atom);
     }
 
-    pimpl->pos = centre_of_mass(atoms());
+    pimpl->pos = centre_of_mass(get_atoms());
 
     if (n_of_rings >= 1)
     {
@@ -450,7 +450,7 @@ vector<atom> atom::attached_hydrogens() const
 {
     vector<atom> hydrogens;
     auto const hydrogen_name_pattern = "H" + name().substr(1, name().size() - 1);
-    for (auto const& a : get_residue().atoms())
+    for (auto const& a : get_residue().get_atoms())
     {
         if (a.is_hydrogen() && prelude::match(a.name(), hydrogen_name_pattern))
             hydrogens.push_back(a);
