@@ -24,7 +24,7 @@ string get_name_from_atoms(vector<atom> const& atoms, string const& delimiter = 
 }
 
 vector<atom> const& aminoacid::get_atoms() const
-re{ return pimpl->atoms; }
+{ return pimpl->atoms; }
 
 string const& aminoacid::get_protein_name() const
 { return pimpl->protein_name; }
