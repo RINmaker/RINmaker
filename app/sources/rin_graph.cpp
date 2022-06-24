@@ -121,8 +121,8 @@ edge::edge(bond::pipistack const& bond)
     tmp_pimpl->distance = std::to_string(bond.get_length());
     tmp_pimpl->energy = std::to_string(bond.get_energy());
     tmp_pimpl->interaction = bond.get_interaction();
-    tmp_pimpl->source_atom = bond.source_ring().name();
-    tmp_pimpl->target_atom = bond.target_ring().name();
+    tmp_pimpl->source_atom = bond.source_ring().get_name();
+    tmp_pimpl->target_atom = bond.target_ring().get_name();
     tmp_pimpl->angle = std::to_string(bond.angle());
     tmp_pimpl->donor = cfg::graphml::none;
     tmp_pimpl->cation = cfg::graphml::none;
@@ -139,7 +139,7 @@ edge::edge(bond::pication const& bond)
     tmp_pimpl->distance = std::to_string(bond.get_length());
     tmp_pimpl->energy = std::to_string(bond.get_energy());
     tmp_pimpl->interaction = bond.get_interaction();
-    tmp_pimpl->source_atom = bond.source_ring().name();
+    tmp_pimpl->source_atom = bond.source_ring().get_name();
     tmp_pimpl->target_atom = bond.target_cation().name();
     tmp_pimpl->cation = bond.target_cation().get_residue().get_id();
     tmp_pimpl->angle = std::to_string(bond.angle());

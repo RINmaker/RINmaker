@@ -190,28 +190,28 @@ public:
     ~ring();
 
     [[nodiscard]]
-    std::array<double, 3> const& normal() const;
+    std::array<double, 3> const& get_normal() const;
 
     [[nodiscard]]
     double radius() const;
 
     [[nodiscard]]
-    bool is_a_pication_candidate() const;
+    bool is_pication_candidate() const;
 
     [[nodiscard]]
-    double closest_distance_between_atoms(ring const& other) const;
+    double get_distance_between_closest_atoms(ring const& other) const;
 
     [[nodiscard]]
-    double angle_between_normals(ring const& other) const;
+    double get_angle_between_normals(ring const& other) const;
 
     [[nodiscard]]
-    double angle_between_normal_and_centres_joining(ring const& other) const;
+    double get_angle_between_normal_and_centers_joining(ring const& other) const;
 
     [[nodiscard]]
     atom atom_closest_to(atom const& atom) const;
 
     [[nodiscard]]
-    std::string name() const;
+    std::string get_name() const;
 };
 
 class ionic_group final : public kdpoint<3>, public aminoacid::component

@@ -98,7 +98,7 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& structure)
             {
                 tmp_pimpl->ring_vector.push_back(*ring);
 
-                if (ring->is_a_pication_candidate())
+                if (ring->is_pication_candidate())
                     tmp_pimpl->pication_ring_vector.push_back(*ring);
             }
         };

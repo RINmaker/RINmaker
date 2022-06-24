@@ -336,7 +336,7 @@ std::shared_ptr<pication const> pication::test(parameters const& params, atom co
 {
     if (ring.get_residue().satisfies_minimum_sequence_separation(cation.get_residue(), params.sequence_separation()))
     {
-        double theta = 90 - geom::d_angle<3>(ring.normal(), (array<double, 3>) (ring - cation));
+        double theta = 90 - geom::d_angle<3>(ring.get_normal(), (array<double, 3>) (ring - cation));
         if (theta >= cfg::params::pication_angle) // 45
             return std::make_shared<pication const>(ring, cation, theta);
     }
@@ -348,17 +348,17 @@ string pication::get_id() const
 {
     return get_id_simple() +
            ":" +
-           source_ring().name() +
+        source_ring().get_name() +
            ":" +
            target_cation().name();
 }
 
 std::shared_ptr<pipistack const> pipistack::test(parameters const& params, ring const& a, ring const& b)
 {
-    double nc1 = a.angle_between_normal_and_centres_joining(b);
-    double nc2 = b.angle_between_normal_and_centres_joining(a);
-    double nn = a.angle_between_normals(b);
-    double mn = a.closest_distance_between_atoms(b);
+    double nc1 = a.get_angle_between_normal_and_centers_joining(b);
+    double nc2 = b.get_angle_between_normal_and_centers_joining(a);
+    double nn = a.get_angle_between_normals(b);
+    double mn = a.get_distance_between_closest_atoms(b);
 
     if (a.get_residue().satisfies_minimum_sequence_separation(b.get_residue()) &&
         (0 <= nn && nn <= cfg::params::pipistack_normal_normal_angle_range) &&
@@ -374,9 +374,9 @@ string pipistack::get_id() const
 {
     return get_id_simple() +
            ":" +
-           source_ring().name() +
+        source_ring().get_name() +
            ":" +
-           target_ring().name();
+        target_ring().get_name();
 }
 
 std::shared_ptr<generic_bond const> generic_bond::test(parameters const& params, atom const& a, atom const& b)
