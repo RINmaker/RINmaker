@@ -26,11 +26,11 @@ public:
     std::string id;
     std::string pdb_name;
     std::string chain;
-    std::string seq;
+    std::string sequence_number;
     std::string name;
     std::string x, y, z;
-    std::string bfactor;
-    std::string secondary;
+    std::string bfactor_ca;
+    std::string secondary_structure;
 
     int degree = 0;
 };

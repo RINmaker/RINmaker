@@ -326,13 +326,13 @@ node::node(chemical_entity::aminoacid const& res) : pimpl{new impl()}
 {
     pimpl->id = res.get_id();
     pimpl->chain = res.get_chain_id();
-    pimpl->seq = to_string(res.get_sequence_number());
+    pimpl->sequence_number = to_string(res.get_sequence_number());
     pimpl->name = res.get_name();
     pimpl->x = to_string(res.get_position()[0]);
     pimpl->y = to_string(res.get_position()[1]);
     pimpl->z = to_string(res.get_position()[2]);
-    pimpl->bfactor = res.get_alpha_carbon().has_value() ? to_string(res.get_alpha_carbon().value().get_temp_factor()) : "NULL";
-    pimpl->secondary = res.get_secondary_structure_id();
+    pimpl->bfactor_ca = res.get_alpha_carbon().has_value() ? to_string(res.get_alpha_carbon().value().get_temp_factor()) : "NULL";
+    pimpl->secondary_structure = res.get_secondary_structure_id();
     pimpl->pdb_name = res.get_protein_name();
     pimpl->degree = 0;
 }
