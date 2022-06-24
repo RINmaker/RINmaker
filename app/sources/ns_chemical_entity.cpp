@@ -26,11 +26,11 @@ string getNameFromAtoms(vector<atom> const& atoms, string const& delimiter = ":"
 
 vector<atom> const& aminoacid::get_atoms() const
 {
-    return pimpl->_atoms;
+    return pimpl->atoms;
 }
 
 string const& aminoacid::get_protein_name() const
-{ return pimpl->pdb_name; }
+{ return pimpl->protein_name; }
 
 std::optional<atom> const& aminoacid::get_alpha_carbon() const
 { return pimpl->alpha_carbon; }
@@ -167,7 +167,7 @@ chemical_entity::aminoacid::aminoacid(
     for (auto const& record: residue.atoms)
     {
         auto atom = chemical_entity::atom{record, *this};
-        pimpl->_atoms.push_back(atom);
+        pimpl->atoms.push_back(atom);
 
         if (atom.get_name() == "CA")
             pimpl->alpha_carbon = atom;
@@ -188,7 +188,7 @@ chemical_entity::aminoacid::aminoacid(
             negative.push_back(atom);
     }
 
-    pimpl->pos = centre_of_mass(get_atoms());
+    pimpl->position = centre_of_mass(get_atoms());
 
     if (n_of_rings >= 1)
     {
@@ -209,7 +209,7 @@ chemical_entity::aminoacid::aminoacid(
     if (!negative.empty())
         pimpl->negative_ionic_group = ionic_group(negative, -1, *this);
 
-    pimpl->pdb_name = protein.name;
+    pimpl->protein_name = protein.name;
 
     if (protein.helices.empty() && protein.sheets.empty())
         pimpl->secondary_structure_name = "NONE";
@@ -242,7 +242,7 @@ aminoacid::~aminoacid() = default;
 
 std::array<double, 3> const& chemical_entity::aminoacid::get_position() const
 {
-    return pimpl->pos;
+    return pimpl->position;
 }
 
 atom::atom(gemmi::Atom const& record, aminoacid const& res) :

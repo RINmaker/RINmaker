@@ -11,7 +11,7 @@
 struct chemical_entity::aminoacid::impl final
 {
 public:
-    std::vector<chemical_entity::atom> _atoms;
+    std::vector<chemical_entity::atom> atoms;
 
     std::optional<chemical_entity::ring> primary_ring = std::nullopt, secondary_ring = std::nullopt;
     std::optional<chemical_entity::ionic_group> positive_ionic_group = std::nullopt, negative_ionic_group = std::nullopt;
@@ -29,9 +29,9 @@ public:
 
     std::string id;
 
-    std::string pdb_name;
+    std::string protein_name;
 
-    std::array<double, 3> pos;
+    std::array<double, 3> position;
 };
 
 struct chemical_entity::atom::impl final
