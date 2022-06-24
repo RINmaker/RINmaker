@@ -13,15 +13,14 @@ using std::vector, std::array, std::string, std::unique_ptr, std::make_unique, s
 
 using chemical_entity::aminoacid, chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group;
 
-string getNameFromAtoms(vector<atom> const& atoms, string const& delimiter = ":")
+string get_name_from_atoms(vector<atom> const& atoms, string const& delimiter = ":")
 {
     vector<string> atoms_name;
-    for (auto const& a: atoms)
-        atoms_name.push_back(a.get_name());
+    for (auto const& atom: atoms)
+        atoms_name.push_back(atom.get_name());
 
     sort(atoms_name.begin(), atoms_name.end());
-
-    return joinStrings(atoms_name, delimiter);
+    return join_strings(atoms_name, delimiter);
 }
 
 vector<atom> const& aminoacid::get_atoms() const
