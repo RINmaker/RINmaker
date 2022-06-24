@@ -371,15 +371,15 @@ void node::append_to(xml_node& graph, bool with_metadata) const
 
     add_data(pugi_node, "v_", "node", "Residue", pimpl->id, "string", with_metadata);
     add_data(pugi_node, "v_", "node", "Chain", pimpl->chain, "string", with_metadata);
-    add_data(pugi_node, "v_", "node", "Position", pimpl->seq, "double", with_metadata);
+    add_data(pugi_node, "v_", "node", "Position", pimpl->sequence_number, "double", with_metadata);
     add_data(pugi_node, "v_", "node", "Name", pimpl->name, "string", with_metadata);
 
     add_data(pugi_node, "v_", "node", "x", pimpl->x, "double", with_metadata);
     add_data(pugi_node, "v_", "node", "y", pimpl->y, "double", with_metadata);
     add_data(pugi_node, "v_", "node", "z", pimpl->z, "double", with_metadata);
 
-    add_data(pugi_node, "v_", "node", "Bfactor_CA", pimpl->bfactor, "double", with_metadata);
-    add_data(pugi_node, "v_", "node", "Secondary_Structure", pimpl->secondary, "string", with_metadata);
+    add_data(pugi_node, "v_", "node", "Bfactor_CA", pimpl->bfactor_ca, "double", with_metadata);
+    add_data(pugi_node, "v_", "node", "Secondary_Structure", pimpl->secondary_structure, "string", with_metadata);
 
     add_data(pugi_node, "v_", "node", "PdbName", pimpl->pdb_name, "string", with_metadata);
 }
