@@ -70,9 +70,7 @@ bool aminoacid::operator!=(aminoacid const& rhs) const
 bool aminoacid::satisfies_minimum_sequence_separation(aminoacid const& other, int minimum_separation) const
 {
     if (*this == other)
-    {
         return false;
-    }
 
     if (get_chain_id() != other.get_chain_id())
     {
@@ -112,8 +110,8 @@ void assert_ring_correctness(
 {
     if (expected_atoms.size() != found_atoms.size())
     {
-        string expected_atoms_str = joinStrings(expected_atoms, ",");
-        string found_atoms_str = getNameFromAtoms(found_atoms, ",");
+        string expected_atoms_str = join_strings(expected_atoms, ",");
+        string found_atoms_str = get_name_from_atoms(found_atoms, ",");
         string exception_description =
                 "line number: " + std::to_string(line_number) + ", aminoacid: " + name +
                 " - expected aromatic ring: " + expected_atoms_str + ", found: " + found_atoms_str;
@@ -519,7 +517,7 @@ double ring::get_angle_between_normal_and_centers_joining(ring const& other) con
 
 string ring::get_name() const
 {
-    return getNameFromAtoms(pimpl->atoms);
+    return get_name_from_atoms(pimpl->atoms);
 }
 
 ionic_group::ionic_group(vector<atom> const& atoms, int const& charge, aminoacid const& res) :
@@ -546,5 +544,5 @@ double ionic_group::get_ionion_energy_q() const
 
 string ionic_group::get_name() const
 {
-    return getNameFromAtoms(pimpl->atoms);
+    return get_name_from_atoms(pimpl->atoms);
 }
