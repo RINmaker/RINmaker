@@ -17,7 +17,7 @@ string getNameFromAtoms(vector<atom> const& atoms, string const& delimiter = ":"
 {
     vector<string> atoms_name;
     for (auto const& a: atoms)
-        atoms_name.push_back(a.name());
+        atoms_name.push_back(a.get_name());
 
     sort(atoms_name.begin(), atoms_name.end());
 
@@ -97,7 +97,7 @@ array<double, 3> centre_of_mass(vector<atom> const& atoms)
     array<double, 3> centroid{0.0, 0.0, 0.0};
     for (auto const& a: atoms)
     {
-        double const m = a.mass();
+        double const m = a.get_mass();
         for (size_t i = 0; i < 3; ++i)
             centroid[i] += a[i] * m;
         mass += m;
@@ -169,16 +169,16 @@ chemical_entity::aminoacid::aminoacid(
         auto atom = chemical_entity::atom{record, *this};
         pimpl->_atoms.push_back(atom);
 
-        if (atom.name() == "CA")
+        if (atom.get_name() == "CA")
             pimpl->alpha_carbon = atom;
 
-        else if (atom.name() == "CB")
+        else if (atom.get_name() == "CB")
             pimpl->beta_carbon = atom;
 
-        if (n_of_rings >= 1 && find(patterns_1.begin(), patterns_1.end(), atom.name()) != patterns_1.end())
+        if (n_of_rings >= 1 && find(patterns_1.begin(), patterns_1.end(), atom.get_name()) != patterns_1.end())
             ring_1.push_back(atom);
 
-        if (n_of_rings == 2 && find(patterns_2.begin(), patterns_2.end(), atom.name()) != patterns_2.end())
+        if (n_of_rings == 2 && find(patterns_2.begin(), patterns_2.end(), atom.get_name()) != patterns_2.end())
             ring_2.push_back(atom);
 
         if (atom.in_positive_ionic_group())
@@ -253,16 +253,16 @@ atom::atom(gemmi::Atom const& record, aminoacid const& res) :
 
 atom::~atom() = default;
 
-string const& atom::name() const
+string const& atom::get_name() const
 { return pimpl->record.name; }
 
-string atom::symbol() const
+string atom::get_symbol() const
 { return gemmi::element_uppercase_name(pimpl->record.element.elem); }
 
-double atom::temp_factor() const
+double atom::get_temp_factor() const
 { return pimpl->record.b_iso; }
 
-int atom::charge() const
+int atom::get_charge() const
 {
     auto c = pimpl->record.charge;
     return c > 0 ? 1 : c < 0 ? -1 : 0;
@@ -274,47 +274,47 @@ bool atom::is_hydrogen() const
 bool atom::is_main_chain() const
 {
     return
-            this->name() == "C" ||
-            this->name() == "O" ||
-            this->name() == "H" ||
-            this->name() == "HA" ||
-            this->name() == "N";
+        this->get_name() == "C" ||
+                this->get_name() == "O" ||
+                this->get_name() == "H" ||
+                this->get_name() == "HA" ||
+                this->get_name() == "N";
 }
 
 
-int32_t atom::atom_number() const
+int atom::get_atom_number() const
 { return pimpl->record.serial; }
 
-double atom::mass() const
+double atom::get_mass() const
 {
-    auto element = symbol();
+    auto element = get_symbol();
     if (element == "H") return 1.008;
     if (element == "C") return 12.011;
     if (element == "N") return 14.007;
     if (element == "O") return 15.994;
     if (element == "S") return 32.065;
 
-    throw std::invalid_argument("atom::mass(): unsupported element " + element);
+    throw std::invalid_argument("atom::get_mass(): unsupported element " + element);
 }
 
-double atom::vdw_radius() const
+double atom::get_vdw_radius() const
 {
-    string element = symbol();
+    string element = get_symbol();
     if (element == "S") return 1.89;
     if (element == "C") return 1.77;
     if (element == "O") return 1.55;
     if (element == "N") return 1.60;
 
-    throw std::invalid_argument("atom::vdw_radius(): unsupported element " + element);
+    throw std::invalid_argument("atom::get_vdw_radius(): unsupported element " + element);
 }
 
 bool atom::is_cation() const
 {
     auto res_name = get_residue().get_name();
 
-    return (res_name == "LYS" && name() == "NZ") ||
-           (res_name == "ARG" && name() == "NH2") ||
-           (res_name == "HIS" && name() == "ND1");
+    return (res_name == "LYS" && get_name() == "NZ") ||
+           (res_name == "ARG" && get_name() == "NH2") ||
+           (res_name == "HIS" && get_name() == "ND1");
 }
 
 bool atom::in_positive_ionic_group() const
@@ -323,15 +323,15 @@ bool atom::in_positive_ionic_group() const
 
     if (res_name == "HIS")
     {
-        return name() == "CG" || name() == "CD2" || name() == "CE1" || name() == "ND1" || name() == "NE2";
+        return get_name() == "CG" || get_name() == "CD2" || get_name() == "CE1" || get_name() == "ND1" || get_name() == "NE2";
     }
     else if (res_name == "ARG")
     {
-        return name() == "CZ" || name() == "NH2";
+        return get_name() == "CZ" || get_name() == "NH2";
     }
     else if (res_name == "LYS")
     {
-        return name() == "NZ";
+        return get_name() == "NZ";
     }
     return false;
 }
@@ -339,7 +339,7 @@ bool atom::in_positive_ionic_group() const
 bool chemical_entity::atom::in_negative_ionic_group() const
 {
     auto res_name = get_residue().get_name();
-    auto n = name();
+    auto n = get_name();
 
     if (res_name == "GLU")
     {
@@ -357,7 +357,7 @@ bool chemical_entity::atom::in_negative_ionic_group() const
 bool atom::is_hydrogen_donor() const
 {
     auto res_name = get_residue().get_name();
-    auto n = name();
+    auto n = get_name();
     return
             (res_name == "ARG" && (n == "NH1" || n == "NH2" || n == "NE")) ||
             (res_name == "ASN" && n == "ND2") ||
@@ -376,7 +376,7 @@ int atom::how_many_hydrogen_can_donate() const
     if (is_hydrogen_donor())
     {
         std::string res_name = get_residue().get_name();
-        std::string n = name();
+        std::string n = get_name();
         if ((res_name == "ARG" && (n == "NH1" || n == "NH2")) ||
             (res_name == "ASN" && n == "ND2") ||
             (res_name == "GLN" && n == "NE2"))
@@ -395,7 +395,7 @@ int atom::how_many_hydrogen_can_donate() const
 bool atom::is_hydrogen_acceptor() const
 {
     auto res_name = get_residue().get_name();
-    auto n = name();
+    auto n = get_name();
 
     return
             (res_name == "ASN" && n == "OD1") ||
@@ -415,7 +415,7 @@ int atom::how_many_hydrogen_can_accept() const
     if (is_hydrogen_acceptor())
     {
         std::string res_name = get_residue().get_name();
-        std::string n = name();
+        std::string n = get_name();
         if ((res_name == "ASN" && n == "OD1") ||
             (res_name == "ASP" && (n == "OD1" || n == "OD2")) ||
             (res_name == "GLN" && n == "OE1") ||
@@ -435,8 +435,8 @@ int atom::how_many_hydrogen_can_accept() const
 bool atom::is_vdw_candidate() const
 {
     auto res_name = get_residue().get_name();
-    auto n = name();
-    auto en = symbol();
+    auto n = get_name();
+    auto en = get_symbol();
 
     return has_vdw_opsl_values(res_name, n, en);
 
@@ -446,13 +446,13 @@ bool atom::is_vdw_candidate() const
             en == "C" || en == "S";*/
 }
 
-vector<atom> atom::attached_hydrogens() const
+vector<atom> atom::get_attached_hydrogens() const
 {
     vector<atom> hydrogens;
-    auto const hydrogen_name_pattern = "H" + name().substr(1, name().size() - 1);
+    auto const hydrogen_name_pattern = "H" + get_name().substr(1, get_name().size() - 1);
     for (auto const& a : get_residue().get_atoms())
     {
-        if (a.is_hydrogen() && prelude::match(a.name(), hydrogen_name_pattern))
+        if (a.is_hydrogen() && prelude::match(a.get_name(), hydrogen_name_pattern))
             hydrogens.push_back(a);
     }
 

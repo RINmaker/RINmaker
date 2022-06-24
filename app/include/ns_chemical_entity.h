@@ -125,16 +125,16 @@ public:
     ~atom();
 
     [[nodiscard]]
-    std::string const& name() const;
+    std::string const& get_name() const;
 
     [[nodiscard]]
-    std::string symbol() const;
+    std::string get_symbol() const;
 
     [[nodiscard]]
-    double temp_factor() const;
+    double get_temp_factor() const;
 
     [[nodiscard]]
-    int charge() const;
+    int get_charge() const;
 
     [[nodiscard]]
     bool in_positive_ionic_group() const;
@@ -155,16 +155,16 @@ public:
     int how_many_hydrogen_can_accept() const;
 
     [[nodiscard]]
-    std::vector<atom> attached_hydrogens() const;
+    std::vector<atom> get_attached_hydrogens() const;
 
     [[nodiscard]]
     bool is_vdw_candidate() const;
 
     [[nodiscard]]
-    double vdw_radius() const;
+    double get_vdw_radius() const;
 
     [[nodiscard]]
-    double mass() const;
+    double get_mass() const;
 
     [[nodiscard]]
     bool is_hydrogen() const;
@@ -175,7 +175,7 @@ public:
     [[nodiscard]]
     bool is_main_chain() const;
 
-    [[nodiscard]] int32_t atom_number() const;
+    [[nodiscard]] int get_atom_number() const;
 };
 
 class ring final : public kdpoint<3>, public aminoacid::component

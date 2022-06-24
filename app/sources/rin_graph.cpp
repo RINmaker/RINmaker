@@ -67,8 +67,8 @@ edge::edge(bond::vdw const& bond)
     tmp_pimpl->distance = std::to_string(bond.get_length());
     tmp_pimpl->energy = std::to_string(bond.get_energy());
     tmp_pimpl->interaction = bond.get_interaction();
-    tmp_pimpl->source_atom = bond.source_atom().name();
-    tmp_pimpl->target_atom = bond.target_atom().name();
+    tmp_pimpl->source_atom = bond.source_atom().get_name();
+    tmp_pimpl->target_atom = bond.target_atom().get_name();
     tmp_pimpl->donor = cfg::graphml::none;
     tmp_pimpl->angle = cfg::graphml::null;
     tmp_pimpl->cation = cfg::graphml::none;
@@ -103,8 +103,8 @@ edge::edge(bond::hydrogen const& bond)
     tmp_pimpl->distance = std::to_string(bond.get_length());
     tmp_pimpl->energy = std::to_string(bond.get_energy());
     tmp_pimpl->interaction = bond.get_interaction();
-    tmp_pimpl->source_atom = bond.source_atom().name();
-    tmp_pimpl->target_atom = bond.target_atom().name();
+    tmp_pimpl->source_atom = bond.source_atom().get_name();
+    tmp_pimpl->target_atom = bond.target_atom().get_name();
     tmp_pimpl->angle = std::to_string(bond.get_angle());
     tmp_pimpl->donor = bond.donor().get_residue().get_id();
     tmp_pimpl->cation = cfg::graphml::none;
@@ -140,7 +140,7 @@ edge::edge(bond::pication const& bond)
     tmp_pimpl->energy = std::to_string(bond.get_energy());
     tmp_pimpl->interaction = bond.get_interaction();
     tmp_pimpl->source_atom = bond.source_ring().get_name();
-    tmp_pimpl->target_atom = bond.target_cation().name();
+    tmp_pimpl->target_atom = bond.target_cation().get_name();
     tmp_pimpl->cation = bond.target_cation().get_residue().get_id();
     tmp_pimpl->angle = std::to_string(bond.angle());
     tmp_pimpl->donor = cfg::graphml::none;
@@ -331,7 +331,7 @@ node::node(chemical_entity::aminoacid const& res) : pimpl{new impl()}
     pimpl->x = to_string(res.get_position()[0]);
     pimpl->y = to_string(res.get_position()[1]);
     pimpl->z = to_string(res.get_position()[2]);
-    pimpl->bfactor = res.get_alpha_carbon().has_value() ? to_string(res.get_alpha_carbon().value().temp_factor()) : "NULL";
+    pimpl->bfactor = res.get_alpha_carbon().has_value() ? to_string(res.get_alpha_carbon().value().get_temp_factor()) : "NULL";
     pimpl->secondary = res.get_secondary_structure_id();
     pimpl->pdb_name = res.get_protein_name();
     pimpl->degree = 0;

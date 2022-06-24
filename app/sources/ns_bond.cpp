@@ -43,7 +43,7 @@ chemical_entity::aminoacid generic_bond::target() const
 
 string generic_bond::get_interaction() const
 {
-    return "GENERIC:" + _source.name();
+    return "GENERIC:" + _source.get_name();
 }
 
 string generic_bond::get_type() const
@@ -55,10 +55,10 @@ pair<double, double> hydrogen::getSigmaEpsilon(atom const& donor, atom const& ac
     std::function<bool(string const&, int, string const&, int)> compare =
             [&](string const& donor_element, int donor_charge, string const& acceptor_element, int acceptor_charge)
             {
-                return donor.symbol() == donor_element
-                       && donor.charge() == donor_charge
-                       && acceptor.symbol() == acceptor_element
-                       && acceptor.charge() == acceptor_charge;
+                return donor.get_symbol() == donor_element
+                       && donor.get_charge() == donor_charge
+                       && acceptor.get_symbol() == acceptor_element
+                       && acceptor.get_charge() == acceptor_charge;
             };
 
     if (compare("N", 0, "N", 0)) return std::make_pair(1.99, -3.00);
@@ -226,8 +226,8 @@ string ss::get_type() const
 
 double vdw::energy(atom const& source_atom, atom const& target_atom)
 {
-    double* source_opts = get_vdw_opsl_values(source_atom.get_residue().get_name(), source_atom.name(), source_atom.symbol());
-    double* target_opts = get_vdw_opsl_values(target_atom.get_residue().get_name(), target_atom.name(), target_atom.symbol());
+    double* source_opts = get_vdw_opsl_values(source_atom.get_residue().get_name(), source_atom.get_name(), source_atom.get_symbol());
+    double* target_opts = get_vdw_opsl_values(target_atom.get_residue().get_name(), target_atom.get_name(), target_atom.get_symbol());
 
     double source_sigma = source_opts[1];
     double target_sigma = target_opts[1];
@@ -254,8 +254,8 @@ vdw::vdw(atom const& a, atom const& b) :
 
 string vdw::get_interaction() const
 {
-    string sourceChain = _source_atom.name() == "C" || _source_atom.name() == "S" ? "MC" : "SC";
-    string targetChain = _target_atom.name() == "C" || _target_atom.name() == "S" ? "MC" : "SC";
+    string sourceChain = _source_atom.get_name() == "C" || _source_atom.get_name() == "S" ? "MC" : "SC";
+    string targetChain = _target_atom.get_name() == "C" || _target_atom.get_name() == "S" ? "MC" : "SC";
 
     return "VDW:" + sourceChain + "_" + targetChain;
 }
@@ -269,7 +269,7 @@ std::shared_ptr<hydrogen const> hydrogen::test(parameters const& params, atom co
     {
         if (!(acceptor.get_residue() == donor.get_residue()))
         {
-            auto hydrogens = donor.attached_hydrogens();
+            auto hydrogens = donor.get_attached_hydrogens();
             for (auto const& h: hydrogens)
             {
                 array<double, 3> const da = (array<double, 3>) (acceptor - donor);
@@ -293,14 +293,14 @@ string hydrogen::get_id() const
 {
     return get_id_simple() +
            ":" +
-           source_atom().name() +
+        source_atom().get_name() +
            ":" +
-           target_atom().name();
+        target_atom().get_name();
 }
 
 std::shared_ptr<vdw const> vdw::test(parameters const& params, atom const& a, atom const& b)
 {
-    if (a.get_residue().satisfies_minimum_sequence_separation(b.get_residue()) && a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= params.surface_dist_vdw())
+    if (a.get_residue().satisfies_minimum_sequence_separation(b.get_residue()) && a.distance(b) - (a.get_vdw_radius() + b.get_vdw_radius()) <= params.surface_dist_vdw())
         return std::make_shared<vdw const>(a, b);
     return nullptr;
 }
@@ -350,7 +350,7 @@ string pication::get_id() const
            ":" +
         source_ring().get_name() +
            ":" +
-           target_cation().name();
+        target_cation().get_name();
 }
 
 std::shared_ptr<pipistack const> pipistack::test(parameters const& params, ring const& a, ring const& b)
@@ -422,7 +422,7 @@ string hydrogen::get_id_simple() const
            ":" +
         target_atom().get_residue().get_id() +
            ":" +
-            hydrogen_atom().name();
+        hydrogen_atom().get_name();
 }
 
 string vdw::get_id_simple() const
