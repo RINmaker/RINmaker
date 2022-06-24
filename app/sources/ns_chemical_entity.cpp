@@ -24,43 +24,43 @@ string get_name_from_atoms(vector<atom> const& atoms, string const& delimiter = 
 }
 
 vector<atom> const& aminoacid::get_atoms() const
-{ return pimpl->atoms; }
+{ return _pimpl->atoms; }
 
 string const& aminoacid::get_protein_name() const
-{ return pimpl->protein_name; }
+{ return _pimpl->protein_name; }
 
 std::optional<atom> const& aminoacid::get_alpha_carbon() const
-{ return pimpl->alpha_carbon; }
+{ return _pimpl->alpha_carbon; }
 
 std::optional<atom> const& aminoacid::get_beta_carbon() const
-{ return pimpl->beta_carbon; }
+{ return _pimpl->beta_carbon; }
 
 std::optional<ring> const& aminoacid::get_primary_ring() const
-{ return pimpl->primary_ring; }
+{ return _pimpl->primary_ring; }
 
 std::optional<ring> const& aminoacid::get_secondary_ring() const
-{ return pimpl->secondary_ring; }
+{ return _pimpl->secondary_ring; }
 
 std::optional<ionic_group> const& aminoacid::get_positive_ionic_group() const
-{ return pimpl->positive_ionic_group; }
+{ return _pimpl->positive_ionic_group; }
 
 std::optional<ionic_group> const& aminoacid::get_negative_ionic_group() const
-{ return pimpl->negative_ionic_group; }
+{ return _pimpl->negative_ionic_group; }
 
 string const& aminoacid::get_name() const
-{ return pimpl->name; }
+{ return _pimpl->name; }
 
 string const& aminoacid::get_chain_id() const
-{ return pimpl->chain_id; }
+{ return _pimpl->chain_id; }
 
 string const& aminoacid::get_id() const
-{ return pimpl->id; }
+{ return _pimpl->id; }
 
 int aminoacid::get_sequence_number() const
-{ return pimpl->sequence_number; }
+{ return _pimpl->sequence_number; }
 
 bool aminoacid::operator==(aminoacid const& rhs) const
-{ return pimpl->id == rhs.pimpl->id; }
+{ return _pimpl->id == rhs._pimpl->id; }
 
 bool aminoacid::operator!=(aminoacid const& rhs) const
 { return !(*this == rhs); }
@@ -77,7 +77,7 @@ aminoacid::operator rin::node() const
 { return rin::node(*this); }
 
 string aminoacid::get_secondary_structure_id() const
-{ return pimpl->secondary_structure_name; }
+{ return _pimpl->secondary_structure_name; }
 
 array<double, 3> center_of_mass(vector<atom> const& atoms)
 {
@@ -111,38 +111,38 @@ void assert_ring_correctness(
                 " - expected aromatic ring: " + expected_atoms_str + ", found: " + found_atoms_str;
         throw std::invalid_argument(exception_description);
     }
-};
+}
 
 chemical_entity::aminoacid::aminoacid(
     gemmi::Residue const& residue,
     gemmi::Chain const& chain,
     gemmi::Model const& model,
     gemmi::Structure const& protein) :
-    pimpl(std::make_shared<impl>())
+    _pimpl(std::make_shared<impl>())
 {
-    pimpl->name = residue.name;
-    pimpl->sequence_number = residue.seqid.num.value;
-    pimpl->chain_id = chain.name;
+    _pimpl->name = residue.name;
+    _pimpl->sequence_number = residue.seqid.num.value;
+    _pimpl->chain_id = chain.name;
 
-    pimpl->id = pimpl->chain_id + ":" + to_string(pimpl->sequence_number) + ":_:" + pimpl->name;
+    _pimpl->id = _pimpl->chain_id + ":" + to_string(_pimpl->sequence_number) + ":_:" + _pimpl->name;
 
     // discover if this has 0, 1 or 2 aromatic rings
     int n_of_rings = 0;
     vector<string> ring1_names, ring2_names;
 
-    if (pimpl->name == "HIS")
+    if (_pimpl->name == "HIS")
     {
         // HIS has a 5-atoms ring
         ring1_names = {"CD2", "CE1", "CG", "ND1", "NE2"};
         n_of_rings = 1;
     }
-    else if (pimpl->name == "PHE" || pimpl->name == "TYR")
+    else if (_pimpl->name == "PHE" || _pimpl->name == "TYR")
     {
         // PHE, TYR have a 6-atoms ring
         ring1_names = {"CD1", "CD2", "CE1", "CE2", "CG", "CZ"};
         n_of_rings = 1;
     }
-    else if (pimpl->name == "TRP")
+    else if (_pimpl->name == "TRP")
     {
         // TRP has both a 6-atoms ring and a 5-atoms ring
         ring1_names = {"CD2", "CE2", "CE3", "CH2", "CZ2", "CZ3"};
@@ -158,13 +158,13 @@ chemical_entity::aminoacid::aminoacid(
     for (auto const& record: residue.atoms)
     {
         auto atom = chemical_entity::atom{record, *this};
-        pimpl->atoms.push_back(atom);
+        _pimpl->atoms.push_back(atom);
 
         if (atom.get_name() == "CA")
-            pimpl->alpha_carbon = atom;
+            _pimpl->alpha_carbon = atom;
 
         else if (atom.get_name() == "CB")
-            pimpl->beta_carbon = atom;
+            _pimpl->beta_carbon = atom;
 
         if (n_of_rings >= 1 && find(ring1_names.begin(), ring1_names.end(), atom.get_name()) != ring1_names.end())
             ring1.push_back(atom);
@@ -179,34 +179,34 @@ chemical_entity::aminoacid::aminoacid(
             negative.push_back(atom);
     }
 
-    pimpl->position = center_of_mass(get_atoms());
+    _pimpl->position = center_of_mass(get_atoms());
 
     if (n_of_rings >= 1)
     {
         // fixme find a way to locate line numbers from gemmi
-        assert_ring_correctness(pimpl->name, -1, ring1_names, ring1);
-        pimpl->primary_ring = ring(ring1, *this);
+        assert_ring_correctness(_pimpl->name, -1, ring1_names, ring1);
+        _pimpl->primary_ring = ring(ring1, *this);
     }
     if (n_of_rings == 2)
     {
         // fixme find a way to locate line numbers from gemmi
-        assert_ring_correctness(pimpl->name, -1, ring2_names, ring2);
-        pimpl->secondary_ring = ring(ring2, *this);
+        assert_ring_correctness(_pimpl->name, -1, ring2_names, ring2);
+        _pimpl->secondary_ring = ring(ring2, *this);
     }
 
     if (!positive.empty())
-        pimpl->positive_ionic_group = ionic_group(positive, 1, *this);
+        _pimpl->positive_ionic_group = ionic_group(positive, 1, *this);
 
     if (!negative.empty())
-        pimpl->negative_ionic_group = ionic_group(negative, -1, *this);
+        _pimpl->negative_ionic_group = ionic_group(negative, -1, *this);
 
-    pimpl->protein_name = protein.name;
+    _pimpl->protein_name = protein.name;
 
     if (protein.helices.empty() && protein.sheets.empty())
-        pimpl->secondary_structure_name = "NONE";
+        _pimpl->secondary_structure_name = "NONE";
     else
     {
-        pimpl->secondary_structure_name = "LOOP";
+        _pimpl->secondary_structure_name = "LOOP";
 
         // todo retrieve secondary structure
         //if (model.find_cra(protein.helices.front().res).chain->find_residue(residue) != nullptr)
@@ -220,7 +220,7 @@ aminoacid aminoacid::component::get_residue() const
     aminoacid res;
 
     // restore all of its information
-    res.pimpl = res_impl.lock();
+    res._pimpl = _res_pimpl.lock();
     return res;
 }
 
@@ -229,33 +229,33 @@ aminoacid::aminoacid() = default;
 aminoacid::~aminoacid() = default;
 
 std::array<double, 3> const& chemical_entity::aminoacid::get_position() const
-{ return pimpl->position; }
+{ return _pimpl->position; }
 
 atom::atom(gemmi::Atom const& record, aminoacid const& res) :
     kdpoint<3>({record.pos.x, record.pos.y, record.pos.z}),
     component(res),
-    pimpl{new impl{record}}
+    _pimpl{new impl{record}}
 {}
 
 atom::~atom() = default;
 
 string const& atom::get_name() const
-{ return pimpl->record.name; }
+{ return _pimpl->record.name; }
 
 string atom::get_symbol() const
-{ return gemmi::element_uppercase_name(pimpl->record.element.elem); }
+{ return gemmi::element_uppercase_name(_pimpl->record.element.elem); }
 
 double atom::get_temp_factor() const
-{ return pimpl->record.b_iso; }
+{ return _pimpl->record.b_iso; }
 
 int atom::get_charge() const
 {
-    auto c = pimpl->record.charge;
+    auto c = _pimpl->record.charge;
     return c > 0 ? 1 : c < 0 ? -1 : 0;
 }
 
 bool atom::is_hydrogen() const
-{ return pimpl->record.is_hydrogen(); }
+{ return _pimpl->record.is_hydrogen(); }
 
 bool atom::is_main_chain() const
 {
@@ -264,7 +264,7 @@ bool atom::is_main_chain() const
 }
 
 int atom::get_atom_number() const
-{ return pimpl->record.serial; }
+{ return _pimpl->record.serial; }
 
 double atom::get_mass() const
 {
@@ -450,26 +450,26 @@ ring::ring(vector<atom> const& atoms, aminoacid const& res) : kdpoint<3>({0, 0, 
     array<double, 3> const w = (array<double, 3>) (atoms[2] - atoms[1]);
     tmp_pimpl->normal = geom::cross(v, w);
 
-    pimpl = tmp_pimpl;
+    _pimpl = tmp_pimpl;
 }
 
 ring::~ring() = default;
 
 array<double, 3> const& ring::get_normal() const
-{ return pimpl->normal; }
+{ return _pimpl->normal; }
 
 bool ring::is_pication_candidate() const
 {
     string name = get_residue().get_name();
-    return name == "PHE" || name == "TYR" || (name == "TRP" && pimpl->atoms.size() == 6);
+    return name == "PHE" || name == "TYR" || (name == "TRP" && _pimpl->atoms.size() == 6);
 }
 
 double ring::get_distance_between_closest_atoms(ring const& other) const
 {
-    double minimum = pimpl->atoms[0].distance(other.pimpl->atoms[0]);
-    for (auto const& atom_1: pimpl->atoms)
+    double minimum = _pimpl->atoms[0].distance(other._pimpl->atoms[0]);
+    for (auto const& atom_1: _pimpl->atoms)
     {
-        for (auto const& atom_2: other.pimpl->atoms)
+        for (auto const& atom_2: other._pimpl->atoms)
         {
             double current = atom_1.distance(atom_2);
             if (current < minimum)
@@ -483,25 +483,25 @@ double ring::get_distance_between_closest_atoms(ring const& other) const
 }
 
 double ring::get_angle_between_normals(ring const& other) const
-{ return geom::d_angle<3>(pimpl->normal, other.pimpl->normal); }
+{ return geom::d_angle<3>(_pimpl->normal, other._pimpl->normal); }
 
 double ring::get_angle_between_normal_and_centers_joining(ring const& other) const
 {
     std::array<double, 3> const centres_joining((std::array<double, 3>) (*this - other));
-    return geom::d_angle<3>(pimpl->normal, centres_joining);
+    return geom::d_angle<3>(_pimpl->normal, centres_joining);
 }
 
 string ring::get_name() const
-{ return get_name_from_atoms(pimpl->atoms); }
+{ return get_name_from_atoms(_pimpl->atoms); }
 
 ionic_group::ionic_group(vector<atom> const& atoms, int const& charge, aminoacid const& res) :
-    kdpoint<3>({0, 0, 0}), component(res), pimpl{new impl{atoms, charge}}
+    kdpoint<3>({0, 0, 0}), component(res), _pimpl{new impl{atoms, charge}}
 { _position = center_of_mass(atoms); }
 
 ionic_group::~ionic_group() = default;
 
 int ionic_group::get_charge() const
-{ return pimpl->charge; }
+{ return _pimpl->charge; }
 
 double ionic_group::get_ionion_energy_q() const
 {
@@ -517,4 +517,4 @@ double ionic_group::get_ionion_energy_q() const
 }
 
 string ionic_group::get_name() const
-{ return get_name_from_atoms(pimpl->atoms); }
+{ return get_name_from_atoms(_pimpl->atoms); }

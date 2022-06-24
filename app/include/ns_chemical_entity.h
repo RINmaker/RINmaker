@@ -30,7 +30,7 @@ class aminoacid
 {
 private:
     struct impl;
-    std::shared_ptr<impl> pimpl;
+    std::shared_ptr<impl> _pimpl;
 
     aminoacid();
 
@@ -38,10 +38,10 @@ public:
     class component
     {
     private:
-        std::weak_ptr<aminoacid::impl> res_impl;
+        std::weak_ptr<aminoacid::impl> _res_pimpl;
 
     protected:
-        explicit component(aminoacid const& res) : res_impl{res.pimpl}
+        explicit component(aminoacid const& res) : _res_pimpl{res._pimpl}
         {}
 
     public:
@@ -117,7 +117,7 @@ class atom final : public kdpoint<3>, public aminoacid::component
 {
 private:
     struct impl;
-    std::shared_ptr<impl const> pimpl;
+    std::shared_ptr<impl const> _pimpl;
 
 public:
     atom(gemmi::Atom const& record, aminoacid const& res);
@@ -182,7 +182,7 @@ class ring final : public kdpoint<3>, public aminoacid::component
 {
 private:
     struct impl;
-    std::shared_ptr<impl const> pimpl;
+    std::shared_ptr<impl const> _pimpl;
 
 public:
     ring(std::vector<atom> const& atoms, aminoacid const& res);
@@ -212,7 +212,7 @@ class ionic_group final : public kdpoint<3>, public aminoacid::component
 {
 private:
     struct impl;
-    std::shared_ptr<impl const> pimpl;
+    std::shared_ptr<impl const> _pimpl;
 
 public:
     ionic_group(std::vector<atom> const& atoms, int const& charge, aminoacid const& res);
