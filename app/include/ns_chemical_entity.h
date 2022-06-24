@@ -193,9 +193,6 @@ public:
     std::array<double, 3> const& get_normal() const;
 
     [[nodiscard]]
-    double radius() const;
-
-    [[nodiscard]]
     bool is_pication_candidate() const;
 
     [[nodiscard]]
@@ -206,9 +203,6 @@ public:
 
     [[nodiscard]]
     double get_angle_between_normal_and_centers_joining(ring const& other) const;
-
-    [[nodiscard]]
-    atom atom_closest_to(atom const& atom) const;
 
     [[nodiscard]]
     std::string get_name() const;

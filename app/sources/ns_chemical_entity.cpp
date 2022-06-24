@@ -490,9 +490,6 @@ ring::~ring() = default;
 array<double, 3> const& ring::get_normal() const
 { return pimpl->normal; }
 
-double ring::radius() const
-{ return pimpl->mean_radius; }
-
 bool ring::is_pication_candidate() const
 {
     string name = get_residue().get_name();
@@ -524,24 +521,6 @@ double ring::get_angle_between_normal_and_centers_joining(ring const& other) con
 {
     std::array<double, 3> const centres_joining((std::array<double, 3>) (*this - other));
     return geom::d_angle<3>(pimpl->normal, centres_joining);
-}
-
-atom ring::atom_closest_to(atom const& atom) const
-{
-    auto closest_atom = pimpl->atoms[0];
-    double min_distance = closest_atom.distance(atom);
-
-    for (auto const& a : pimpl->atoms)
-    {
-        const double distance = a.distance(atom);
-        if (distance < min_distance)
-        {
-            min_distance = distance;
-            closest_atom = a;
-        }
-    }
-
-    return closest_atom;
 }
 
 string ring::get_name() const
