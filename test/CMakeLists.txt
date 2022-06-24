@@ -21,7 +21,7 @@ target_include_directories(
         "${CMAKE_CURRENT_SOURCE_DIR}/../app/include"
         "${CMAKE_CURRENT_SOURCE_DIR}/../gemmi/include")
 
-target_link_libraries(${TARGET_NAME} PRIVATE "gtest" "spdlog" "pugixml" "CLI11")
+target_link_libraries(${TARGET_NAME} PRIVATE "gtest_main" "spdlog" "pugixml" "CLI11")
 
 add_custom_command(
         TARGET ${TARGET_NAME} POST_BUILD
