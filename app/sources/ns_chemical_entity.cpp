@@ -77,11 +77,9 @@ aminoacid::operator rin::node() const
 { return rin::node(*this); }
 
 string aminoacid::get_secondary_structure_id() const
-{
-    return pimpl->secondary_structure_name;
-}
+{ return pimpl->secondary_structure_name; }
 
-array<double, 3> centre_of_mass(vector<atom> const& atoms)
+array<double, 3> center_of_mass(vector<atom> const& atoms)
 {
     double mass{0.0};
     array<double, 3> centroid{0.0, 0.0, 0.0};
@@ -99,7 +97,10 @@ array<double, 3> centre_of_mass(vector<atom> const& atoms)
 }
 
 void assert_ring_correctness(
-        string const& name, uint32_t line_number, vector<string> const& expected_atoms, vector<atom> const& found_atoms)
+        string const& name,
+        uint32_t line_number,
+        vector<string> const& expected_atoms,
+        vector<atom> const& found_atoms)
 {
     if (expected_atoms.size() != found_atoms.size())
     {
@@ -127,32 +128,32 @@ chemical_entity::aminoacid::aminoacid(
 
     // discover if this has 0, 1 or 2 aromatic rings
     int n_of_rings = 0;
-    vector<string> patterns_1, patterns_2;
+    vector<string> ring1_names, ring2_names;
 
     if (pimpl->name == "HIS")
     {
         // HIS has a 5-atoms ring
-        patterns_1 = {"CD2", "CE1", "CG", "ND1", "NE2"};
+        ring1_names = {"CD2", "CE1", "CG", "ND1", "NE2"};
         n_of_rings = 1;
     }
     else if (pimpl->name == "PHE" || pimpl->name == "TYR")
     {
         // PHE, TYR have a 6-atoms ring
-        patterns_1 = {"CD1", "CD2", "CE1", "CE2", "CG", "CZ"};
+        ring1_names = {"CD1", "CD2", "CE1", "CE2", "CG", "CZ"};
         n_of_rings = 1;
     }
     else if (pimpl->name == "TRP")
     {
         // TRP has both a 6-atoms ring and a 5-atoms ring
-        patterns_1 = {"CD2", "CE2", "CE3", "CH2", "CZ2", "CZ3"};
-        patterns_2 = {"CD2", "CE2", "CD1", "CG", "NE1"};
+        ring1_names = {"CD2", "CE2", "CE3", "CH2", "CZ2", "CZ3"};
+        ring2_names = {"CD2", "CE2", "CD1", "CG", "NE1"};
 
         n_of_rings = 2;
     }
 
     // note: are they mutually exclusive? should be addressed
     vector<atom> positive, negative;
-    vector<atom> ring_1, ring_2;
+    vector<atom> ring1, ring2;
 
     for (auto const& record: residue.atoms)
     {
@@ -165,11 +166,11 @@ chemical_entity::aminoacid::aminoacid(
         else if (atom.get_name() == "CB")
             pimpl->beta_carbon = atom;
 
-        if (n_of_rings >= 1 && find(patterns_1.begin(), patterns_1.end(), atom.get_name()) != patterns_1.end())
-            ring_1.push_back(atom);
+        if (n_of_rings >= 1 && find(ring1_names.begin(), ring1_names.end(), atom.get_name()) != ring1_names.end())
+            ring1.push_back(atom);
 
-        if (n_of_rings == 2 && find(patterns_2.begin(), patterns_2.end(), atom.get_name()) != patterns_2.end())
-            ring_2.push_back(atom);
+        if (n_of_rings == 2 && find(ring2_names.begin(), ring2_names.end(), atom.get_name()) != ring2_names.end())
+            ring2.push_back(atom);
 
         if (atom.in_positive_ionic_group())
             positive.push_back(atom);
@@ -178,19 +179,19 @@ chemical_entity::aminoacid::aminoacid(
             negative.push_back(atom);
     }
 
-    pimpl->position = centre_of_mass(get_atoms());
+    pimpl->position = center_of_mass(get_atoms());
 
     if (n_of_rings >= 1)
     {
         // fixme find a way to locate line numbers from gemmi
-        assert_ring_correctness(pimpl->name, -1, patterns_1, ring_1);
-        pimpl->primary_ring = ring(ring_1, *this);
+        assert_ring_correctness(pimpl->name, -1, ring1_names, ring1);
+        pimpl->primary_ring = ring(ring1, *this);
     }
     if (n_of_rings == 2)
     {
         // fixme find a way to locate line numbers from gemmi
-        assert_ring_correctness(pimpl->name, -1, patterns_2, ring_2);
-        pimpl->secondary_ring = ring(ring_2, *this);
+        assert_ring_correctness(pimpl->name, -1, ring2_names, ring2);
+        pimpl->secondary_ring = ring(ring2, *this);
     }
 
     if (!positive.empty())
@@ -208,8 +209,8 @@ chemical_entity::aminoacid::aminoacid(
         pimpl->secondary_structure_name = "LOOP";
 
         // todo retrieve secondary structure
-        //if (model.find_cra(protein.helices.front().res).chain->find_residue(residue) != nullptr
-        //||  model.find_cra(protein.helices.front().start).chain->find_residue(residue);
+        //if (model.find_cra(protein.helices.front().res).chain->find_residue(residue) != nullptr)
+        //model.find_cra(protein.helices.front().start).chain->find_residue(residue);
     }
 }
 
@@ -219,21 +220,16 @@ aminoacid aminoacid::component::get_residue() const
     aminoacid res;
 
     // restore all of its information
-    // TODO check and throw exception?
-    // to me it is redundant, because weak_ptr already throws iff not valid when calling .lock()
     res.pimpl = res_impl.lock();
     return res;
 }
-
 
 aminoacid::aminoacid() = default;
 
 aminoacid::~aminoacid() = default;
 
 std::array<double, 3> const& chemical_entity::aminoacid::get_position() const
-{
-    return pimpl->position;
-}
+{ return pimpl->position; }
 
 atom::atom(gemmi::Atom const& record, aminoacid const& res) :
     kdpoint<3>({record.pos.x, record.pos.y, record.pos.z}),
@@ -263,14 +259,9 @@ bool atom::is_hydrogen() const
 
 bool atom::is_main_chain() const
 {
-    return
-        this->get_name() == "C" ||
-                this->get_name() == "O" ||
-                this->get_name() == "H" ||
-                this->get_name() == "HA" ||
-                this->get_name() == "N";
+    auto names = {"C", "O", "H", "HA", "N"};
+    return find(names.begin(), names.end(), get_name()) != names.end();
 }
-
 
 int atom::get_atom_number() const
 { return pimpl->record.serial; }
@@ -302,44 +293,38 @@ bool atom::is_cation() const
 {
     auto res_name = get_residue().get_name();
 
-    return (res_name == "LYS" && get_name() == "NZ") ||
-           (res_name == "ARG" && get_name() == "NH2") ||
-           (res_name == "HIS" && get_name() == "ND1");
+    return (res_name == "LYS" && get_name() == "NZ")
+        || (res_name == "ARG" && get_name() == "NH2")
+        || (res_name == "HIS" && get_name() == "ND1");
 }
 
 bool atom::in_positive_ionic_group() const
 {
     auto res_name = get_residue().get_name();
+    auto name = get_name();
 
     if (res_name == "HIS")
-    {
-        return get_name() == "CG" || get_name() == "CD2" || get_name() == "CE1" || get_name() == "ND1" || get_name() == "NE2";
-    }
+        return name == "CG" || name == "CD2" || name == "CE1" || name == "ND1" || name == "NE2";
+
     else if (res_name == "ARG")
-    {
-        return get_name() == "CZ" || get_name() == "NH2";
-    }
+        return name == "CZ" || name == "NH2";
+
     else if (res_name == "LYS")
-    {
-        return get_name() == "NZ";
-    }
+        return name == "NZ";
+
     return false;
 }
 
 bool chemical_entity::atom::in_negative_ionic_group() const
 {
     auto res_name = get_residue().get_name();
-    auto n = get_name();
+    auto name = get_name();
 
     if (res_name == "GLU")
-    {
-        return n == "CD" || n == "OE1" || n == "OE2";
-    }
+        return name == "CD" || name == "OE1" || name == "OE2";
 
     else if (res_name == "ASP")
-    {
-        return n == "CG" || n == "OD1" || n == "OD2";
-    }
+        return name == "CG" || name == "OD1" || name == "OD2";
 
     return false;
 }
@@ -347,18 +332,18 @@ bool chemical_entity::atom::in_negative_ionic_group() const
 bool atom::is_hydrogen_donor() const
 {
     auto res_name = get_residue().get_name();
-    auto n = get_name();
-    return
-            (res_name == "ARG" && (n == "NH1" || n == "NH2" || n == "NE")) ||
-            (res_name == "ASN" && n == "ND2") ||
-            (res_name == "GLN" && n == "NE2") ||
-            (res_name == "HIS" && (n == "NE2" || n == "ND1")) ||
-            (res_name == "LYS" && n == "NZ") ||
-            (res_name == "SER" && n == "OG") ||
-            (res_name == "THR" && n == "OG1") ||
-            (res_name == "TRP" && n == "NE1") ||
-            (res_name == "TYR" && n == "OH") ||
-            n == "NH" || n == "N";
+    auto name = get_name();
+    return (res_name == "ARG" && (name == "NH1" || name == "NH2" || name == "NE"))
+        || (res_name == "ASN" && name == "ND2")
+        || (res_name == "GLN" && name == "NE2")
+        || (res_name == "HIS" && (name == "NE2" || name == "ND1"))
+        || (res_name == "LYS" && name == "NZ")
+        || (res_name == "SER" && name == "OG")
+        || (res_name == "THR" && name == "OG1")
+        || (res_name == "TRP" && name == "NE1")
+        || (res_name == "TYR" && name == "OH")
+        || name == "NH"
+        || name == "N";
 }
 
 int atom::how_many_hydrogen_can_donate() const
@@ -385,19 +370,18 @@ int atom::how_many_hydrogen_can_donate() const
 bool atom::is_hydrogen_acceptor() const
 {
     auto res_name = get_residue().get_name();
-    auto n = get_name();
+    auto name = get_name();
 
-    return
-            (res_name == "ASN" && n == "OD1") ||
-            (res_name == "ASP" && (n == "OD1" || n == "OD2")) ||
-            (res_name == "GLN" && n == "OE1") ||
-            (res_name == "GLU" && (n == "OE1" || n == "OE2")) ||
-            (res_name == "HIS" && (n == "ND1" || n == "NE2")) ||
-            (res_name == "SER" && n == "OG") ||
-            (res_name == "THR" && n == "OG1") ||
-            (res_name == "TYR" && n == "OH") ||
-            //n == "C" ||
-            n == "O";
+    return (res_name == "ASN" && name == "OD1")
+        || (res_name == "ASP" && (name == "OD1" || name == "OD2"))
+        || (res_name == "GLN" && name == "OE1")
+        || (res_name == "GLU" && (name == "OE1" || name == "OE2"))
+        || (res_name == "HIS" && (name == "ND1" || name == "NE2"))
+        || (res_name == "SER" && name == "OG")
+        || (res_name == "THR" && name == "OG1")
+        || (res_name == "TYR" && name == "OH")
+        //|| n == "C"
+        || name == "O";
 }
 
 int atom::how_many_hydrogen_can_accept() const
@@ -425,32 +409,31 @@ int atom::how_many_hydrogen_can_accept() const
 bool atom::is_vdw_candidate() const
 {
     auto res_name = get_residue().get_name();
-    auto n = get_name();
-    auto en = get_symbol();
+    auto name = get_name();
+    auto element = get_symbol();
 
-    return has_vdw_opsl_values(res_name, n, en);
+    return has_vdw_opsl_values(res_name, name, element);
 
-    /*return
-            (res_name == "GLN" && (n == "NE1" || n == "OE1")) ||
-            (res_name == "ASN" && (n == "ND2" || n == "OD1")) ||
-            en == "C" || en == "S";*/
+    //return (res_name == "GLN" && (name == "NE1" || name == "OE1"))
+    //    || (res_name == "ASN" && (name == "ND2" || name == "OD1"))
+    //    || element == "C"
+    //    || element == "S";
 }
 
 vector<atom> atom::get_attached_hydrogens() const
 {
     vector<atom> hydrogens;
     auto const hydrogen_name_pattern = "H" + get_name().substr(1, get_name().size() - 1);
-    for (auto const& a : get_residue().get_atoms())
+    for (auto const& atom : get_residue().get_atoms())
     {
-        if (a.is_hydrogen() && prelude::match(a.get_name(), hydrogen_name_pattern))
-            hydrogens.push_back(a);
+        if (atom.is_hydrogen() && prelude::match(atom.get_name(), hydrogen_name_pattern))
+            hydrogens.push_back(atom);
     }
 
     return hydrogens;
 }
 
-ring::ring(vector<atom> const& atoms, aminoacid const& res) :
-        kdpoint<3>({0, 0, 0}), component(res)
+ring::ring(vector<atom> const& atoms, aminoacid const& res) : kdpoint<3>({0, 0, 0}), component(res)
 {
     auto tmp_pimpl = std::make_shared<impl>();
 
@@ -459,7 +442,7 @@ ring::ring(vector<atom> const& atoms, aminoacid const& res) :
 
     tmp_pimpl->atoms = atoms;
 
-    _position = centre_of_mass(atoms);
+    _position = center_of_mass(atoms);
 
     // kudos to Giulio Marcolin for the following shortcut
     // it only deviates from a SVD best-fit method no more than 1-2°, on average
@@ -509,13 +492,11 @@ double ring::get_angle_between_normal_and_centers_joining(ring const& other) con
 }
 
 string ring::get_name() const
-{
-    return get_name_from_atoms(pimpl->atoms);
-}
+{ return get_name_from_atoms(pimpl->atoms); }
 
 ionic_group::ionic_group(vector<atom> const& atoms, int const& charge, aminoacid const& res) :
-        kdpoint<3>({0, 0, 0}), component(res), pimpl{new impl{atoms, charge}}
-{ _position = centre_of_mass(atoms); }
+    kdpoint<3>({0, 0, 0}), component(res), pimpl{new impl{atoms, charge}}
+{ _position = center_of_mass(atoms); }
 
 ionic_group::~ionic_group() = default;
 
@@ -536,6 +517,4 @@ double ionic_group::get_ionion_energy_q() const
 }
 
 string ionic_group::get_name() const
-{
-    return get_name_from_atoms(pimpl->atoms);
-}
+{ return get_name_from_atoms(pimpl->atoms); }
