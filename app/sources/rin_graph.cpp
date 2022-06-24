@@ -331,7 +331,7 @@ node::node(chemical_entity::aminoacid const& res) : pimpl{new impl()}
     pimpl->x = to_string(res.position()[0]);
     pimpl->y = to_string(res.position()[1]);
     pimpl->z = to_string(res.position()[2]);
-    pimpl->bfactor = res.ca().has_value() ? to_string(res.ca().value().temp_factor()) : "NULL";
+    pimpl->bfactor = res.get_alpha_carbon().has_value() ? to_string(res.get_alpha_carbon().value().temp_factor()) : "NULL";
     pimpl->secondary = res.secondary_structure_id();
     pimpl->pdb_name = res.get_protein_name();
     pimpl->degree = 0;

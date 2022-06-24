@@ -61,11 +61,11 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& structure)
     for (auto const& res: tmp_pimpl->aminoacids)
     {
 
-        auto const ca = res.ca();
+        auto const ca = res.get_alpha_carbon();
         if (ca.has_value())
             tmp_pimpl->alpha_carbon_vector.push_back(*ca);
 
-        auto const cb = res.cb();
+        auto const cb = res.get_beta_carbon();
         if (cb.has_value())
             tmp_pimpl->beta_carbon_vector.push_back(*cb);
 

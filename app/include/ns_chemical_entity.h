@@ -67,10 +67,10 @@ public:
     std::string const& get_protein_name() const;
 
     [[nodiscard]]
-    std::optional<atom> const& ca() const;
+    std::optional<atom> const& get_alpha_carbon() const;
 
     [[nodiscard]]
-    std::optional<atom> const& cb() const;
+    std::optional<atom> const& get_beta_carbon() const;
 
     [[nodiscard]]
     std::optional<ring> const& primary_ring() const;

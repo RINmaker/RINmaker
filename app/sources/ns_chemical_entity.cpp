@@ -32,10 +32,10 @@ vector<atom> const& aminoacid::get_atoms() const
 string const& aminoacid::get_protein_name() const
 { return pimpl->pdb_name; }
 
-std::optional<atom> const& aminoacid::ca() const
+std::optional<atom> const& aminoacid::get_alpha_carbon() const
 { return pimpl->alpha_carbon; }
 
-std::optional<atom> const& aminoacid::cb() const
+std::optional<atom> const& aminoacid::get_beta_carbon() const
 { return pimpl->beta_carbon; }
 
 std::optional<ring> const& aminoacid::primary_ring() const
