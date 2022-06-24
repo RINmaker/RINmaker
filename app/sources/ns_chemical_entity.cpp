@@ -223,7 +223,7 @@ chemical_entity::aminoacid::aminoacid(
     }
 }
 
-aminoacid aminoacid::component::res() const
+aminoacid aminoacid::component::get_residue() const
 {
     // information-less aminoacid
     aminoacid res;
@@ -310,7 +310,7 @@ double atom::vdw_radius() const
 
 bool atom::is_cation() const
 {
-    auto res_name = res().name();
+    auto res_name = get_residue().name();
 
     return (res_name == "LYS" && name() == "NZ") ||
            (res_name == "ARG" && name() == "NH2") ||
@@ -319,7 +319,7 @@ bool atom::is_cation() const
 
 bool atom::in_positive_ionic_group() const
 {
-    auto res_name = res().name();
+    auto res_name = get_residue().name();
 
     if (res_name == "HIS")
     {
@@ -338,7 +338,7 @@ bool atom::in_positive_ionic_group() const
 
 bool chemical_entity::atom::in_negative_ionic_group() const
 {
-    auto res_name = res().name();
+    auto res_name = get_residue().name();
     auto n = name();
 
     if (res_name == "GLU")
@@ -356,7 +356,7 @@ bool chemical_entity::atom::in_negative_ionic_group() const
 
 bool atom::is_hydrogen_donor() const
 {
-    auto res_name = res().name();
+    auto res_name = get_residue().name();
     auto n = name();
     return
             (res_name == "ARG" && (n == "NH1" || n == "NH2" || n == "NE")) ||
@@ -375,7 +375,7 @@ int atom::how_many_hydrogen_can_donate() const
 {
     if (is_hydrogen_donor())
     {
-        std::string res_name = res().name();
+        std::string res_name = get_residue().name();
         std::string n = name();
         if ((res_name == "ARG" && (n == "NH1" || n == "NH2")) ||
             (res_name == "ASN" && n == "ND2") ||
@@ -394,7 +394,7 @@ int atom::how_many_hydrogen_can_donate() const
 
 bool atom::is_hydrogen_acceptor() const
 {
-    auto res_name = res().name();
+    auto res_name = get_residue().name();
     auto n = name();
 
     return
@@ -414,7 +414,7 @@ int atom::how_many_hydrogen_can_accept() const
 {
     if (is_hydrogen_acceptor())
     {
-        std::string res_name = res().name();
+        std::string res_name = get_residue().name();
         std::string n = name();
         if ((res_name == "ASN" && n == "OD1") ||
             (res_name == "ASP" && (n == "OD1" || n == "OD2")) ||
@@ -434,7 +434,7 @@ int atom::how_many_hydrogen_can_accept() const
 
 bool atom::is_vdw_candidate() const
 {
-    auto res_name = res().name();
+    auto res_name = get_residue().name();
     auto n = name();
     auto en = symbol();
 
@@ -450,7 +450,7 @@ vector<atom> atom::attached_hydrogens() const
 {
     vector<atom> hydrogens;
     auto const hydrogen_name_pattern = "H" + name().substr(1, name().size() - 1);
-    for (auto const& a : res().atoms())
+    for (auto const& a : get_residue().atoms())
     {
         if (a.is_hydrogen() && prelude::match(a.name(), hydrogen_name_pattern))
             hydrogens.push_back(a);
@@ -495,7 +495,7 @@ double ring::radius() const
 
 bool ring::is_a_pication_candidate() const
 {
-    string name = res().name();
+    string name = get_residue().name();
     return name == "PHE" || name == "TYR" || (name == "TRP" && pimpl->atoms.size() == 6);
 }
 
@@ -560,7 +560,7 @@ int ionic_group::charge() const
 
 double ionic_group::ionion_energy_q() const
 {
-    string res_name = res().name();
+    string res_name = get_residue().name();
     //                                q  // * number of protons
     if (res_name == "LYS") return 0.640; // * 81;
     if (res_name == "ASP") return 0.380; // * 95;

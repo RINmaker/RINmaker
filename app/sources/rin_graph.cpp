@@ -62,8 +62,8 @@ edge::edge(bond::ss const& bond)
 edge::edge(bond::vdw const& bond)
 {
     auto tmp_pimpl = std::make_shared<impl>();
-    tmp_pimpl->source = bond.source_atom().res().id();
-    tmp_pimpl->target = bond.target_atom().res().id();
+    tmp_pimpl->source = bond.source_atom().get_residue().id();
+    tmp_pimpl->target = bond.target_atom().get_residue().id();
     tmp_pimpl->distance = std::to_string(bond.get_length());
     tmp_pimpl->energy = std::to_string(bond.get_energy());
     tmp_pimpl->interaction = bond.get_interaction();
@@ -80,14 +80,14 @@ edge::edge(bond::vdw const& bond)
 edge::edge(bond::ionic const& bond)
 {
     auto tmp_pimpl = std::make_shared<impl>();
-    tmp_pimpl->source = bond.source_positive().res().id();
-    tmp_pimpl->target = bond.target_negative().res().id();
+    tmp_pimpl->source = bond.source_positive().get_residue().id();
+    tmp_pimpl->target = bond.target_negative().get_residue().id();
     tmp_pimpl->distance = std::to_string(bond.get_length());
     tmp_pimpl->energy = std::to_string(bond.get_energy());
     tmp_pimpl->interaction = bond.get_interaction();
     tmp_pimpl->source_atom = bond.source_positive().name();
     tmp_pimpl->target_atom = bond.target_negative().name();
-    tmp_pimpl->positive = bond.source_positive().res().id();
+    tmp_pimpl->positive = bond.source_positive().get_residue().id();
     tmp_pimpl->angle = cfg::graphml::null;
     tmp_pimpl->donor = cfg::graphml::none;
     tmp_pimpl->cation = cfg::graphml::none;
@@ -98,15 +98,15 @@ edge::edge(bond::ionic const& bond)
 edge::edge(bond::hydrogen const& bond)
 {
     auto tmp_pimpl = std::make_shared<impl>();
-    tmp_pimpl->source = bond.source_atom().res().id();
-    tmp_pimpl->target = bond.target_atom().res().id();
+    tmp_pimpl->source = bond.source_atom().get_residue().id();
+    tmp_pimpl->target = bond.target_atom().get_residue().id();
     tmp_pimpl->distance = std::to_string(bond.get_length());
     tmp_pimpl->energy = std::to_string(bond.get_energy());
     tmp_pimpl->interaction = bond.get_interaction();
     tmp_pimpl->source_atom = bond.source_atom().name();
     tmp_pimpl->target_atom = bond.target_atom().name();
     tmp_pimpl->angle = std::to_string(bond.get_angle());
-    tmp_pimpl->donor = bond.donor().res().id();
+    tmp_pimpl->donor = bond.donor().get_residue().id();
     tmp_pimpl->cation = cfg::graphml::none;
     tmp_pimpl->positive = cfg::graphml::none;
     tmp_pimpl->orientation = cfg::graphml::none;
@@ -116,8 +116,8 @@ edge::edge(bond::hydrogen const& bond)
 edge::edge(bond::pipistack const& bond)
 {
     auto tmp_pimpl = std::make_shared<impl>();
-    tmp_pimpl->source = bond.source_ring().res().id();
-    tmp_pimpl->target = bond.target_ring().res().id();
+    tmp_pimpl->source = bond.source_ring().get_residue().id();
+    tmp_pimpl->target = bond.target_ring().get_residue().id();
     tmp_pimpl->distance = std::to_string(bond.get_length());
     tmp_pimpl->energy = std::to_string(bond.get_energy());
     tmp_pimpl->interaction = bond.get_interaction();
@@ -134,14 +134,14 @@ edge::edge(bond::pipistack const& bond)
 edge::edge(bond::pication const& bond)
 {
     auto tmp_pimpl = std::make_shared<impl>();
-    tmp_pimpl->source = bond.source_ring().res().id();
-    tmp_pimpl->target = bond.target_cation().res().id();
+    tmp_pimpl->source = bond.source_ring().get_residue().id();
+    tmp_pimpl->target = bond.target_cation().get_residue().id();
     tmp_pimpl->distance = std::to_string(bond.get_length());
     tmp_pimpl->energy = std::to_string(bond.get_energy());
     tmp_pimpl->interaction = bond.get_interaction();
     tmp_pimpl->source_atom = bond.source_ring().name();
     tmp_pimpl->target_atom = bond.target_cation().name();
-    tmp_pimpl->cation = bond.target_cation().res().id();
+    tmp_pimpl->cation = bond.target_cation().get_residue().id();
     tmp_pimpl->angle = std::to_string(bond.angle());
     tmp_pimpl->donor = cfg::graphml::none;
     tmp_pimpl->positive = cfg::graphml::none;

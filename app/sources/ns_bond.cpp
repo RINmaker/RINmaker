@@ -27,19 +27,19 @@ bool base::operator>(base const& rhs) const
 // TODO memoize?
 template<typename Entity>
 pair<Entity const*, Entity const*> sort_by_res_id(Entity const& a, Entity const& b)
-{ return a.res().id() < b.res().id() ? make_pair(&a, &b) : make_pair(&b, &a); }
+{ return a.get_residue().id() < b.get_residue().id() ? make_pair(&a, &b) : make_pair(&b, &a); }
 
 generic_bond::generic_bond(parameters const& params, atom const& a, atom const& b) :
-        base(geom::distance(a.res().position(), b.res().position()), 0), // TODO
+        base(geom::distance(a.get_residue().position(), b.get_residue().position()), 0), // TODO
         _source(*sort_by_res_id(a, b).first),
         _target(*sort_by_res_id(a, b).second)
 {}
 
 chemical_entity::aminoacid generic_bond::source() const
-{ return _source.res(); }
+{ return _source.get_residue(); }
 
 chemical_entity::aminoacid generic_bond::target() const
-{ return _target.res(); }
+{ return _target.get_residue(); }
 
 string generic_bond::get_interaction() const
 {
@@ -139,7 +139,7 @@ string ionic::get_type() const
 
 double pication::getKappa(atom const& cation)
 {
-    string res_name = cation.res().name();
+    string res_name = cation.get_residue().name();
 
     if (res_name == "LYS" || res_name == "HIS") return 1.00;
     if (res_name == "ARG") return 0.25;
@@ -149,7 +149,7 @@ double pication::getKappa(atom const& cation)
 
 double pication::getAlpha(ring const& ring)
 {
-    string res_name = ring.res().name();
+    string res_name = ring.get_residue().name();
 
     if (res_name == "PHE" || res_name == "TYR") return 190;
     if (res_name == "TRP") return 150;
@@ -226,8 +226,8 @@ string ss::get_type() const
 
 double vdw::energy(atom const& source_atom, atom const& target_atom)
 {
-    double* source_opts = get_vdw_opsl_values(source_atom.res().name(), source_atom.name(), source_atom.symbol());
-    double* target_opts = get_vdw_opsl_values(target_atom.res().name(), target_atom.name(), target_atom.symbol());
+    double* source_opts = get_vdw_opsl_values(source_atom.get_residue().name(), source_atom.name(), source_atom.symbol());
+    double* target_opts = get_vdw_opsl_values(target_atom.get_residue().name(), target_atom.name(), target_atom.symbol());
 
     double source_sigma = source_opts[1];
     double target_sigma = target_opts[1];
@@ -265,9 +265,9 @@ string vdw::get_type() const
 
 std::shared_ptr<hydrogen const> hydrogen::test(parameters const& params, atom const& acceptor, atom const& donor)
 {
-    if (acceptor.res().satisfies_minimum_separation(donor.res()))
+    if (acceptor.get_residue().satisfies_minimum_separation(donor.get_residue()))
     {
-        if (!(acceptor.res() == donor.res()))
+        if (!(acceptor.get_residue() == donor.get_residue()))
         {
             auto hydrogens = donor.attached_hydrogens();
             for (auto const& h: hydrogens)
@@ -300,7 +300,7 @@ string hydrogen::get_id() const
 
 std::shared_ptr<vdw const> vdw::test(parameters const& params, atom const& a, atom const& b)
 {
-    if (a.res().satisfies_minimum_separation(b.res()) && a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= params.surface_dist_vdw())
+    if (a.get_residue().satisfies_minimum_separation(b.get_residue()) && a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= params.surface_dist_vdw())
         return std::make_shared<vdw const>(a, b);
     return nullptr;
 }
@@ -317,7 +317,7 @@ string vdw::get_id() const
 
 std::shared_ptr<ionic const> ionic::test(parameters const& params, ionic_group const& negative, ionic_group const& positive)
 {
-    if (negative.res().satisfies_minimum_separation(positive.res()) && negative.charge() == -positive.charge())
+    if (negative.get_residue().satisfies_minimum_separation(positive.get_residue()) && negative.charge() == -positive.charge())
         return std::make_shared<ionic const>(negative, positive);
 
     return nullptr;
@@ -334,7 +334,7 @@ string ionic::get_id() const
 
 std::shared_ptr<pication const> pication::test(parameters const& params, atom const& cation, ring const& ring)
 {
-    if (ring.res().satisfies_minimum_separation(cation.res(), params.sequence_separation()))
+    if (ring.get_residue().satisfies_minimum_separation(cation.get_residue(), params.sequence_separation()))
     {
         double theta = 90 - geom::d_angle<3>(ring.normal(), (array<double, 3>) (ring - cation));
         if (theta >= cfg::params::pication_angle) // 45
@@ -360,7 +360,7 @@ std::shared_ptr<pipistack const> pipistack::test(parameters const& params, ring 
     double nn = a.angle_between_normals(b);
     double mn = a.closest_distance_between_atoms(b);
 
-    if (a.res().satisfies_minimum_separation(b.res()) &&
+    if (a.get_residue().satisfies_minimum_separation(b.get_residue()) &&
         (0 <= nn && nn <= cfg::params::pipistack_normal_normal_angle_range) &&
         ((0 <= nc1 && nc1 <= cfg::params::pipistack_normal_centre_angle_range) ||
          (0 <= nc2 && nc2 <= cfg::params::pipistack_normal_centre_angle_range)) &&
@@ -381,7 +381,7 @@ string pipistack::get_id() const
 
 std::shared_ptr<generic_bond const> generic_bond::test(parameters const& params, atom const& a, atom const& b)
 {
-    if (a.res().satisfies_minimum_separation(b.res()))
+    if (a.get_residue().satisfies_minimum_separation(b.get_residue()))
         return std::make_shared<generic_bond const>(params, a, b);;
     return nullptr;
 }
@@ -402,25 +402,25 @@ string generic_bond::get_id_simple() const
 string pipistack::get_id_simple() const
 {
     return "PIPISTACK:" +
-           source_ring().res().id() +
+        source_ring().get_residue().id() +
            ":" +
-           target_ring().res().id();
+        target_ring().get_residue().id();
 }
 
 string pication::get_id_simple() const
 {
     return "PICATION:" +
-           source_ring().res().id() +
+        source_ring().get_residue().id() +
            ":" +
-           target_cation().res().id();
+        target_cation().get_residue().id();
 }
 
 string hydrogen::get_id_simple() const
 {
     return "HYDROGEN:" +
-           source_atom().res().id() +
+        source_atom().get_residue().id() +
            ":" +
-           target_atom().res().id() +
+        target_atom().get_residue().id() +
            ":" +
             hydrogen_atom().name();
 }
@@ -428,17 +428,17 @@ string hydrogen::get_id_simple() const
 string vdw::get_id_simple() const
 {
     return "VDW:" +
-           source_atom().res().id() +
+        source_atom().get_residue().id() +
            ":" +
-           target_atom().res().id();
+        target_atom().get_residue().id();
 }
 
 string ionic::get_id_simple() const
 {
     return "IONIC:" +
-           source_positive().res().id() +
+        source_positive().get_residue().id() +
            ":" +
-           target_negative().res().id();
+        target_negative().get_residue().id();
 }
 
 string ss::get_id_simple() const

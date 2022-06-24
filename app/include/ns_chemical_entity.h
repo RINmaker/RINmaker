@@ -46,7 +46,7 @@ public:
 
     public:
         [[nodiscard]]
-        aminoacid res() const;
+        aminoacid get_residue() const;
     };
 
     friend class aminoacid::component;
