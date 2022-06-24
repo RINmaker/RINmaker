@@ -8,6 +8,9 @@
       <file path="$PROJECT_DIR$/src" />
       <file path="$PROJECT_DIR$/test" />
     </sourceRoots>
+    <libraryRoots>
+      <file path="$PROJECT_DIR$/gemmi" />
+    </libraryRoots>
     <excludeRoots>
       <file path="$PROJECT_DIR$/build" />
       <file path="$PROJECT_DIR$/cmake-build-debug" />
