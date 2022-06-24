@@ -534,10 +534,10 @@ ionic_group::ionic_group(vector<atom> const& atoms, int const& charge, aminoacid
 
 ionic_group::~ionic_group() = default;
 
-int ionic_group::charge() const
+int ionic_group::get_charge() const
 { return pimpl->charge; }
 
-double ionic_group::ionion_energy_q() const
+double ionic_group::get_ionion_energy_q() const
 {
     string res_name = get_residue().get_name();
     //                                q  // * number of protons
@@ -547,10 +547,10 @@ double ionic_group::ionion_energy_q() const
     if (res_name == "ARG") return 0.260; // * 77;
     if (res_name == "GLU") return 0.635; // * 69;
 
-    throw std::invalid_argument("ionic_group::ionion_energy_q(): unsupported residue " + res_name);
+    throw std::invalid_argument("ionic_group::get_ionion_energy_q(): unsupported residue " + res_name);
 }
 
-string ionic_group::name() const
+string ionic_group::get_name() const
 {
     return getNameFromAtoms(pimpl->atoms);
 }

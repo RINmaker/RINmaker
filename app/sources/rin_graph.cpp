@@ -85,8 +85,8 @@ edge::edge(bond::ionic const& bond)
     tmp_pimpl->distance = std::to_string(bond.get_length());
     tmp_pimpl->energy = std::to_string(bond.get_energy());
     tmp_pimpl->interaction = bond.get_interaction();
-    tmp_pimpl->source_atom = bond.source_positive().name();
-    tmp_pimpl->target_atom = bond.target_negative().name();
+    tmp_pimpl->source_atom = bond.source_positive().get_name();
+    tmp_pimpl->target_atom = bond.target_negative().get_name();
     tmp_pimpl->positive = bond.source_positive().get_residue().get_id();
     tmp_pimpl->angle = cfg::graphml::null;
     tmp_pimpl->donor = cfg::graphml::none;

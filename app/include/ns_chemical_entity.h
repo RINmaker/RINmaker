@@ -220,12 +220,12 @@ public:
     ~ionic_group();
 
     [[nodiscard]]
-    int charge() const;
+    int get_charge() const;
 
     [[nodiscard]]
-    double ionion_energy_q() const;
+    double get_ionion_energy_q() const;
 
     [[nodiscard]]
-    std::string name() const;
+    std::string get_name() const;
 };
 }

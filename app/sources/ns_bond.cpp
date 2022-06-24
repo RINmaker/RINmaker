@@ -126,7 +126,7 @@ string hydrogen::get_type() const
 { return "hydrogen"; } // TODO config
 
 ionic::ionic(ionic_group const& negative, ionic_group const& positive) :
-        base(negative.distance(positive), (constant::ion_ion_k * positive.ionion_energy_q() * negative.ionion_energy_q() / (negative.distance(positive)))),
+        base(negative.distance(positive), (constant::ion_ion_k * positive.get_ionion_energy_q() * negative.get_ionion_energy_q() / (negative.distance(positive)))),
         _negative(negative),
         _positive(positive)
 {}
@@ -317,7 +317,7 @@ string vdw::get_id() const
 
 std::shared_ptr<ionic const> ionic::test(parameters const& params, ionic_group const& negative, ionic_group const& positive)
 {
-    if (negative.get_residue().satisfies_minimum_sequence_separation(positive.get_residue()) && negative.charge() == -positive.charge())
+    if (negative.get_residue().satisfies_minimum_sequence_separation(positive.get_residue()) && negative.get_charge() == -positive.get_charge())
         return std::make_shared<ionic const>(negative, positive);
 
     return nullptr;
@@ -327,9 +327,9 @@ string ionic::get_id() const
 {
     return get_id_simple() +
            ":" +
-           source_positive().name() +
+        source_positive().get_name() +
            ":" +
-           target_negative().name();
+        target_negative().get_name();
 }
 
 std::shared_ptr<pication const> pication::test(parameters const& params, atom const& cation, ring const& ring)
