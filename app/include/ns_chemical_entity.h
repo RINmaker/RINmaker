@@ -73,28 +73,28 @@ public:
     std::optional<atom> const& get_beta_carbon() const;
 
     [[nodiscard]]
-    std::optional<ring> const& primary_ring() const;
+    std::optional<ring> const& get_primary_ring() const;
 
     [[nodiscard]]
-    std::optional<ring> const& secondary_ring() const;
+    std::optional<ring> const& get_secondary_ring() const;
 
     [[nodiscard]]
-    std::optional<ionic_group> const& positive_ionic_group() const;
+    std::optional<ionic_group> const& get_positive_ionic_group() const;
 
     [[nodiscard]]
-    std::optional<ionic_group> const& negative_ionic_group() const;
+    std::optional<ionic_group> const& get_negative_ionic_group() const;
 
     [[nodiscard]]
-    std::string const& name() const;
+    std::string const& get_name() const;
 
     [[nodiscard]]
-    std::string const& chain_id() const;
+    std::string const& get_chain_id() const;
 
     [[nodiscard]]
-    std::string const& id() const;
+    std::string const& get_id() const;
 
     [[nodiscard]]
-    int sequence_number() const;
+    int get_sequence_number() const;
 
     bool operator==(aminoacid const& rhs) const;
 
@@ -107,10 +107,10 @@ public:
     explicit operator rin::node() const;
 
     [[nodiscard]]
-    std::string secondary_structure_id() const;
+    std::string get_secondary_structure_id() const;
 
     [[nodiscard]]
-    std::array<double, 3> const& position() const;
+    std::array<double, 3> const& get_position() const;
 };
 
 class atom final : public kdpoint<3>, public aminoacid::component

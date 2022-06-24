@@ -84,11 +84,11 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& structure)
                 tmp_pimpl->cation_vector.push_back(a);
         }
 
-        auto const pos_group = res.positive_ionic_group();
+        auto const pos_group = res.get_positive_ionic_group();
         if (pos_group.has_value())
             positives.push_back(*pos_group);
 
-        auto const neg_group = res.negative_ionic_group();
+        auto const neg_group = res.get_negative_ionic_group();
         if (neg_group.has_value())
             tmp_pimpl->negative_ion_vector.push_back(*neg_group);
 
@@ -103,8 +103,8 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& structure)
             }
         };
 
-        ring_setup(res.primary_ring());
-        ring_setup(res.secondary_ring());
+        ring_setup(res.get_primary_ring());
+        ring_setup(res.get_secondary_ring());
     }
 
     lm::main()->info("hydrogen acceptors: {}", tmp_pimpl->hacceptor_vector.size());

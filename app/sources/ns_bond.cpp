@@ -27,10 +27,10 @@ bool base::operator>(base const& rhs) const
 // TODO memoize?
 template<typename Entity>
 pair<Entity const*, Entity const*> sort_by_res_id(Entity const& a, Entity const& b)
-{ return a.get_residue().id() < b.get_residue().id() ? make_pair(&a, &b) : make_pair(&b, &a); }
+{ return a.get_residue().get_id() < b.get_residue().get_id() ? make_pair(&a, &b) : make_pair(&b, &a); }
 
 generic_bond::generic_bond(parameters const& params, atom const& a, atom const& b) :
-        base(geom::distance(a.get_residue().position(), b.get_residue().position()), 0), // TODO
+        base(geom::distance(a.get_residue().get_position(), b.get_residue().get_position()), 0), // TODO
         _source(*sort_by_res_id(a, b).first),
         _target(*sort_by_res_id(a, b).second)
 {}
@@ -139,7 +139,7 @@ string ionic::get_type() const
 
 double pication::getKappa(atom const& cation)
 {
-    string res_name = cation.get_residue().name();
+    string res_name = cation.get_residue().get_name();
 
     if (res_name == "LYS" || res_name == "HIS") return 1.00;
     if (res_name == "ARG") return 0.25;
@@ -149,7 +149,7 @@ double pication::getKappa(atom const& cation)
 
 double pication::getAlpha(ring const& ring)
 {
-    string res_name = ring.get_residue().name();
+    string res_name = ring.get_residue().get_name();
 
     if (res_name == "PHE" || res_name == "TYR") return 190;
     if (res_name == "TRP") return 150;
@@ -226,8 +226,8 @@ string ss::get_type() const
 
 double vdw::energy(atom const& source_atom, atom const& target_atom)
 {
-    double* source_opts = get_vdw_opsl_values(source_atom.get_residue().name(), source_atom.name(), source_atom.symbol());
-    double* target_opts = get_vdw_opsl_values(target_atom.get_residue().name(), target_atom.name(), target_atom.symbol());
+    double* source_opts = get_vdw_opsl_values(source_atom.get_residue().get_name(), source_atom.name(), source_atom.symbol());
+    double* target_opts = get_vdw_opsl_values(target_atom.get_residue().get_name(), target_atom.name(), target_atom.symbol());
 
     double source_sigma = source_opts[1];
     double target_sigma = target_opts[1];
@@ -394,33 +394,33 @@ string generic_bond::get_id() const
 string generic_bond::get_id_simple() const
 {
     return "GENERICO:" +
-           source().id() +
+        source().get_id() +
            ":" +
-           target().id();
+        target().get_id();
 }
 
 string pipistack::get_id_simple() const
 {
     return "PIPISTACK:" +
-        source_ring().get_residue().id() +
+        source_ring().get_residue().get_id() +
            ":" +
-        target_ring().get_residue().id();
+        target_ring().get_residue().get_id();
 }
 
 string pication::get_id_simple() const
 {
     return "PICATION:" +
-        source_ring().get_residue().id() +
+        source_ring().get_residue().get_id() +
            ":" +
-        target_cation().get_residue().id();
+        target_cation().get_residue().get_id();
 }
 
 string hydrogen::get_id_simple() const
 {
     return "HYDROGEN:" +
-        source_atom().get_residue().id() +
+        source_atom().get_residue().get_id() +
            ":" +
-        target_atom().get_residue().id() +
+        target_atom().get_residue().get_id() +
            ":" +
             hydrogen_atom().name();
 }
@@ -428,17 +428,17 @@ string hydrogen::get_id_simple() const
 string vdw::get_id_simple() const
 {
     return "VDW:" +
-        source_atom().get_residue().id() +
+        source_atom().get_residue().get_id() +
            ":" +
-        target_atom().get_residue().id();
+        target_atom().get_residue().get_id();
 }
 
 string ionic::get_id_simple() const
 {
     return "IONIC:" +
-        source_positive().get_residue().id() +
+        source_positive().get_residue().get_id() +
            ":" +
-        target_negative().get_residue().id();
+        target_negative().get_residue().get_id();
 }
 
 string ss::get_id_simple() const
