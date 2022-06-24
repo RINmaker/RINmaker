@@ -469,11 +469,6 @@ ring::ring(vector<atom> const& atoms, aminoacid const& res) :
 
     tmp_pimpl->atoms = atoms;
 
-    double sum_radii = 0;
-    for (auto const& a: atoms)
-        sum_radii += distance(a);
-    tmp_pimpl->mean_radius = sum_radii / (double) atoms.size();
-
     _position = centre_of_mass(atoms);
 
     // kudos to Giulio Marcolin for the following shortcut

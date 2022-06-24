@@ -45,8 +45,7 @@ struct chemical_entity::ring::impl final
 public:
     std::vector<chemical_entity::atom> atoms;
 
-    std::array<double, 3> normal{};
-    double mean_radius;
+    std::array<double, 3> normal;
 };
 
 struct chemical_entity::ionic_group::impl
