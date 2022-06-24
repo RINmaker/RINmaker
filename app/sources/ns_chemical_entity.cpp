@@ -24,9 +24,7 @@ string get_name_from_atoms(vector<atom> const& atoms, string const& delimiter = 
 }
 
 vector<atom> const& aminoacid::get_atoms() const
-{
-    return pimpl->atoms;
-}
+re{ return pimpl->atoms; }
 
 string const& aminoacid::get_protein_name() const
 { return pimpl->protein_name; }
@@ -72,12 +70,7 @@ bool aminoacid::satisfies_minimum_sequence_separation(aminoacid const& other, in
     if (*this == other)
         return false;
 
-    if (get_chain_id() != other.get_chain_id())
-    {
-        return true;
-    }
-
-    return abs(get_sequence_number() - other.get_sequence_number()) >= minimum_separation;
+    return get_chain_id() != other.get_chain_id() || abs(get_sequence_number() - other.get_sequence_number()) >= minimum_separation;
 }
 
 aminoacid::operator rin::node() const
