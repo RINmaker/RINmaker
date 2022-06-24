@@ -68,19 +68,19 @@ bool aminoacid::operator==(aminoacid const& rhs) const
 bool aminoacid::operator!=(aminoacid const& rhs) const
 { return !(*this == rhs); }
 
-bool aminoacid::satisfies_minimum_separation(aminoacid const& aa, int minimum_separation) const
+bool aminoacid::satisfies_minimum_sequence_separation(aminoacid const& other, int minimum_separation) const
 {
-    if (*this == aa)
+    if (*this == other)
     {
         return false;
     }
 
-    if (pimpl->chain_id != aa.pimpl->chain_id)
+    if (get_chain_id() != other.get_chain_id())
     {
         return true;
     }
 
-    return abs(pimpl->sequence_number - aa.pimpl->sequence_number) >= minimum_separation;
+    return abs(get_sequence_number() - other.get_sequence_number()) >= minimum_separation;
 }
 
 aminoacid::operator rin::node() const

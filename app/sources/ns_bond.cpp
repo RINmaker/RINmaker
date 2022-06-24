@@ -265,7 +265,7 @@ string vdw::get_type() const
 
 std::shared_ptr<hydrogen const> hydrogen::test(parameters const& params, atom const& acceptor, atom const& donor)
 {
-    if (acceptor.get_residue().satisfies_minimum_separation(donor.get_residue()))
+    if (acceptor.get_residue().satisfies_minimum_sequence_separation(donor.get_residue()))
     {
         if (!(acceptor.get_residue() == donor.get_residue()))
         {
@@ -300,7 +300,7 @@ string hydrogen::get_id() const
 
 std::shared_ptr<vdw const> vdw::test(parameters const& params, atom const& a, atom const& b)
 {
-    if (a.get_residue().satisfies_minimum_separation(b.get_residue()) && a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= params.surface_dist_vdw())
+    if (a.get_residue().satisfies_minimum_sequence_separation(b.get_residue()) && a.distance(b) - (a.vdw_radius() + b.vdw_radius()) <= params.surface_dist_vdw())
         return std::make_shared<vdw const>(a, b);
     return nullptr;
 }
@@ -317,7 +317,7 @@ string vdw::get_id() const
 
 std::shared_ptr<ionic const> ionic::test(parameters const& params, ionic_group const& negative, ionic_group const& positive)
 {
-    if (negative.get_residue().satisfies_minimum_separation(positive.get_residue()) && negative.charge() == -positive.charge())
+    if (negative.get_residue().satisfies_minimum_sequence_separation(positive.get_residue()) && negative.charge() == -positive.charge())
         return std::make_shared<ionic const>(negative, positive);
 
     return nullptr;
@@ -334,7 +334,7 @@ string ionic::get_id() const
 
 std::shared_ptr<pication const> pication::test(parameters const& params, atom const& cation, ring const& ring)
 {
-    if (ring.get_residue().satisfies_minimum_separation(cation.get_residue(), params.sequence_separation()))
+    if (ring.get_residue().satisfies_minimum_sequence_separation(cation.get_residue(), params.sequence_separation()))
     {
         double theta = 90 - geom::d_angle<3>(ring.normal(), (array<double, 3>) (ring - cation));
         if (theta >= cfg::params::pication_angle) // 45
@@ -360,7 +360,7 @@ std::shared_ptr<pipistack const> pipistack::test(parameters const& params, ring 
     double nn = a.angle_between_normals(b);
     double mn = a.closest_distance_between_atoms(b);
 
-    if (a.get_residue().satisfies_minimum_separation(b.get_residue()) &&
+    if (a.get_residue().satisfies_minimum_sequence_separation(b.get_residue()) &&
         (0 <= nn && nn <= cfg::params::pipistack_normal_normal_angle_range) &&
         ((0 <= nc1 && nc1 <= cfg::params::pipistack_normal_centre_angle_range) ||
          (0 <= nc2 && nc2 <= cfg::params::pipistack_normal_centre_angle_range)) &&
@@ -381,7 +381,7 @@ string pipistack::get_id() const
 
 std::shared_ptr<generic_bond const> generic_bond::test(parameters const& params, atom const& a, atom const& b)
 {
-    if (a.get_residue().satisfies_minimum_separation(b.get_residue()))
+    if (a.get_residue().satisfies_minimum_sequence_separation(b.get_residue()))
         return std::make_shared<generic_bond const>(params, a, b);;
     return nullptr;
 }

@@ -101,7 +101,7 @@ public:
     bool operator!=(aminoacid const& rhs) const;
 
     [[nodiscard]]
-    bool satisfies_minimum_separation(aminoacid const& aa, int minimum_separation = cfg::params::seq_sep) const;
+    bool satisfies_minimum_sequence_separation(aminoacid const& other, int minimum_separation = cfg::params::seq_sep) const;
 
     [[nodiscard]]
     explicit operator rin::node() const;
