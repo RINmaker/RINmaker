@@ -34,15 +34,6 @@ public:
     std::array<double, 3> pos;
 };
 
-struct chemical_entity::aminoacid::component::impl final
-{
-public:
-    std::weak_ptr<aminoacid::impl> res_impl;
-
-    explicit impl(aminoacid const& res) : res_impl{res.pimpl}
-    {}
-};
-
 struct chemical_entity::atom::impl final
 {
 public:

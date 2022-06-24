@@ -36,11 +36,11 @@ public:
     class component
     {
     private:
-        struct impl;
-        std::shared_ptr<component::impl> pimpl;
+        std::weak_ptr<aminoacid::impl> res_impl;
 
     protected:
-        explicit component(aminoacid const& res);
+        explicit component(aminoacid const& res) : res_impl{res.pimpl}
+        {}
 
     public:
         [[nodiscard]]

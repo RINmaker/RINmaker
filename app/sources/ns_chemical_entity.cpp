@@ -230,17 +230,13 @@ aminoacid aminoacid::component::res() const
 
     // restore all of its information
     // TODO check and throw exception?
-    // to me it is redundant.
-    res.pimpl = pimpl->res_impl.lock();
+    // to me it is redundant, because weak_ptr already throws iff not valid when calling .lock()
+    res.pimpl = res_impl.lock();
     return res;
 }
 
 
 aminoacid::aminoacid() = default;
-
-
-aminoacid::component::component(aminoacid const& res) : pimpl{std::make_shared<component::impl>(res)}
-{}
 
 aminoacid::~aminoacid() = default;
 
