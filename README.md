@@ -1,9 +1,17 @@
 # RINmaker
 
+## Clone this repo
+
+```bash
+git clone -b dev https://github.com/RINmaker/RINmaker.git
+git submodules init
+git submodules update
+```
+
 ## Configure project:
 
 ```bash
-cmake -S . -B your-build-dir
+cmake -S . -B build
 ```
 
 ## App
@@ -11,13 +19,13 @@ cmake -S . -B your-build-dir
 #### Build
 
 ```bash
-cmake --build your-build-dir --target RINmaker
+cmake --build build --target RINmaker
 ```
 
 #### Run
 
 ```bash
-./your-build-dir/app/RINmaker -h
+./build/app/RINmaker -h
 ```
 
 ## Test
@@ -25,11 +33,11 @@ cmake --build your-build-dir --target RINmaker
 #### Build
 
 ```bash
-cmake --build your-build-dir --target RINmaker_test
+cmake --build build --target RINmaker_test
 ```
 
 #### Run
 
 ```bash
-./your-build-dir/test/RINmaker_test
+./build/test/RINmaker_test
 ```
