@@ -4,8 +4,12 @@
 
 ```bash
 git clone -b dev https://github.com/RINmaker/RINmaker.git
-git submodules init
-git submodules update
+```
+
+```bash
+cd RINmaker
+git submodule init
+git submodule update
 ```
 
 ## Configure project:
