@@ -309,9 +309,9 @@ string vdw::get_id() const
 {
     return get_id_simple() +
            ":" +
-           source_atom().name() +
+           source_atom().get_name() +
            ":" +
-           target_atom().name();
+           target_atom().get_name();
 }
 
 
