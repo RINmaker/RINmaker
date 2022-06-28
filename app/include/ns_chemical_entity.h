@@ -13,7 +13,6 @@
 #include <optional>
 
 #include "config.h"
-
 #include "rin_graph.h"
 
 #include "spatial/kdpoint.h"
@@ -175,7 +174,8 @@ public:
     [[nodiscard]]
     bool is_main_chain() const;
 
-    [[nodiscard]] int get_atom_number() const;
+    [[nodiscard]]
+    int get_atom_number() const;
 };
 
 class ring final : public kdpoint<3>, public aminoacid::component
