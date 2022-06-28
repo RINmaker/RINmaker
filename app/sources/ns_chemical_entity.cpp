@@ -426,7 +426,7 @@ vector<atom> atom::get_attached_hydrogens() const
     auto const hydrogen_name_pattern = "H" + get_name().substr(1, get_name().size() - 1);
     for (auto const& atom : get_residue().get_atoms())
     {
-        if (atom.is_hydrogen() && prelude::match(atom.get_name(), hydrogen_name_pattern))
+        if (atom.is_hydrogen() && atom.get_name().find(hydrogen_name_pattern) != std::string::npos)
             hydrogens.push_back(atom);
     }
 

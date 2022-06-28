@@ -53,9 +53,4 @@ public:
         }
     };
 };
-
-inline static bool match(std::string const &str, std::string const &pattern)
-{
-    return str.find(pattern) != std::string::npos;
-}
 }
