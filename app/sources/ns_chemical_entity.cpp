@@ -107,18 +107,26 @@ array<double, 3> center_of_mass(vector<atom> const& atoms)
 }
 
 void assert_ring_correctness(
-        string const& name,
-        uint32_t line_number,
-        vector<string> const& expected_atoms,
-        vector<atom> const& found_atoms)
+    gemmi::Residue const& residue,
+    gemmi::Chain const& chain,
+    gemmi::Model const& model,
+    gemmi::Structure const& protein,
+    vector<string> const& expected_atoms,
+    vector<atom> const& found_atoms)
 {
     if (expected_atoms.size() != found_atoms.size())
     {
         string expected_atoms_str = join_strings(expected_atoms, ",");
         string found_atoms_str = get_name_from_atoms(found_atoms, ",");
-        string exception_description =
-                "line number: " + std::to_string(line_number) + ", aminoacid: " + name +
-                " - expected aromatic ring: " + expected_atoms_str + ", found: " + found_atoms_str;
+
+        auto const exception_description =
+            "in: residue=" + residue.name +
+            " chain=" + chain.name +
+            " model=" + model.name +
+            " structure= " + protein.name +
+            " , found a malformed aromatic ring: expected=" + expected_atoms_str +
+            " actual=" + (found_atoms_str.empty() ? "none" : found_atoms_str);
+
         throw std::invalid_argument(exception_description);
     }
 }
@@ -194,13 +202,14 @@ chemical_entity::aminoacid::aminoacid(
     if (n_of_rings >= 1)
     {
         // fixme find a way to locate line numbers from gemmi
-        assert_ring_correctness(_pimpl->name, -1, ring1_names, ring1);
+        assert_ring_correctness(residue, chain, model, protein, ring1_names, ring1);
+
         _pimpl->primary_ring = ring(ring1, *this);
     }
     if (n_of_rings == 2)
     {
         // fixme find a way to locate line numbers from gemmi
-        assert_ring_correctness(_pimpl->name, -1, ring2_names, ring2);
+        assert_ring_correctness(residue, chain, model, protein, ring2_names, ring2);
         _pimpl->secondary_ring = ring(ring2, *this);
     }
 
