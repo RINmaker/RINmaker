@@ -12,6 +12,19 @@ using std::vector, std::array, std::string, std::unique_ptr, std::make_unique, s
 
 using chemical_entity::aminoacid, chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group;
 
+string join_strings(std::vector<std::string> const& values, string const& delimiter)
+{
+    string out;
+    for (string const& value: values)
+    {
+        if (!out.empty())
+            out += delimiter;
+        out += value;
+    }
+
+    return out;
+}
+
 string get_name_from_atoms(vector<atom> const& atoms, string const& delimiter = ":")
 {
     vector<string> atoms_name;

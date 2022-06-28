@@ -197,16 +197,3 @@ optional<arguments> read_args(int argc, const char* argv[])
 
     return arguments{params, pdb_path, out_dir, log_dir};
 }
-
-string join_strings(std::vector<std::string> const& values, string const& delimiter)
-{
-    string out;
-    for (string const& value: values)
-    {
-        if (!out.empty())
-            out += delimiter;
-        out += value;
-    }
-
-    return out;
-}
