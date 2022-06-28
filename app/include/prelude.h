@@ -54,29 +54,6 @@ public:
     };
 };
 
-// trim from start (in place)
-// https://stackoverflow.com/a/217605
-inline static void ltrim(std::string &s)
-{
-    s.erase(s.begin(), find_if(s.begin(), s.end(), [](unsigned char ch)
-    { return !isspace(ch); }));
-}
-
-// trim from both ends
-// https://stackoverflow.com/a/217605
-inline static void rtrim(std::string &s)
-{
-    s.erase(find_if(s.rbegin(), s.rend(), [](unsigned char ch)
-    { return !isspace(ch); }).base(), s.end());
-}
-
-inline static std::string trim(std::string s)
-{
-    ltrim(s);
-    rtrim(s);
-    return s;
-}
-
 inline static bool match(std::string const &str, std::string const &pattern)
 {
     return str.find(pattern) != std::string::npos;
