@@ -201,14 +201,11 @@ chemical_entity::aminoacid::aminoacid(
 
     if (n_of_rings >= 1)
     {
-        // fixme find a way to locate line numbers from gemmi
         assert_ring_correctness(residue, chain, model, protein, ring1_names, ring1);
-
         _pimpl->primary_ring = ring(ring1, *this);
     }
     if (n_of_rings == 2)
     {
-        // fixme find a way to locate line numbers from gemmi
         assert_ring_correctness(residue, chain, model, protein, ring2_names, ring2);
         _pimpl->secondary_ring = ring(ring2, *this);
     }
