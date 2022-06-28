@@ -4,8 +4,6 @@
 
 #include "energy.h"
 
-#include "utils.h"
-
 #include "private/impl_chemical_entity.h"
 
 using std::vector, std::array, std::string, std::unique_ptr, std::make_unique, std::to_string, std::invalid_argument;
