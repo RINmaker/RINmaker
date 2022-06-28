@@ -291,6 +291,7 @@ double atom::get_mass() const
     if (element == "O") return 15.994;
     if (element == "S") return 32.065;
 
+    //return _pimpl->record.element.weight();
     throw std::invalid_argument("atom::get_mass(): unsupported element " + element);
 }
 
@@ -302,6 +303,7 @@ double atom::get_vdw_radius() const
     if (element == "O") return 1.55;
     if (element == "N") return 1.60;
 
+    //return _pimpl->record.element.vdw_r();
     throw std::invalid_argument("atom::get_vdw_radius(): unsupported element " + element);
 }
 
