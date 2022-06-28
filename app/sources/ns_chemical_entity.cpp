@@ -4,7 +4,6 @@
 
 #include "energy.h"
 
-#include "prelude.h"
 #include "utils.h"
 
 #include "private/impl_chemical_entity.h"

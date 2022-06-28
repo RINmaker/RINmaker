@@ -9,8 +9,6 @@
 #include <string>
 #include <memory>
 
-#include "prelude.h"
-
 #include "rin_graph.h"
 
 #include "ns_chemical_entity.h"

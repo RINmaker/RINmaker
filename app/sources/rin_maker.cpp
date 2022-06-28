@@ -3,6 +3,7 @@
 #include <string>
 #include <list>
 #include <map>
+#include <set>
 #include <unordered_map>
 
 #include <functional>
@@ -32,7 +33,7 @@ using std::vector, std::string, std::list, std::set, std::map, std::unordered_ma
         std::shared_ptr, std::make_shared, std::make_unique, std::is_base_of, std::ifstream, std::runtime_error,
         std::pair, std::nullopt;
 
-using rin::parameters, prelude::interval;
+using rin::parameters;
 
 
 /*rin::maker::maker(string const& pdb_name,
