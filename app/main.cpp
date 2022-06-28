@@ -49,7 +49,7 @@ int main(int argc, const char* argv[])
         return 1;
     }
 
-    catch (runtime_error& e)
+    catch (exception& e)
     {
         cerr << "exception caught: " << e.what() << endl;
         return 1;
