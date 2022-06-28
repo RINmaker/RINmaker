@@ -35,12 +35,6 @@ using std::vector, std::string, std::list, std::set, std::map, std::unordered_ma
 
 using rin::parameters;
 
-
-/*rin::maker::maker(string const& pdb_name,
-                  vector<record::atom> const& atom_records,
-                  vector<record::ss> const& ssbond_records,
-                  vector<record::helix> const& helix_records,
-                  vector<record::sheet_piece> const& sheet_records)*/
 rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& structure)
 {
     // we are filling the private implementation piece-by-piece, so we need a non-const temporary here
