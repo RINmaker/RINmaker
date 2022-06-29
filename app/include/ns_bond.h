@@ -266,16 +266,7 @@ private:
     std::string const _target_name;
 
 public:
-    explicit ss(gemmi::Connection const& connection) :
-        base(connection.reported_distance, 167),
-        _source_seq{connection.partner1.res_id.seqid.num.value},
-        _source_name{connection.partner1.res_id.name},
-        _source_chain{connection.partner1.chain_name},
-
-        _target_seq{connection.partner2.res_id.seqid.num.value},
-        _target_name{connection.partner2.res_id.name},
-        _target_chain{connection.partner2.chain_name}
-    {}
+    explicit ss(gemmi::Connection const& connection);
 
     [[nodiscard]]
     std::string source_id() const;

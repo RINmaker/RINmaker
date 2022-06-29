@@ -193,6 +193,17 @@ double pipistack::angle() const
 string pipistack::get_interaction() const
 { return "PIPISTACK:SC_SC"; }
 
+ss::ss(gemmi::Connection const& connection) :
+    base(connection.reported_distance, 167),
+    _source_seq{connection.partner1.res_id.seqid.num.value},
+    _source_name{connection.partner1.res_id.name},
+    _source_chain{connection.partner1.chain_name},
+
+    _target_seq{connection.partner2.res_id.seqid.num.value},
+    _target_name{connection.partner2.res_id.name},
+    _target_chain{connection.partner2.chain_name}
+{}
+
 string ss::source_id() const
 { return _source_chain + ":" + std::to_string(_source_seq) + ":_:" + _source_name; }
 
