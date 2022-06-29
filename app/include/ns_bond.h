@@ -66,10 +66,10 @@ public:
     generic_bond(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     [[nodiscard]]
-    chemical_entity::aminoacid source() const;
+    chemical_entity::aminoacid get_source() const;
 
     [[nodiscard]]
-    chemical_entity::aminoacid target() const;
+    chemical_entity::aminoacid get_target() const;
 
     [[nodiscard]]
     std::string get_interaction() const override;
@@ -105,21 +105,21 @@ public:
     hydrogen(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const& hydrogen, double angle);
 
     [[nodiscard]]
-    chemical_entity::atom const& acceptor() const;
+    chemical_entity::atom const& get_acceptor() const;
 
     [[nodiscard]]
-    chemical_entity::atom const& donor() const;
+    chemical_entity::atom const& get_donor() const;
 
     [[nodiscard]]
-    chemical_entity::atom const& source_atom() const
-    { return acceptor(); }
+    chemical_entity::atom const& get_source_atom() const
+    { return get_acceptor(); }
 
     [[nodiscard]]
-    chemical_entity::atom const& target_atom() const
-    { return donor(); }
+    chemical_entity::atom const& get_target_atom() const
+    { return get_donor(); }
 
     [[nodiscard]]
-    chemical_entity::atom const& hydrogen_atom() const;
+    chemical_entity::atom const& get_hydrogen_atom() const;
 
     [[nodiscard]]
     double get_angle() const;
@@ -150,11 +150,11 @@ public:
     ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive);
 
     [[nodiscard]]
-    chemical_entity::ionic_group const& source_positive() const
+    chemical_entity::ionic_group const& get_source_positive() const
     { return _positive; }
 
     [[nodiscard]]
-    chemical_entity::ionic_group const& target_negative() const
+    chemical_entity::ionic_group const& get_target_negative() const
     { return _negative; }
 
     [[nodiscard]]
@@ -185,15 +185,15 @@ public:
     pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle);
 
     [[nodiscard]]
-    chemical_entity::ring const& source_ring() const
+    chemical_entity::ring const& get_source_ring() const
     { return _ring; }
 
     [[nodiscard]]
-    chemical_entity::atom const& target_cation() const
+    chemical_entity::atom const& get_target_cation() const
     { return _cation; }
 
     [[nodiscard]]
-    double angle() const;
+    double get_angle() const;
 
     [[nodiscard]]
     std::string get_interaction() const override;
@@ -230,15 +230,15 @@ public:
     static double energy(double angle);
 
     [[nodiscard]]
-    chemical_entity::ring const& source_ring() const
+    chemical_entity::ring const& get_source_ring() const
     { return _source_ring; }
 
     [[nodiscard]]
-    chemical_entity::ring const& target_ring() const
+    chemical_entity::ring const& get_target_ring() const
     { return _target_ring; }
 
     [[nodiscard]]
-    double angle() const;
+    double get_angle() const;
 
     [[nodiscard]]
     std::string get_interaction() const override;
@@ -269,10 +269,10 @@ public:
     explicit ss(gemmi::Connection const& connection);
 
     [[nodiscard]]
-    std::string source_id() const;
+    std::string get_source_id() const;
 
     [[nodiscard]]
-    std::string target_id() const;
+    std::string get_target_id() const;
 
     [[nodiscard]]
     std::string get_interaction() const override;
@@ -302,11 +302,11 @@ public:
     vdw(chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     [[nodiscard]]
-    chemical_entity::atom const& source_atom() const
+    chemical_entity::atom const& get_source_atom() const
     { return _source_atom; }
 
     [[nodiscard]]
-    chemical_entity::atom const& target_atom() const
+    chemical_entity::atom const& get_target_atom() const
     { return _target_atom; }
 
     [[nodiscard]]

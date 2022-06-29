@@ -34,10 +34,10 @@ generic_bond::generic_bond(parameters const& params, atom const& a, atom const& 
         _target(a < b ? b : a)
 {}
 
-chemical_entity::aminoacid generic_bond::source() const
+chemical_entity::aminoacid generic_bond::get_source() const
 { return _source.get_residue(); }
 
-chemical_entity::aminoacid generic_bond::target() const
+chemical_entity::aminoacid generic_bond::get_target() const
 { return _target.get_residue(); }
 
 string generic_bond::get_interaction() const
@@ -96,15 +96,15 @@ hydrogen::hydrogen(atom const& acceptor, atom const& donor, atom const& hydrogen
         _angle(angle)
 {}
 
-atom const& hydrogen::acceptor() const
+atom const& hydrogen::get_acceptor() const
 { return _acceptor; }
 
-atom const& hydrogen::donor() const
+atom const& hydrogen::get_donor() const
 { return _donor; }
 
 
 
-atom const& hydrogen::hydrogen_atom() const
+atom const& hydrogen::get_hydrogen_atom() const
 { return _hydrogen; }
 
 double hydrogen::get_angle() const
@@ -165,7 +165,7 @@ pication::pication(ring const& ring, atom const& cation, double angle) :
         _angle(angle)
 {}
 
-double pication::angle() const
+double pication::get_angle() const
 { return _angle; }
 
 string pication::get_interaction() const
@@ -186,7 +186,7 @@ pipistack::pipistack(ring const& a, ring const& b, double angle) :
         _angle(angle)
 {}
 
-double pipistack::angle() const
+double pipistack::get_angle() const
 { return _angle; }
 
 string pipistack::get_interaction() const
@@ -203,10 +203,10 @@ ss::ss(gemmi::Connection const& connection) :
     _target_chain{connection.partner2.chain_name}
 {}
 
-string ss::source_id() const
+string ss::get_source_id() const
 { return _source_chain + ":" + std::to_string(_source_seq) + ":_:" + _source_name; }
 
-string ss::target_id() const
+string ss::get_target_id() const
 { return _target_chain + ":" + std::to_string(_target_seq) + ":_:" + _target_name; }
 
 string ss::get_interaction() const
@@ -281,9 +281,9 @@ string hydrogen::get_id() const
 {
     return get_id_simple() +
            ":" +
-        source_atom().get_name() +
+        get_source_atom().get_name() +
            ":" +
-        target_atom().get_name();
+        get_target_atom().get_name();
 }
 
 std::shared_ptr<vdw const> vdw::test(parameters const& params, atom const& a, atom const& b)
@@ -297,9 +297,9 @@ string vdw::get_id() const
 {
     return get_id_simple() +
            ":" +
-           source_atom().get_name() +
+           get_source_atom().get_name() +
            ":" +
-           target_atom().get_name();
+           get_target_atom().get_name();
 }
 
 
@@ -315,9 +315,9 @@ string ionic::get_id() const
 {
     return get_id_simple() +
            ":" +
-        source_positive().get_name() +
+        get_source_positive().get_name() +
            ":" +
-        target_negative().get_name();
+        get_target_negative().get_name();
 }
 
 std::shared_ptr<pication const> pication::test(parameters const& params, atom const& cation, ring const& ring)
@@ -336,9 +336,9 @@ string pication::get_id() const
 {
     return get_id_simple() +
            ":" +
-        source_ring().get_name() +
+        get_source_ring().get_name() +
            ":" +
-        target_cation().get_name();
+        get_target_cation().get_name();
 }
 
 std::shared_ptr<pipistack const> pipistack::test(parameters const& params, ring const& a, ring const& b)
@@ -362,9 +362,9 @@ string pipistack::get_id() const
 {
     return get_id_simple() +
            ":" +
-        source_ring().get_name() +
+        get_source_ring().get_name() +
            ":" +
-        target_ring().get_name();
+        get_target_ring().get_name();
 }
 
 std::shared_ptr<generic_bond const> generic_bond::test(parameters const& params, atom const& a, atom const& b)
@@ -382,54 +382,54 @@ string generic_bond::get_id() const
 string generic_bond::get_id_simple() const
 {
     return "GENERICO:" +
-        source().get_id() +
+        get_source().get_id() +
            ":" +
-        target().get_id();
+        get_target().get_id();
 }
 
 string pipistack::get_id_simple() const
 {
     return "PIPISTACK:" +
-        source_ring().get_residue().get_id() +
+        get_source_ring().get_residue().get_id() +
            ":" +
-        target_ring().get_residue().get_id();
+        get_target_ring().get_residue().get_id();
 }
 
 string pication::get_id_simple() const
 {
     return "PICATION:" +
-        source_ring().get_residue().get_id() +
+        get_source_ring().get_residue().get_id() +
            ":" +
-        target_cation().get_residue().get_id();
+        get_target_cation().get_residue().get_id();
 }
 
 string hydrogen::get_id_simple() const
 {
     return "HYDROGEN:" +
-        source_atom().get_residue().get_id() +
+        get_source_atom().get_residue().get_id() +
            ":" +
-        target_atom().get_residue().get_id() +
+        get_target_atom().get_residue().get_id() +
            ":" +
-        hydrogen_atom().get_name();
+        get_hydrogen_atom().get_name();
 }
 
 string vdw::get_id_simple() const
 {
     return "VDW:" +
-        source_atom().get_residue().get_id() +
+           get_source_atom().get_residue().get_id() +
            ":" +
-        target_atom().get_residue().get_id();
+        get_target_atom().get_residue().get_id();
 }
 
 string ionic::get_id_simple() const
 {
     return "IONIC:" +
-        source_positive().get_residue().get_id() +
+        get_source_positive().get_residue().get_id() +
            ":" +
-        target_negative().get_residue().get_id();
+        get_target_negative().get_residue().get_id();
 }
 
 string ss::get_id_simple() const
 {
-    return "SS:" + source_id() + ":" + target_id();
+    return "SS:" + get_source_id() + ":" + get_target_id();
 }
