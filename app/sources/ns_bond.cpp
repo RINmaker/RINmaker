@@ -29,9 +29,9 @@ bool operator<(Entity const& a, Entity const& b)
 { return a.get_residue().get_id() < b.get_residue().get_id(); }
 
 generic_bond::generic_bond(parameters const& params, atom const& a, atom const& b) :
-        base(geom::distance(a.get_residue().get_position(), b.get_residue().get_position()), 0), // TODO
-        _source(a < b ? a : b),
-        _target(a < b ? b : a)
+    base(geom::distance(a.get_residue().get_position(), b.get_residue().get_position()), 0), // todo should be != 0 ?
+    _source(a < b ? a : b),
+    _target(a < b ? b : a)
 {}
 
 chemical_entity::aminoacid generic_bond::get_source() const
@@ -41,21 +41,19 @@ chemical_entity::aminoacid generic_bond::get_target() const
 { return _target.get_residue(); }
 
 string generic_bond::get_interaction() const
-{
-    return "GENERIC:" + _source.get_name();
-}
+{ return "GENERIC:" + _source.get_name(); }
 
 //Returns a pair of Sigmaij Epsilonij
 pair<double, double> hydrogen::getSigmaEpsilon(atom const& donor, atom const& acceptor)
 {
     std::function<bool(string const&, int, string const&, int)> compare =
-            [&](string const& donor_element, int donor_charge, string const& acceptor_element, int acceptor_charge)
-            {
-                return donor.get_symbol() == donor_element
-                       && donor.get_charge() == donor_charge
-                       && acceptor.get_symbol() == acceptor_element
-                       && acceptor.get_charge() == acceptor_charge;
-            };
+        [&](string const& donor_element, int donor_charge, string const& acceptor_element, int acceptor_charge)
+        {
+            return donor.get_symbol() == donor_element
+                && donor.get_charge() == donor_charge
+                && acceptor.get_symbol() == acceptor_element
+                && acceptor.get_charge() == acceptor_charge;
+        };
 
     if (compare("N", 0, "N", 0)) return std::make_pair(1.99, -3.00);
     if (compare("N", 0, "O", 0)) return std::make_pair(1.89, -3.50);
@@ -89,11 +87,11 @@ double hydrogen::energy(atom const& donor, atom const& acceptor, atom const& hyd
 }
 
 hydrogen::hydrogen(atom const& acceptor, atom const& donor, atom const& hydrogen, double angle) :
-        base(acceptor.distance(donor), energy(donor, acceptor, hydrogen)),
-        _acceptor(acceptor),
-        _donor(donor),
-        _hydrogen(hydrogen),
-        _angle(angle)
+    base(acceptor.distance(donor), energy(donor, acceptor, hydrogen)),
+    _acceptor(acceptor),
+    _donor(donor),
+    _hydrogen(hydrogen),
+    _angle(angle)
 {}
 
 atom const& hydrogen::get_acceptor() const
@@ -101,8 +99,6 @@ atom const& hydrogen::get_acceptor() const
 
 atom const& hydrogen::get_donor() const
 { return _donor; }
-
-
 
 atom const& hydrogen::get_hydrogen_atom() const
 { return _hydrogen; }
@@ -119,9 +115,9 @@ string hydrogen::get_interaction() const
 }
 
 ionic::ionic(ionic_group const& negative, ionic_group const& positive) :
-        base(negative.distance(positive), (constant::ion_ion_k * positive.get_ionion_energy_q() * negative.get_ionion_energy_q() / (negative.distance(positive)))),
-        _negative(negative),
-        _positive(positive)
+    base(negative.distance(positive), (constant::ion_ion_k * positive.get_ionion_energy_q() * negative.get_ionion_energy_q() / (negative.distance(positive)))),
+    _negative(negative),
+    _positive(positive)
 {}
 
 string ionic::get_interaction() const
@@ -159,10 +155,10 @@ double pication::energy(ring const& ring, atom const& cation)
 }
 
 pication::pication(ring const& ring, atom const& cation, double angle) :
-        base(ring.distance(cation), energy(ring, cation)),
-        _cation(cation),
-        _ring(ring),
-        _angle(angle)
+    base(ring.distance(cation), energy(ring, cation)),
+    _cation(cation),
+    _ring(ring),
+    _angle(angle)
 {}
 
 double pication::get_angle() const
@@ -178,12 +174,10 @@ double pipistack::energy(double angle)
 }
 
 pipistack::pipistack(ring const& a, ring const& b, double angle) :
-        base(a.distance(b),energy(angle)),
-
-        _source_ring(a < b ? a : b),
-        _target_ring(a < b ? b : a),
-
-        _angle(angle)
+    base(a.distance(b),energy(angle)),
+    _source_ring(a < b ? a : b),
+    _target_ring(a < b ? b : a),
+    _angle(angle)
 {}
 
 double pipistack::get_angle() const
@@ -237,10 +231,9 @@ double vdw::energy(atom const& source_atom, atom const& target_atom)
 }
 
 vdw::vdw(atom const& a, atom const& b) :
-        base(a.distance(b), energy(a < b ? a : b, a < b ? b : a)),
-
-        _source_atom(a < b ? a : b),
-        _target_atom(a < b ? b : a)
+    base(a.distance(b), energy(a < b ? a : b, a < b ? b : a)),
+    _source_atom(a < b ? a : b),
+    _target_atom(a < b ? b : a)
 {}
 
 string vdw::get_interaction() const
@@ -280,9 +273,9 @@ std::shared_ptr<hydrogen const> hydrogen::test(parameters const& params, atom co
 string hydrogen::get_id() const
 {
     return get_id_simple() +
-           ":" +
+        ":" +
         get_source_atom().get_name() +
-           ":" +
+        ":" +
         get_target_atom().get_name();
 }
 
@@ -296,10 +289,10 @@ std::shared_ptr<vdw const> vdw::test(parameters const& params, atom const& a, at
 string vdw::get_id() const
 {
     return get_id_simple() +
-           ":" +
-           get_source_atom().get_name() +
-           ":" +
-           get_target_atom().get_name();
+        ":" +
+        get_source_atom().get_name() +
+        ":" +
+        get_target_atom().get_name();
 }
 
 
@@ -314,9 +307,9 @@ std::shared_ptr<ionic const> ionic::test(parameters const& params, ionic_group c
 string ionic::get_id() const
 {
     return get_id_simple() +
-           ":" +
+        ":" +
         get_source_positive().get_name() +
-           ":" +
+        ":" +
         get_target_negative().get_name();
 }
 
@@ -335,9 +328,9 @@ std::shared_ptr<pication const> pication::test(parameters const& params, atom co
 string pication::get_id() const
 {
     return get_id_simple() +
-           ":" +
+        ":" +
         get_source_ring().get_name() +
-           ":" +
+        ":" +
         get_target_cation().get_name();
 }
 
@@ -361,9 +354,9 @@ std::shared_ptr<pipistack const> pipistack::test(parameters const& params, ring 
 string pipistack::get_id() const
 {
     return get_id_simple() +
-           ":" +
+        ":" +
         get_source_ring().get_name() +
-           ":" +
+        ":" +
         get_target_ring().get_name();
 }
 
@@ -375,15 +368,13 @@ std::shared_ptr<generic_bond const> generic_bond::test(parameters const& params,
 }
 
 string generic_bond::get_id() const
-{
-    return get_id_simple();
-}
+{ return get_id_simple(); }
 
 string generic_bond::get_id_simple() const
 {
-    return "GENERICO:" +
+    return "GENERIC:" +
         get_source().get_id() +
-           ":" +
+        ":" +
         get_target().get_id();
 }
 
@@ -391,7 +382,7 @@ string pipistack::get_id_simple() const
 {
     return "PIPISTACK:" +
         get_source_ring().get_residue().get_id() +
-           ":" +
+        ":" +
         get_target_ring().get_residue().get_id();
 }
 
@@ -399,7 +390,7 @@ string pication::get_id_simple() const
 {
     return "PICATION:" +
         get_source_ring().get_residue().get_id() +
-           ":" +
+        ":" +
         get_target_cation().get_residue().get_id();
 }
 
@@ -407,17 +398,17 @@ string hydrogen::get_id_simple() const
 {
     return "HYDROGEN:" +
         get_source_atom().get_residue().get_id() +
-           ":" +
+        ":" +
         get_target_atom().get_residue().get_id() +
-           ":" +
+        ":" +
         get_hydrogen_atom().get_name();
 }
 
 string vdw::get_id_simple() const
 {
     return "VDW:" +
-           get_source_atom().get_residue().get_id() +
-           ":" +
+        get_source_atom().get_residue().get_id() +
+        ":" +
         get_target_atom().get_residue().get_id();
 }
 
@@ -425,11 +416,9 @@ string ionic::get_id_simple() const
 {
     return "IONIC:" +
         get_source_positive().get_residue().get_id() +
-           ":" +
+        ":" +
         get_target_negative().get_residue().get_id();
 }
 
 string ss::get_id_simple() const
-{
-    return "SS:" + get_source_id() + ":" + get_target_id();
-}
+{ return "SS:" + get_source_id() + ":" + get_target_id(); }
