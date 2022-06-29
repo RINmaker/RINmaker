@@ -217,54 +217,26 @@ chemical_entity::aminoacid::aminoacid(
         _pimpl->negative_ionic_group = ionic_group(negative, -1, *this);
 
     _pimpl->protein_name = protein.name;
-
-    if (protein.helices.empty() && protein.sheets.empty())
-        _pimpl->secondary_structure_name = "NONE";
-    else
-    {
-        _pimpl->secondary_structure_name = "LOOP";
-
-        // fixme the following loops should go outside this constructor
-        // these loops should NOT be performed every time, but I have observed that the performance
-        // impact is unnoticeable. I will extract them in the future, for now they stay here.
-
-        int helix_num = 1;
-        for (auto const& helix : protein.helices)
-        {
-            auto cra_start = model.find_cra(helix.start);
-            auto cra_end = model.find_cra(helix.end);
-
-            auto seq_start = cra_start.residue->seqid.num.value;
-            auto seq_end = cra_end.residue->seqid.num.value;
-
-            auto chain_start = cra_start.chain->name;
-            auto chain_end = cra_end.chain->name;
-
-            if (get_chain_id() == chain_start && seq_start <= get_sequence_number() && get_sequence_number() <= seq_end)
-                _pimpl->secondary_structure_name = "HELIX:" + std::to_string(helix_num) + ":" + std::to_string(1 + get_sequence_number() - seq_start);
-
-            ++helix_num;
-        }
-
-        for (auto const& sheet : protein.sheets)
-        {
-            for (auto const& strand : sheet.strands)
-            {
-                auto cra_start = model.find_cra(strand.start);
-                auto cra_end = model.find_cra(strand.end);
-
-                auto seq_start = cra_start.residue->seqid.num.value;
-                auto seq_end = cra_end.residue->seqid.num.value;
-
-                auto chain_start = cra_start.chain->name;
-                auto chain_end = cra_end.chain->name;
-
-                if (get_chain_id() == chain_start && seq_start <= get_sequence_number() && get_sequence_number() <= seq_end)
-                    _pimpl->secondary_structure_name = "SHEET:" + strand.name + ":" + std::to_string(1 + get_sequence_number() - seq_start);
-            }
-        }
-    }
+    _pimpl->secondary_structure_name = "NONE";
 }
+
+aminoacid::aminoacid(
+    gemmi::Residue const& residue,
+    gemmi::Chain const& chain,
+    gemmi::Model const& model,
+    gemmi::Structure const& protein,
+    std::optional<gemmi::Helix> const& helix) :
+    aminoacid(residue, chain, model, protein)
+{ _pimpl->secondary_structure_name = helix.has_value() ? "HELIX" : "LOOP"; }    // fixme find a good name format
+
+aminoacid::aminoacid(
+    gemmi::Residue const& residue,
+    gemmi::Chain const& chain,
+    gemmi::Model const& model,
+    gemmi::Structure const& protein,
+    std::optional<gemmi::Sheet::Strand> const& strand) :
+    aminoacid(residue, chain, model, protein)
+{ _pimpl->secondary_structure_name = strand.has_value() ? "SHEET" : "LOOP"; }   // fixme find a good name format
 
 aminoacid aminoacid::component::get_residue() const
 {

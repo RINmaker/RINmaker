@@ -35,17 +35,124 @@ using std::vector, std::string, std::list, std::set, std::map, std::unordered_ma
 
 using rin::parameters;
 
+// for use in sorted structures, such as std::map
+// (see std::map requirements @ cppreference.com)
+//
+// semantics:
+// a < b means "interval a comes before interval b and they do not overlap"
+// a > b means b < a
+// a == b means !(a < b) && !(b < a)
+//
+// equality means "overlapping"
+//
+template<typename T>
+struct interval final
+{
+private:
+    T _inf, _sup;
+
+public:
+    interval(T const &a, T const &b) : _inf(a < b ? a : b), _sup(a < b ? b : a)
+    {}
+
+    struct less final
+    {
+        bool operator()(interval const &lhs, interval const &rhs) const
+        { return lhs._sup < rhs._inf; }
+    };
+};
+
+template <typename Secondary>
+std::tuple<std::string, interval<int>> from_secondary_structure(Secondary sec, gemmi::Model const& model)
+{
+    auto cra_start = model.find_cra(sec.start);
+    auto cra_end = model.find_cra(sec.end);
+
+    auto seq_start = cra_start.residue->seqid.num.value;
+    auto seq_end = cra_end.residue->seqid.num.value;
+
+    return {cra_start.chain->name, {seq_start, seq_end}};
+}
+
+template <typename T>
+struct secondary_structure_helper_map
+{
+private:
+    unordered_map<string, map<interval<int>, T, interval<int>::less>> chain_to_map;
+
+public:
+    void insert(T const& t, gemmi::Model const& model)
+    {
+        auto chain_and_interval = from_secondary_structure(t, model);
+
+        auto chain_name = std::get<0>(chain_and_interval);
+        auto sequence_interval = std::get<1>(chain_and_interval);
+
+        auto chain_and_ts = chain_to_map.find(chain_name);
+        if (chain_and_ts == chain_to_map.end())
+        {
+            map<interval<int>, T, interval<int>::less> tmp{{sequence_interval, t}};
+            chain_to_map.insert({chain_name, tmp});
+        }
+        else
+        { chain_and_ts->second.insert_or_assign(sequence_interval, t); }
+    }
+
+    std::optional<T> find(gemmi::Residue const& residue, gemmi::Chain const& chain)
+    {
+        std::optional<T> result{};
+        auto chain_and_ts = chain_to_map.find(chain.name);
+        if (chain_and_ts != chain_to_map.end())
+        {
+            auto t = chain_and_ts->second.find(interval(residue.seqid.num.value, residue.seqid.num.value));
+            if (t != chain_and_ts->second.end())
+                result = {t->second};
+        }
+        return result;
+    }
+
+    auto empty() const
+    { return chain_to_map.empty(); }
+};
+
 rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& structure)
 {
+    secondary_structure_helper_map<gemmi::Helix> helix_map;
+    for (auto const& helix: structure.helices)
+        helix_map.insert(helix, model);
+
+    secondary_structure_helper_map<gemmi::Sheet::Strand> strand_map;
+    for (auto const& sheet: structure.sheets)
+        for (auto const& strand: sheet.strands)
+            strand_map.insert(strand, model);
+
     // we are filling the private implementation piece-by-piece, so we need a non-const temporary here
     // at the end of the constructor we will store it in the private member pimpl, which is a const*
     auto tmp_pimpl = make_shared<rin::maker::impl>();
 
     // GEMMI already parses all records and then groups atoms together in the respective residues
     // so all information is already here. We will just need to rebuild rings and ionic groups
-    for (auto const& chain : model.chains)
-        for (auto const& residue : chain.residues)
-            tmp_pimpl->aminoacids.emplace_back(residue, chain, model, structure);
+    for (auto const& chain: model.chains)
+    {
+        for (auto const& residue: chain.residues)
+        {
+            if (helix_map.empty() && strand_map.empty())
+                tmp_pimpl->aminoacids.emplace_back(residue, chain, model, structure);
+            else
+            {
+                auto maybe_helix = helix_map.find(residue, chain);
+                if (maybe_helix.has_value())
+                    tmp_pimpl->aminoacids.emplace_back(residue, chain, model, structure, maybe_helix);
+                else
+                {
+                    auto maybe_strand = strand_map.find(residue, chain);
+                    if (maybe_strand.has_value())
+                        tmp_pimpl->aminoacids.emplace_back(residue, chain, model, structure, maybe_strand);
+                }
+            }
+        }
+    }
+
 
     lm::main()->info("retrieving components from aminoacids...");
 

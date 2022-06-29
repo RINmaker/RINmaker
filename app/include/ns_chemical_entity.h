@@ -57,6 +57,20 @@ public:
         gemmi::Model const& model,
         gemmi::Structure const& protein);
 
+    aminoacid(
+        gemmi::Residue const& residue,
+        gemmi::Chain const& chain,
+        gemmi::Model const& model,
+        gemmi::Structure const& protein,
+        std::optional<gemmi::Helix> const& helix);
+
+    aminoacid(
+        gemmi::Residue const& residue,
+        gemmi::Chain const& chain,
+        gemmi::Model const& model,
+        gemmi::Structure const& protein,
+        std::optional<gemmi::Sheet::Strand> const& strand);
+
     ~aminoacid();
 
     [[nodiscard]]
