@@ -140,11 +140,8 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& structure)
                 if (maybe_helix.has_value())
                     tmp_pimpl->aminoacids.emplace_back(residue, chain, model, structure, maybe_helix);
                 else
-                {
-                    auto maybe_strand = strand_map.find(residue, chain);
-                    if (maybe_strand.has_value())
-                        tmp_pimpl->aminoacids.emplace_back(residue, chain, model, structure, maybe_strand);
-                }
+                    // in this last case either it is in a sheet or it is in a loop
+                    tmp_pimpl->aminoacids.emplace_back(residue, chain, model, structure, strand_map.find(residue, chain));
             }
         }
     }
