@@ -27,7 +27,11 @@ int main(int argc, const char* argv[])
             // does this hold? --lore
             lm::main()->info("params summary: " + parsed_args.params.pretty());
 
+            lm::console()->info("file={}", parsed_args.pdb_path.filename().string());
+
             auto protein_structure = gemmi::read_pdb_file(parsed_args.pdb_path);
+
+            lm::console()->info("found {} models in protein {}", protein_structure.models.size(), protein_structure.name);
 
             for (auto const& model: protein_structure.models)
             {
@@ -35,7 +39,9 @@ int main(int argc, const char* argv[])
 
                 // create rin::maker, create graph and write to graphml
                 rin::maker{model, protein_structure}(parsed_args.params).write_to_file(parsed_args.out_dir / out_file);
+                lm::console()->info("model={}", model.name);
             }
+            lm::console()->info("done");
 
 #           if _MSC_VER
             spdlog::drop_all();
