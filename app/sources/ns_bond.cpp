@@ -24,15 +24,14 @@ bool base::operator<(base const& rhs) const
 bool base::operator>(base const& rhs) const
 { return rhs < *this; }
 
-// TODO memoize?
 template<typename Entity>
-pair<Entity const*, Entity const*> sort_by_res_id(Entity const& a, Entity const& b)
-{ return a.get_residue().get_id() < b.get_residue().get_id() ? make_pair(&a, &b) : make_pair(&b, &a); }
+bool operator<(Entity const& a, Entity const& b)
+{ return a.get_residue().get_id() < b.get_residue().get_id(); }
 
 generic_bond::generic_bond(parameters const& params, atom const& a, atom const& b) :
         base(geom::distance(a.get_residue().get_position(), b.get_residue().get_position()), 0), // TODO
-        _source(*sort_by_res_id(a, b).first),
-        _target(*sort_by_res_id(a, b).second)
+        _source(a < b ? a : b),
+        _target(a < b ? b : a)
 {}
 
 chemical_entity::aminoacid generic_bond::source() const
@@ -181,8 +180,8 @@ double pipistack::energy(double angle)
 pipistack::pipistack(ring const& a, ring const& b, double angle) :
         base(a.distance(b),energy(angle)),
 
-        _source_ring(*sort_by_res_id(a, b).first),
-        _target_ring(*sort_by_res_id(a, b).second),
+        _source_ring(a < b ? a : b),
+        _target_ring(a < b ? b : a),
 
         _angle(angle)
 {}
@@ -238,10 +237,10 @@ double vdw::energy(atom const& source_atom, atom const& target_atom)
 }
 
 vdw::vdw(atom const& a, atom const& b) :
-        base(a.distance(b), energy(*sort_by_res_id(a, b).first, *sort_by_res_id(a, b).second)),
+        base(a.distance(b), energy(a < b ? a : b, a < b ? b : a)),
 
-        _source_atom(*sort_by_res_id(a, b).first),
-        _target_atom(*sort_by_res_id(a, b).second)
+        _source_atom(a < b ? a : b),
+        _target_atom(a < b ? b : a)
 {}
 
 string vdw::get_interaction() const
