@@ -13,9 +13,11 @@ TODO:
 - UI avere la conversione tra kj e kcal
 
 URGENT:
-- implementare hydrophobic interaction
 - probabilistic rin in case of multiple models (server side)
     * use graph analysis tools (e.g. networkx, igraph)
+
+NOT-SO-URGENT
+- implementare hydrophobic interaction
 
 WIP:
 - Rivedere costanti di energia (Jacopo)
