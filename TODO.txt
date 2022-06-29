@@ -18,10 +18,6 @@ URGENT:
     * use graph analysis tools (e.g. networkx, igraph)
 
 WIP:
-- use a proper parsing library for pdb and pdbx/mmcif: GEMMI
-    - [x] integration
-    - [x] tests are green
-    - [ ] (of minor importance) retrieve information about helix/sheet from gemmi
 - Rivedere costanti di energia (Jacopo)
 - Documento contenete la lista e il risultato atteso dei test (Jacopo)
 
@@ -41,3 +37,7 @@ DONE:
 - "model" multipli => multiple run
 - Lanciare eccezione in casi unexpected (Ad esempio nei ring accediamo con [0] [1])
 - implementare il nuovo calcolo dell'energia per Pication e Pipi
+- use a proper parsing library for pdb and pdbx/mmcif: GEMMI
+    - [x] integration
+    - [x] tests are green
+    - [x] (of minor importance) retrieve information about helix/sheet from gemmi

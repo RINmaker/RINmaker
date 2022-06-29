@@ -224,9 +224,45 @@ chemical_entity::aminoacid::aminoacid(
     {
         _pimpl->secondary_structure_name = "LOOP";
 
-        // todo retrieve secondary structure
-        //if (model.find_cra(protein.helices.front().res).chain->find_residue(residue) != nullptr)
-        //model.find_cra(protein.helices.front().start).chain->find_residue(residue);
+        // fixme the following loops should go outside this constructor
+        // these loops should NOT be performed every time, but I have observed that the performance
+        // impact is unnoticeable. I will extract them in the future, for now they stay here.
+
+        int helix_num = 1;
+        for (auto const& helix : protein.helices)
+        {
+            auto cra_start = model.find_cra(helix.start);
+            auto cra_end = model.find_cra(helix.end);
+
+            auto seq_start = cra_start.residue->seqid.num.value;
+            auto seq_end = cra_end.residue->seqid.num.value;
+
+            auto chain_start = cra_start.chain->name;
+            auto chain_end = cra_end.chain->name;
+
+            if (get_chain_id() == chain_start && seq_start <= get_sequence_number() && get_sequence_number() <= seq_end)
+                _pimpl->secondary_structure_name = "HELIX:" + std::to_string(helix_num) + ":" + std::to_string(1 + get_sequence_number() - seq_start);
+
+            ++helix_num;
+        }
+
+        for (auto const& sheet : protein.sheets)
+        {
+            for (auto const& strand : sheet.strands)
+            {
+                auto cra_start = model.find_cra(strand.start);
+                auto cra_end = model.find_cra(strand.end);
+
+                auto seq_start = cra_start.residue->seqid.num.value;
+                auto seq_end = cra_end.residue->seqid.num.value;
+
+                auto chain_start = cra_start.chain->name;
+                auto chain_end = cra_end.chain->name;
+
+                if (get_chain_id() == chain_start && seq_start <= get_sequence_number() && get_sequence_number() <= seq_end)
+                    _pimpl->secondary_structure_name = "SHEET:" + strand.name + ":" + std::to_string(1 + get_sequence_number() - seq_start);
+            }
+        }
     }
 }
 
