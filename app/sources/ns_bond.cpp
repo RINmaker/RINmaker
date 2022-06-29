@@ -46,9 +46,6 @@ string generic_bond::get_interaction() const
     return "GENERIC:" + _source.get_name();
 }
 
-string generic_bond::get_type() const
-{ return "generic"; } // TODO config
-
 //Returns a pair of Sigmaij Epsilonij
 pair<double, double> hydrogen::getSigmaEpsilon(atom const& donor, atom const& acceptor)
 {
@@ -122,9 +119,6 @@ string hydrogen::get_interaction() const
     return "HBOND:" + acceptorChain + "_" + donorChain;
 }
 
-string hydrogen::get_type() const
-{ return "hydrogen"; } // TODO config
-
 ionic::ionic(ionic_group const& negative, ionic_group const& positive) :
         base(negative.distance(positive), (constant::ion_ion_k * positive.get_ionion_energy_q() * negative.get_ionion_energy_q() / (negative.distance(positive)))),
         _negative(negative),
@@ -133,9 +127,6 @@ ionic::ionic(ionic_group const& negative, ionic_group const& positive) :
 
 string ionic::get_interaction() const
 { return "IONIC:SC_SC"; }
-
-string ionic::get_type() const
-{ return "ionic"; }
 
 double pication::getKappa(atom const& cation)
 {
@@ -181,9 +172,6 @@ double pication::angle() const
 string pication::get_interaction() const
 { return "PICATION:SC_SC"; }
 
-string pication::get_type() const
-{ return "pication"; }
-
 double pipistack::energy(double angle)
 {
     double cos_part = cos(1. / (angle + 10.));
@@ -205,9 +193,6 @@ double pipistack::angle() const
 string pipistack::get_interaction() const
 { return "PIPISTACK:SC_SC"; }
 
-string pipistack::get_type() const
-{ return "pipistack"; }
-
 string ss::source_id() const
 { return _source_chain + ":" + std::to_string(_source_seq) + ":_:" + _source_name; }
 
@@ -219,10 +204,6 @@ string ss::get_interaction() const
 
 string ss::get_id() const
 { return get_id_simple(); }
-
-string ss::get_type() const
-{ return "ss"; }
-
 
 double vdw::energy(atom const& source_atom, atom const& target_atom)
 {
@@ -259,9 +240,6 @@ string vdw::get_interaction() const
 
     return "VDW:" + sourceChain + "_" + targetChain;
 }
-
-string vdw::get_type() const
-{ return "vdw"; }
 
 std::shared_ptr<hydrogen const> hydrogen::test(parameters const& params, atom const& acceptor, atom const& donor)
 {

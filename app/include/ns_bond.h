@@ -45,9 +45,6 @@ public:
     virtual std::string get_interaction() const = 0;
 
     [[nodiscard]]
-    virtual std::string get_type() const = 0;
-
-    [[nodiscard]]
     virtual std::string get_id() const = 0;
 
     [[nodiscard]]
@@ -76,9 +73,6 @@ public:
 
     [[nodiscard]]
     std::string get_interaction() const override;
-
-    [[nodiscard]]
-    std::string get_type() const override;
 
     [[nodiscard]]
     std::string get_id() const override;
@@ -142,9 +136,6 @@ public:
     [[nodiscard]]
     explicit operator rin::edge() const override
     { return rin::edge(*this); }
-
-    [[nodiscard]]
-    std::string get_type() const override;
 };
 
 class ionic final : public base
@@ -172,9 +163,6 @@ public:
     [[nodiscard]]
     explicit operator rin::edge() const override
     { return rin::edge(*this); }
-
-    [[nodiscard]]
-    std::string get_type() const override;
 
     [[nodiscard]]
     std::string get_id() const override;
@@ -213,9 +201,6 @@ public:
     [[nodiscard]]
     explicit operator rin::edge() const override
     { return rin::edge(*this); }
-
-    [[nodiscard]]
-    std::string get_type() const override;
 
     [[nodiscard]]
     std::string get_id() const override;
@@ -261,9 +246,6 @@ public:
     [[nodiscard]]
     explicit operator rin::edge() const override
     { return rin::edge(*this); }
-
-    [[nodiscard]]
-    std::string get_type() const override;
 
     [[nodiscard]]
     std::string get_id() const override;
@@ -313,9 +295,6 @@ public:
 
     [[nodiscard]]
     std::string get_id_simple() const override;
-
-    [[nodiscard]]
-    std::string get_type() const override;
 };
 
 class vdw final : public base
@@ -345,9 +324,6 @@ public:
     [[nodiscard]]
     explicit operator rin::edge() const override
     { return rin::edge(*this); }
-
-    [[nodiscard]]
-    std::string get_type() const override;
 
     [[nodiscard]]
     std::string get_id() const override;
