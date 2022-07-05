@@ -23,6 +23,7 @@ WIP:
 - Cambiare opzione di output:
     * aggiungere -d: comportamento identico a --output-directory corrente (vedere l'help per informazioni)
     * cambiare -o: restituisce il primo model di un pdb nel filepath specificato
+- Better error message in assert_ring_correctness
 - Rivedere costanti di energia (Jacopo)
 - Documento contenete la lista e il risultato atteso dei test (Jacopo)
 
