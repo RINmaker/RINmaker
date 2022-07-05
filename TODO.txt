@@ -24,6 +24,7 @@ WIP:
     * aggiungere -d: comportamento identico a --output-directory corrente (vedere l'help per informazioni)
     * cambiare -o: restituisce il primo model di un pdb nel filepath specificato
 - Better error message in assert_ring_correctness
+- Add assert_ionic_group_correctness
 - Rivedere costanti di energia (Jacopo)
 - Documento contenete la lista e il risultato atteso dei test (Jacopo)
 
