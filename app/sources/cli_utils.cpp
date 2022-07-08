@@ -68,11 +68,7 @@ optional<arguments> read_args(int argc, const char* argv[])
     app.add_option("-l,--log-directory", log_dir, "Log directory")
         ->default_str(cfg::log::default_dirname);
 
-    filesystem::path out_dir = cfg::graphml::default_dirname;
-    app.add_option("-o,--out-directory", out_dir, "Output directory")
-        ->default_str(cfg::graphml::default_dirname);
-
-    uint32_t sequence_separation;
+    int sequence_separation;
     app.add_option("-s,--sequence-separation", sequence_separation, "Minimum sequence separation")
         ->default_val(cfg::params::seq_sep)
         ->check(CLI::PositiveNumber);
