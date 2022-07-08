@@ -107,27 +107,31 @@ array<double, 3> center_of_mass(vector<atom> const& atoms)
 }
 
 void assert_ring_correctness(
-    gemmi::Residue const& residue,
-    gemmi::Chain const& chain,
-    gemmi::Model const& model,
-    gemmi::Structure const& protein,
-    vector<string> const& expected_atoms,
-    vector<atom> const& found_atoms)
+    aminoacid const& residue, gemmi::Model const& model, vector<string> const& expected_atom_names, vector<atom> const& actual_atoms)
 {
-    if (expected_atoms.size() != found_atoms.size())
+    vector<string> actual_atom_names;
+    actual_atom_names.reserve(actual_atoms.size());
+
+    for(auto const& atom : actual_atoms)
+        actual_atom_names.push_back(atom.get_name());
+
+    for(auto const& expected_atom : expected_atom_names)
     {
-        string expected_atoms_str = join_strings(expected_atoms, ",");
-        string found_atoms_str = get_name_from_atoms(found_atoms, ",");
+        if (find(actual_atom_names.begin(), actual_atom_names.end(), expected_atom) == actual_atom_names.end())
+        {
+            auto const expected_atoms_str = join_strings(expected_atom_names, ",");
+            auto const actual_atoms_str = get_name_from_atoms(actual_atoms, ",");
 
-        auto const exception_description =
-            "in: residue=" + residue.name +
-            " chain=" + chain.name +
-            " model=" + model.name +
-            " structure= " + protein.name +
-            " , found a malformed aromatic ring: expected=" + expected_atoms_str +
-            " actual=" + (found_atoms_str.empty() ? "none" : found_atoms_str);
+            string msg = "malformed ring in model " + model.name;
+            msg += " residue " + residue.get_id();
+            msg += " expected atoms={";
+            msg += expected_atoms_str;
+            msg += "} actual atoms={";
+            msg += actual_atoms_str;
+            msg += "}";
 
-        throw std::invalid_argument(exception_description);
+            throw std::invalid_argument(msg);
+        }
     }
 }
 
@@ -201,12 +205,12 @@ chemical_entity::aminoacid::aminoacid(
 
     if (n_of_rings >= 1)
     {
-        assert_ring_correctness(residue, chain, model, protein, ring1_names, ring1);
+        assert_ring_correctness(*this, model, ring1_names, ring1);
         _pimpl->primary_ring = ring(ring1, *this);
     }
     if (n_of_rings == 2)
     {
-        assert_ring_correctness(residue, chain, model, protein, ring2_names, ring2);
+        assert_ring_correctness(*this, model, ring2_names, ring2);
         _pimpl->secondary_ring = ring(ring2, *this);
     }
 
@@ -463,8 +467,8 @@ ring::ring(vector<atom> const& atoms, aminoacid const& res) : kdpoint<3>({0, 0, 
 {
     auto tmp_pimpl = std::make_shared<impl>();
 
-    if (atoms.size() < 3)
-        throw invalid_argument("rings should have at least 3 atoms");
+    // already taken care of in assert_ring_correctness
+    //if (atoms.size() < 3) throw invalid_argument("rings should have at least 3 atoms");
 
     tmp_pimpl->atoms = atoms;
 
