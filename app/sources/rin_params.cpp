@@ -3,43 +3,57 @@
 
 #include <sstream>
 
-using netp = rin::parameters::network_policy_t;
-using intt = rin::parameters::interaction_type_t;
 using std::string;
 
-string rin::parameters::to_string(netp np)
+string to_string(rin::parameters::network_policy_t network_policy)
 {
-    switch (np)
+    switch (network_policy)
     {
-    case netp::ALL:
+    case rin::parameters::network_policy_t::ALL:
         return "all";
 
-    case netp::BEST_PER_TYPE:
+    case rin::parameters::network_policy_t::BEST_PER_TYPE:
         return "multiple";
 
-    case netp::BEST_ONE:
+    case rin::parameters::network_policy_t::BEST_ONE:
         return "one";
 
     default:
-        return "unknown";
+        // unreachable
+        return "err";
     }
 }
 
-string rin::parameters::to_string(intt it)
+
+string to_string(rin::parameters::interaction_type_t interaction_type)
 {
-    switch (it)
+    switch (interaction_type)
     {
-    case intt::NONCOVALENT_BONDS:
-        return "non_covalent";
+        case rin::parameters::interaction_type_t::NONCOVALENT_BONDS:
+            return "closest";
 
-    case intt::ALPHA_BACKBONE:
-        return "alpha_backbone";
+        case rin::parameters::interaction_type_t::CONTACT_MAP:
+            return "cmap";
 
-    case intt::BETA_BACKBONE:
-        return "beta_backbone";
+        default:
+            // unreachable
+            return "err";
+    }
+}
+
+string to_string(rin::parameters::contact_map_type_t cmap_type)
+{
+    switch (cmap_type)
+    {
+    case rin::parameters::contact_map_type_t::ALPHA:
+        return "alpha";
+
+    case rin::parameters::contact_map_type_t::BETA:
+        return "beta";
 
     default:
-        return "unknown";
+        // unreachable
+        return "err";
     }
 }
 
@@ -49,12 +63,13 @@ string rin::parameters::pretty() const
 
     strs << "{";
 
-    auto pc = interaction_type();
-    strs << "interaction_type:" << rin::parameters::to_string(pc) << ", ";
-    switch (pc)
+    auto in = interaction_type();
+    strs << "interaction_type:" << to_string(in) << ", ";
+    switch (in)
     {
-    case intt::NONCOVALENT_BONDS:
+    case rin::parameters::interaction_type_t::NONCOVALENT_BONDS:
         strs
+                << "network_policy:" << to_string(network_policy()) << ","
                 << "h_bond:" << query_dist_hbond() << ", "
                 << "vdw_bond:" << query_dist_vdw() << ", "
                 << "ionic_bond:" << query_dist_ionic() << ", "
@@ -62,16 +77,14 @@ string rin::parameters::pretty() const
                 << "pipistack:" << query_dist_pipi() << ", ";
         break;
 
-    case intt::ALPHA_BACKBONE:
-        strs << "generic_bond:" << query_dist_alpha() << ", ";
-        break;
-
-    case intt::BETA_BACKBONE:
-        strs << "generic_bond:" << query_dist_beta() << ", ";
+    case rin::parameters::interaction_type_t::CONTACT_MAP:
+        strs
+            << "contact_map_type:" << to_string(cmap_type()) << ", "
+            << "generic_bond:" << query_dist_cmap() << ", ";
         break;
     }
 
-    strs << "seq_sep:" << sequence_separation() << ", " << "network_policy:" << rin::parameters::to_string(network_policy()) << "}";
+    strs << "seq_sep:" << sequence_separation() << "}";
 
     return strs.str();
 }

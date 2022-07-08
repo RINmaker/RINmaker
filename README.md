@@ -1,23 +1,47 @@
 # RINmaker
 
-### How to build
-
-Configure project:
+## Clone this repo
 
 ```bash
-cmake -S . -B cmake-build-debug
+git clone -b dev https://github.com/RINmaker/RINmaker.git
 ```
-
-#### App
 
 ```bash
-cmake --build cmake-build-debug --target RINmaker
+cd RINmaker
+git submodule init
+git submodule update
 ```
 
-#### Test
+## Configure project:
 
 ```bash
-cmake --build cmake-build-debug --target RINmaker_test
+cmake -S . -B build
 ```
 
-Executable will be in `cmake-build-debug/app/RINmaker`.
+## App
+
+#### Build
+
+```bash
+cmake --build build --target RINmaker
+```
+
+#### Run
+
+```bash
+./build/app/RINmaker -h
+```
+
+## Test
+
+#### Build
+
+```bash
+cmake --build build --target RINmaker_test
+```
+
+#### Run
+
+```bash
+./build/test/RINmaker_test
+```

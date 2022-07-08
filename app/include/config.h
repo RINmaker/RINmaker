@@ -7,6 +7,9 @@ namespace constant
 extern const double ion_ion_k;
 extern const double avogadro;
 extern const double bohr_radius;
+extern const double pipi_a;
+extern const double pipi_b;
+extern const double pipi_c;
 }
 
 namespace cfg

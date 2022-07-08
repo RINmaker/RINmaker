@@ -1,5 +1,9 @@
 #include "blackbox_test.h"
 
+#include "../app/sources/private/impl_rin_graph.h"
+
+#include "../app/sources/private/impl_chemical_entity.h"
+
 #define MY_DBL_EPSILON 0.00005
 
 using namespace std;
@@ -66,7 +70,7 @@ private:
     }
 public:
     vector<edge> find_edges(const function<bool(const edge&)>& pred) const { return find(edges, pred); }
-    int count_edges(const function<bool(const edge&)>& pred) const { return find_edges(pred).size(); }
+    unsigned int count_edges(const function<bool(const edge&)>& pred) const { return (unsigned int)find_edges(pred).size(); }
     bool contain_edge(const function<bool(const edge&)>& pred) const { return count_edges(pred) > 0; }
 };
 
@@ -84,16 +88,17 @@ protected:
     {
         string exePath = running_path.string();
         string pdbPath = (running_folder / test_case_folder / filename).string();
-        const char* args[2] = { exePath.c_str(), pdbPath.c_str() };
+
+        // RINmaker -i filename rin
+        const char* args[4] = { exePath.c_str(), "-i", pdbPath.c_str(), "rin"};
 
         std::optional<arguments> maybe_args;
-        read_args(2, args, maybe_args);
+        maybe_args = read_args(4, args);
         // won't throw std::bad_optional because args are hand crafted above
-        arguments parsed = maybe_args.value();
-
-        auto file_contents = read_lines(parsed.pdb_path);
-        auto pdb_name = parsed.pdb_path.stem().string();
-        return Result(rin::maker(pdb_name, file_contents.begin(), file_contents.end()), parsed.params);
+        auto const parsed_args = maybe_args.value();
+        auto protein_structure = gemmi::read_pdb_file(parsed_args.pdb_path);
+        // again, won't throw because tests are hand crafted to have 1 model each
+        return Result(rin::maker{protein_structure.first_model(), protein_structure}, parsed_args.params);
     }
 
     void TearDown() override { }
@@ -174,6 +179,21 @@ TEST_F(BlackBoxTest, IonIon6) {
 }
 TEST_F(BlackBoxTest, IonIon7) {
     Result r = SetUp("ionion/7.pdb");
+
+    EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "IONIC"; }), 0);
+}
+TEST_F(BlackBoxTest, IonIon8) {
+    Result r = SetUp("ionion/8.pdb");
+
+    EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "IONIC"; }), 1);
+    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+        return interaction_name(e) == "IONIC" && source(e) == "LYS" && target(e) == "ASP" &&
+               compare_distance(e, 3.19828) &&
+               source_atom(e) == "NZ" && target_atom(e) == "CG:OD1:OD2";
+    }));
+}
+TEST_F(BlackBoxTest, IonIon9) {
+    Result r = SetUp("ionion/9.pdb");
 
     EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "IONIC"; }), 0);
 }
@@ -348,20 +368,10 @@ TEST_F(BlackBoxTest, vdw7) {
 
     EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "VDW"; }), 1);
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
-        return interaction_name(e) == "VDW" && source(e) == "ASN" && target(e) == "GLN" &&
-               source_atom(e) == "CB" && target_atom(e) == "NE2" &&
-               compare_distance(e, 3.85866) && compare_energy(e, -0.13357);
-    }));
-    /* the following test is exactly the one above, but with source<->target inverted.
-     * while there was no specific rule for ordering the two in a vdw bond, now they are decided by
-     * the lexicographic order of the residues' IDs, for consistency reasons.
-     * the tests should be updated accordingly.
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "VDW" && target(e) == "ASN" && source(e) == "GLN" &&
-               target_atom(e) == "CB" && source_atom(e) == "NE2" &&
+                target_atom(e) == "CB" && source_atom(e) == "NE2" &&
                compare_distance(e, 3.85866) && compare_energy(e, -0.13357);
     }));
-    */
 }
 TEST_F(BlackBoxTest, vdw8) {
     Result r = SetUp("vdw/8.pdb");

@@ -11,7 +11,7 @@ struct parameters final
 public:
     enum class interaction_type_t
     {
-        NONCOVALENT_BONDS, ALPHA_BACKBONE, BETA_BACKBONE
+        NONCOVALENT_BONDS, CONTACT_MAP
     };
 
     enum class network_policy_t
@@ -19,19 +19,20 @@ public:
         ALL, BEST_PER_TYPE, BEST_ONE
     };
 
-
-    static std::string to_string(parameters::network_policy_t np);
-
-    static std::string to_string(parameters::interaction_type_t it);
+    enum class contact_map_type_t
+    {
+        ALPHA, BETA
+    };
 
 private:
     double _query_dist_hbond, _surface_dist_vdw, _query_dist_ionic, _query_dist_pipi, _query_dist_pica;
-    double _query_dist_alpha, _query_dist_beta;
+    double _query_dist_cmap;
 
     int _sequence_separation;
 
     interaction_type_t _interaction_type;
     network_policy_t _network_policy;
+    contact_map_type_t _cmap_type;
 
     bool _hbond_realistics;
 
@@ -41,12 +42,12 @@ private:
             _query_dist_ionic{cfg::params::query_dist_ionic},
             _query_dist_pipi{cfg::params::query_dist_pipi},
             _query_dist_pica{cfg::params::query_dist_pica},
-            _query_dist_alpha{cfg::params::query_dist_alpha},
-            _query_dist_beta{cfg::params::query_dist_beta},
+            _query_dist_cmap{cfg::params::query_dist_alpha},
             _hbond_realistics{true},
             _sequence_separation{cfg::params::seq_sep},
             _interaction_type{interaction_type_t::NONCOVALENT_BONDS},
-            _network_policy{network_policy_t::ALL}
+            _network_policy{network_policy_t::ALL},
+            _cmap_type{contact_map_type_t::ALPHA}
     {}
 
 public:
@@ -77,12 +78,8 @@ public:
     { return _query_dist_pica; }
 
     [[nodiscard]]
-    double query_dist_alpha() const
-    { return _query_dist_alpha; }
-
-    [[nodiscard]]
-    double query_dist_beta() const
-    { return _query_dist_beta; }
+    double query_dist_cmap() const
+    { return _query_dist_cmap; }
 
     [[nodiscard]]
     int sequence_separation() const
@@ -99,6 +96,10 @@ public:
     [[nodiscard]]
     network_policy_t network_policy() const
     { return _network_policy; }
+
+    [[nodiscard]]
+    contact_map_type_t cmap_type() const
+    { return _cmap_type; }
 
     [[nodiscard]]
     std::string pretty() const;
@@ -143,21 +144,21 @@ public:
         return *this;
     }
 
-    configurator& set_query_dist_alpha(double val)
+    configurator& set_query_dist_cmap(double val)
     {
-        params._query_dist_alpha = std::clamp(val, 0.0, cfg::params::max_limit);
-        return *this;
-    }
-
-    configurator& set_query_dist_beta(double val)
-    {
-        params._query_dist_beta = std::clamp(val, 0.0, cfg::params::max_limit);
+        params._query_dist_cmap = std::clamp(val, 0.0, cfg::params::max_limit);
         return *this;
     }
 
     configurator& set_interaction_type(interaction_type_t interaction_type)
     {
         params._interaction_type = interaction_type;
+        return *this;
+    }
+
+    configurator& set_cmap_type(contact_map_type_t cmap_type)
+    {
+        params._cmap_type = cmap_type;
         return *this;
     }
 

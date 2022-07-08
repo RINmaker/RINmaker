@@ -1,233 +1,256 @@
 #include "rin_maker.h"
 
-#include <functional>
-#include <exception>
-
 #include <string>
 #include <list>
+#include <map>
+#include <set>
+#include <unordered_map>
 
 #include <optional>
 
-#include <map>
-#include <unordered_map>
+#include <utility>
+
+#include "ns_bond.h"
+#include "ns_chemical_entity.h"
 
 #include "rin_params.h"
-#include "bonds.h"
+#include "log_manager.h"
+#include "spatial/kdtree.h"
 
-using std::string, std::function, std::optional, std::shared_ptr;
-using std::list, std::vector, std::map, std::unordered_map;
-using std::is_base_of;
+#include "private/impl_rin_maker.h"
+
+namespace fs = std::filesystem;
+
+using lm = log_manager;
+
+using chemical_entity::aminoacid, chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group;
+
+using std::vector, std::string, std::list, std::set, std::map, std::unordered_map, std::function, std::optional,
+        std::shared_ptr, std::make_shared, std::make_unique, std::is_base_of, std::ifstream, std::runtime_error,
+        std::pair, std::nullopt;
 
 using rin::parameters;
 
-using prelude::interval;
-
-template<typename Record>
-class secondary_structure_helper final
+// for use in sorted structures, such as std::map
+// (see std::map requirements @ cppreference.com)
+//
+// semantics:
+// a < b means "interval a comes before interval b and they do not overlap"
+// a > b means b < a
+// a == b means !(a < b) && !(b < a)
+//
+// equality means "overlapping"
+//
+template<typename T>
+struct interval final
 {
 private:
-    std::unordered_map<string, std::map<interval<int>, Record, interval<int>::less>> _map;
+    T _inf, _sup;
 
 public:
-    void insert(Record const& record)
+    interval(T const &a, T const &b) : _inf(a < b ? a : b), _sup(a < b ? b : a)
+    {}
+
+    struct less final
     {
-        auto chain = _map.find(record.init_chain_id());
-        if (chain == _map.end())
-        {
-            std::map<interval<int>, Record, interval<int>::less> new_chain;
-            new_chain.insert({record.range(), record});
-            _map.insert({record.init_chain_id(), new_chain});
-        }
-        else
-        {
-            chain->second.insert({record.range(), record});
-        }
-    }
-
-    [[nodiscard]]
-    int size() const
-    { return _map.size(); }
-
-    std::optional<Record> find(chemical_entity::aminoacid& res) const
-    {
-        auto chain = _map.find(res.chain_id());
-        if (chain != _map.end())
-        {
-            auto kv = chain->second.find(interval<int>(res.sequence_number(), res.sequence_number()));
-            if (kv != chain->second.end())
-                return kv->second;
-        }
-
-        return std::nullopt;
-    }
+        bool operator()(interval const &lhs, interval const &rhs) const
+        { return lhs._sup < rhs._inf; }
+    };
 };
 
-rin::maker::maker(std::string const& pdb_name, std::vector<numbered_line_t>::iterator const begin, std::vector<numbered_line_t>::iterator const end) : _pdb_name(pdb_name)
+template <typename Secondary>
+std::tuple<std::string, interval<int>> from_secondary_structure(Secondary sec, gemmi::Model const& model)
 {
-    auto sheet_records = secondary_structure_helper<records::sheet_piece>();
-    auto helix_records = secondary_structure_helper<records::helix>();
+    auto cra_start = model.find_cra(sec.start);
+    auto cra_end = model.find_cra(sec.end);
 
-    vector<records::atom> tmp_atoms;
-    std::vector<chemical_entity::aminoacid*> tmp_aminoacids;
+    auto seq_start = cra_start.residue->seqid.num.value;
+    auto seq_end = cra_end.residue->seqid.num.value;
 
-    lm::main()->info("parsing pdb lines...");
+    return {cra_start.chain->name, {seq_start, seq_end}};
+}
 
-    for (auto it = begin; it != end; ++it)
+template <typename T>
+struct secondary_structure_helper_map
+{
+private:
+    unordered_map<string, map<interval<int>, T, interval<int>::less>> chain_to_map;
+
+public:
+    void insert(T const& t, gemmi::Model const& model)
     {
-        auto line = it->second;
-        auto line_number = it->first;
+        auto chain_and_interval = from_secondary_structure(t, model);
 
-        auto const record_type = prelude::trim(line.substr(0, 6));
-        if (record_type == "ATOM")
+        auto chain_name = std::get<0>(chain_and_interval);
+        auto sequence_interval = std::get<1>(chain_and_interval);
+
+        auto chain_and_ts = chain_to_map.find(chain_name);
+        if (chain_and_ts == chain_to_map.end())
         {
-            // atoms are grouped by aminoacid: we can simply fill a collection until we change residue
-            records::atom record(line, line_number);
-            if (!tmp_atoms.empty() && !record.same_res(tmp_atoms.back()))
+            map<interval<int>, T, interval<int>::less> tmp{{sequence_interval, t}};
+            chain_to_map.insert({chain_name, tmp});
+        }
+        else
+        { chain_and_ts->second.insert_or_assign(sequence_interval, t); }
+    }
+
+    std::optional<T> find(gemmi::Residue const& residue, gemmi::Chain const& chain)
+    {
+        std::optional<T> result{};
+        auto chain_and_ts = chain_to_map.find(chain.name);
+        if (chain_and_ts != chain_to_map.end())
+        {
+            auto t = chain_and_ts->second.find(interval(residue.seqid.num.value, residue.seqid.num.value));
+            if (t != chain_and_ts->second.end())
+                result = {t->second};
+        }
+        return result;
+    }
+
+    auto empty() const
+    { return chain_to_map.empty(); }
+};
+
+rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& structure)
+{
+    secondary_structure_helper_map<gemmi::Helix> helix_map;
+    for (auto const& helix: structure.helices)
+        helix_map.insert(helix, model);
+
+    secondary_structure_helper_map<gemmi::Sheet::Strand> strand_map;
+    for (auto const& sheet: structure.sheets)
+        for (auto const& strand: sheet.strands)
+            strand_map.insert(strand, model);
+
+    // we are filling the private implementation piece-by-piece, so we need a non-const temporary here
+    // at the end of the constructor we will store it in the private member pimpl, which is a const*
+    auto tmp_pimpl = make_shared<rin::maker::impl>();
+
+    // GEMMI already parses all records and then groups atoms together in the respective residues
+    // so all information is already here. We will just need to rebuild rings and ionic groups
+    for (auto const& chain: model.chains)
+    {
+        for (auto const& residue: chain.residues)
+        {
+            if (helix_map.empty() && strand_map.empty())
+                tmp_pimpl->aminoacids.emplace_back(residue, chain, model, structure);
+            else
             {
-                tmp_aminoacids.emplace_back(new aminoacid(tmp_atoms, pdb_name));
-                tmp_atoms.clear();
+                auto maybe_helix = helix_map.find(residue, chain);
+                if (maybe_helix.has_value())
+                    tmp_pimpl->aminoacids.emplace_back(residue, chain, model, structure, maybe_helix);
+                else
+                    // in this last case either it is in a sheet or it is in a loop
+                    tmp_pimpl->aminoacids.emplace_back(residue, chain, model, structure, strand_map.find(residue, chain));
             }
-
-            tmp_atoms.push_back(record);
-        }
-
-        else if (record_type == "HELIX")
-            helix_records.insert(records::helix(line, line_number));
-
-        else if (record_type == "SHEET")
-            sheet_records.insert(records::sheet_piece(line, line_number));
-
-        else if (record_type == "SSBOND")
-            _ss_bonds.emplace_back(std::make_shared<bond::ss>(records::ss(line, line_number)));
-    }
-
-    if (!tmp_atoms.empty())
-        tmp_aminoacids.emplace_back(new aminoacid(tmp_atoms, pdb_name));
-
-    lm::main()->info("finding the appropriate secondary structure for each aminoacid...");
-
-    if (sheet_records.size() != 0 || helix_records.size() != 0)
-    {
-        for (auto res: tmp_aminoacids)
-        {
-            res->make_secondary_structure();
-
-            auto sheet = sheet_records.find(*res);
-            if (sheet.has_value())
-                res->make_secondary_structure(sheet.value());
-
-            auto helix = helix_records.find(*res);
-            if(helix.has_value())
-                res->make_secondary_structure(helix.value());
         }
     }
 
-    _aminoacids.reserve(tmp_aminoacids.size());
-    for (auto res: tmp_aminoacids)
-        _aminoacids.emplace_back(res);
 
     lm::main()->info("retrieving components from aminoacids...");
 
-    // used only to build the corresponding kdtrees
-    vector<atom const*> hdonors;
-    vector<ionic_group const*> positives;
+    // these are used only to build the corresponding kdtrees
+    vector<atom> hdonors;
+    vector<ionic_group> positives;
 
-    for (auto const* res: _aminoacids)
+    for (auto const& res: tmp_pimpl->aminoacids)
     {
 
-        auto carbon = res->ca();
-        if (carbon != nullptr)
-            _alpha_carbon_vector.push_back(carbon);
+        auto const ca = res.get_alpha_carbon();
+        if (ca.has_value())
+            tmp_pimpl->alpha_carbon_vector.push_back(*ca);
 
-        carbon = res->cb();
-        if (carbon != nullptr)
-            _beta_carbon_vector.push_back(carbon);
+        auto const cb = res.get_beta_carbon();
+        if (cb.has_value())
+            tmp_pimpl->beta_carbon_vector.push_back(*cb);
 
-        for (auto const* a: res->atoms())
+        for (auto const& a : res.get_atoms())
         {
-            if (a->is_a_hydrogen_donor())
+            if (a.is_hydrogen_donor())
                 hdonors.push_back(a);
 
-            if (a->is_a_hydrogen_acceptor())
-                _hacceptor_vector.push_back(a);
+            if (a.is_hydrogen_acceptor())
+                tmp_pimpl->hacceptor_vector.push_back(a);
 
-            if (a->is_a_vdw_candidate())
-                _vdw_vector.push_back(a);
+            if (a.is_vdw_candidate())
+                tmp_pimpl->vdw_vector.push_back(a);
 
-            if (a->is_a_cation())
-                _cation_vector.push_back(a);
+            if (a.is_cation())
+                tmp_pimpl->cation_vector.push_back(a);
         }
 
-        auto const* group = res->positive_ionic_group();
-        if (group != nullptr)
-            positives.push_back(group);
+        auto const pos_group = res.get_positive_ionic_group();
+        if (pos_group.has_value())
+            positives.push_back(*pos_group);
 
-        group = res->negative_ionic_group();
-        if (group != nullptr)
-            _negative_ion_vector.push_back(group);
+        auto const neg_group = res.get_negative_ionic_group();
+        if (neg_group.has_value())
+            tmp_pimpl->negative_ion_vector.push_back(*neg_group);
 
-        auto const* ring = res->primary_ring();
-        if (ring != nullptr)
+        auto const ring_setup = [&](std::optional<ring> const& ring)
         {
-            _ring_vector.push_back(ring);
+            if (ring.has_value())
+            {
+                tmp_pimpl->ring_vector.push_back(*ring);
 
-            if (ring->is_a_pication_candidate())
-                _pication_ring_vector.push_back(ring);
-        }
+                if (ring->is_pication_candidate())
+                    tmp_pimpl->pication_ring_vector.push_back(*ring);
+            }
+        };
 
-        ring = res->secondary_ring();
-        if (ring != nullptr)
-        {
-            _ring_vector.push_back(ring);
-
-            if (ring->is_a_pication_candidate())
-                _pication_ring_vector.push_back(ring);
-        }
+        ring_setup(res.get_primary_ring());
+        ring_setup(res.get_secondary_ring());
     }
 
-    lm::main()->info("hydrogen acceptors: {}", _hacceptor_vector.size());
+    lm::main()->info("hydrogen acceptors: {}", tmp_pimpl->hacceptor_vector.size());
     lm::main()->info("hydrogen donors: {}", hdonors.size());
-    lm::main()->info("vdw candidates: {}", _vdw_vector.size());
-    lm::main()->info("cations: {}", _cation_vector.size());
-    lm::main()->info("aromatic rings: {}", _ring_vector.size());
-    lm::main()->info("aromatic rings (valid for pication): {}", _ring_vector.size());
+    lm::main()->info("vdw candidates: {}", tmp_pimpl->vdw_vector.size());
+    lm::main()->info("cations: {}", tmp_pimpl->cation_vector.size());
+    lm::main()->info("aromatic rings: {}", tmp_pimpl->ring_vector.size());
+    lm::main()->info("aromatic rings (valid for pication): {}", tmp_pimpl->ring_vector.size());
 
     lm::main()->info("building acceleration structures...");
 
-    _hdonor_tree = kdtree<chemical_entity::atom, 3>(hdonors);
-    _vdw_tree = kdtree<chemical_entity::atom, 3>(_vdw_vector);
+    tmp_pimpl->hdonor_tree = kdtree<atom, 3>(hdonors);
+    tmp_pimpl->vdw_tree = kdtree<atom, 3>(tmp_pimpl->vdw_vector);
 
-    _ring_tree = kdtree<chemical_entity::ring, 3>(_ring_vector);
-    _pication_ring_tree = kdtree<chemical_entity::ring, 3>(_pication_ring_vector);
-    _positive_ion_tree = kdtree<chemical_entity::ionic_group, 3>(positives);
+    tmp_pimpl->ring_tree = kdtree<ring, 3>(tmp_pimpl->ring_vector);
+    tmp_pimpl->pication_ring_tree = kdtree<ring, 3>(tmp_pimpl->pication_ring_vector);
+    tmp_pimpl->positive_ion_tree = kdtree<ionic_group, 3>(positives);
 
-    _alpha_carbon_tree = kdtree<atom, 3>(_alpha_carbon_vector);
-    _beta_carbon_tree = kdtree<atom, 3>(_beta_carbon_vector);
+    tmp_pimpl->alpha_carbon_tree = kdtree<atom, 3>(tmp_pimpl->alpha_carbon_vector);
+    tmp_pimpl->beta_carbon_tree = kdtree<atom, 3>(tmp_pimpl->beta_carbon_vector);
+
+    for (auto const& connection : structure.connections)
+        if (connection.type == gemmi::Connection::Type::Disulf)
+            tmp_pimpl->ss_bonds.push_back(std::make_shared<bond::ss>(connection));
+
+    pimpl = tmp_pimpl;
 }
 
-rin::maker::~maker()
-{ for (auto* res: _aminoacids) delete res; }
-
-using chemical_entity::component;
+rin::maker::~maker() = default;
 
 template<typename Bond, typename Entity1, typename Entity2>
-vector<shared_ptr<Bond const>> find_bonds(vector<Entity1 const*> const& vec, kdtree<Entity2, 3> const& tree, double dist, parameters const& params)
+vector<shared_ptr<Bond const>>
+find_bonds(vector<Entity1> const& vec, kdtree<Entity2, 3> const& tree, double dist, parameters const& params)
 {
     static_assert(
-            is_base_of<component, Entity1>::value, "template typename Entity1 must inherit from type chemical_entity::component");
+            is_base_of<aminoacid::component, Entity1>::value,
+            "template typename Entity1 must inherit from type chemical_entity::aminoacid::component");
     static_assert(
-            is_base_of<component, Entity2>::value, "template typename Entity2 must inherit from type chemical_entity::component");
+            is_base_of<aminoacid::component, Entity2>::value,
+            "template typename Entity2 must inherit from type chemical_entity::aminoacid::component");
     static_assert(
-            is_base_of<bond::base, Bond>::value, "template typename BondFunc must inherit from type bond::base");
+            is_base_of<bond::base, Bond>::value, "template typename Bond must inherit from type bond::base");
 
     vector<shared_ptr<Bond const>> bonds;
-    for (auto e1 : vec)
+    for (auto const& e1 : vec)
     {
-        auto neighbors = tree.range_search(*e1, dist);
-        for (auto e2 : neighbors)
+        auto neighbors = tree.range_search(e1, dist);
+        for (auto const& e2 : neighbors)
         {
-            auto bond = Bond::test(params, *e1, *e2);
-            if(bond != nullptr)
+            auto bond = Bond::test(params, e1, e2);
+            if (bond != nullptr)
                 bonds.emplace_back(bond);
         }
     }
@@ -235,18 +258,16 @@ vector<shared_ptr<Bond const>> find_bonds(vector<Entity1 const*> const& vec, kdt
     return bonds;
 }
 
-
-vector<shared_ptr<bond::base const>> filter_hbond_realistic(vector<shared_ptr<bond::base const>> const& input)
+std::vector<shared_ptr<bond::hydrogen const>> filter_hbond_realistic(std::vector<shared_ptr<bond::hydrogen const>> input)
 {
-    std::set<shared_ptr<bond::hydrogen const>> hydrogen_bonds_output;
-    std::vector<shared_ptr<bond::hydrogen const>> hydrogen_bonds_input;
+    std::vector<shared_ptr<bond::hydrogen const>> output;
     std::unordered_map<chemical_entity::atom const*, int> donors_bond_count;
     std::unordered_map<chemical_entity::atom const*, int> hydrogen_bond_count;
     std::unordered_map<chemical_entity::atom const*, int> acceptors_bond_count;
 
     //Get the bonds count of an atom
     auto get_bond_count = [](
-            std::unordered_map<chemical_entity::atom const*, int>& container, chemical_entity::atom const* atom)->int
+            std::unordered_map<chemical_entity::atom const*, int>& container, chemical_entity::atom const* atom) -> int
     {
         if (container.find(atom) == container.end())
             return 0;
@@ -256,73 +277,53 @@ vector<shared_ptr<bond::base const>> filter_hbond_realistic(vector<shared_ptr<bo
 
     //Increase the bonds count of an atom
     auto inc_bond_count = [](
-            std::unordered_map<chemical_entity::atom const*, int>& container, chemical_entity::atom const* atom)->void
+            std::unordered_map<chemical_entity::atom const*, int>& container,
+            chemical_entity::atom const* atom) -> void
     {
         if (container.find(atom) == container.end())
             container[atom] = 0;
         container[atom]++;
     };
-    auto can_be_added = [&](shared_ptr<bond::hydrogen const> bond)->bool
+    auto can_be_added = [&](shared_ptr<bond::hydrogen const> const& bond) -> bool
     {
-        return (get_bond_count(donors_bond_count, bond->donor_ptr()) <
-                bond->donor().how_many_hydrogen_can_donate() &&
-                get_bond_count(hydrogen_bond_count, bond->hydrogen_ptr()) < 1 &&
+        return (get_bond_count(donors_bond_count, &bond->get_donor()) <
+                bond->get_donor().how_many_hydrogen_can_donate() &&
+                get_bond_count(hydrogen_bond_count, &bond->get_hydrogen_atom()) < 1 &&
                 //An hydrogen can make only one bond
-                get_bond_count(acceptors_bond_count, bond->acceptor_ptr()) <
-                bond->acceptor().how_many_hydrogen_can_accept());
+                get_bond_count(acceptors_bond_count, &bond->get_acceptor()) <
+                bond->get_acceptor().how_many_hydrogen_can_accept());
     };
-    auto add_bond = [&](shared_ptr<bond::hydrogen const> bond)->void
+    auto add_bond = [&](shared_ptr<bond::hydrogen const> const& bond) -> void
     {
-        inc_bond_count(donors_bond_count, bond->donor_ptr());
-        inc_bond_count(hydrogen_bond_count, bond->hydrogen_ptr());
-        inc_bond_count(acceptors_bond_count, bond->acceptor_ptr());
-        hydrogen_bonds_output.insert(bond);
+        inc_bond_count(donors_bond_count, &bond->get_donor());
+        inc_bond_count(hydrogen_bond_count, &bond->get_hydrogen_atom());
+        inc_bond_count(acceptors_bond_count, &bond->get_acceptor());
+        output.push_back(bond);
     };
-
-    //Extract hydrogen bonds from input
-    for (auto& i: input)
-    {
-        if (i->get_type() == "hydrogen")
-            hydrogen_bonds_input.push_back(std::dynamic_pointer_cast<bond::hydrogen const>(i));
-    }
 
     //Order from smallest to largest energy
-    sort(
-            hydrogen_bonds_input.begin(), hydrogen_bonds_input.end(), [](shared_ptr<bond::hydrogen const> a, shared_ptr<bond::hydrogen const> b)
-            { return a->get_energy() < b->get_energy(); });
+    sort(input.begin(), input.end(),
+         [](shared_ptr<bond::hydrogen const> const& a, shared_ptr<bond::hydrogen const> const& b)
+         { return a->get_energy() < b->get_energy(); });
 
     //Add as many hydrogen bonds as possible
-    for (auto i: hydrogen_bonds_input)
+    for (const auto& i: input)
     {
         if (can_be_added(i))
             add_bond(i);
     }
 
-    //Let's build the output list
-    vector<shared_ptr<bond::base const>> output;
-    for (auto i: input)
-    {
-        //Insert i into the output if it is not an hydrogen or if it is in the filtered list
-        if (i->get_type() != "hydrogen" ||
-            hydrogen_bonds_output.find(std::dynamic_pointer_cast<bond::hydrogen const>(i)) != hydrogen_bonds_output.end())
-        {
-            output.push_back(i);
-        }
-    }
-
     return output;
 }
 
-using std::set, std::unordered_map;
-
-template <typename Bond>
+template<typename Bond>
 vector<shared_ptr<Bond const>> remove_duplicates(vector<shared_ptr<Bond const>> const& unfiltered)
 {
     vector<shared_ptr<Bond const>> results;
     results.reserve(unfiltered.size());
 
     set<string> unique_ids;
-    for (auto const& b : unfiltered)
+    for (auto const& b: unfiltered)
     {
         auto const bond_id = b->get_id();
         if (unique_ids.find(bond_id) == unique_ids.end())
@@ -335,14 +336,14 @@ vector<shared_ptr<Bond const>> remove_duplicates(vector<shared_ptr<Bond const>> 
     return results;
 }
 
-template <typename Bond>
+template<typename Bond>
 vector<shared_ptr<Bond const>> filter_best(vector<shared_ptr<Bond const>> const& unfiltered)
 {
     vector<shared_ptr<Bond const>> results;
     results.reserve(unfiltered.size());
 
     unordered_map<string, shared_ptr<Bond const>> res_pairs;
-    for (auto const& b : unfiltered)
+    for (auto const& b: unfiltered)
     {
         auto const pair_id = b->get_id_simple();
         auto const pair = res_pairs.find(pair_id);
@@ -350,13 +351,13 @@ vector<shared_ptr<Bond const>> filter_best(vector<shared_ptr<Bond const>> const&
             res_pairs.insert_or_assign(pair_id, b);
     }
 
-    for (auto const& pair : res_pairs)
+    for (auto const& pair: res_pairs)
         results.push_back(pair.second);
 
     return results;
 }
 
-template <typename Bond>
+template<typename Bond>
 void append(vector<shared_ptr<bond::base const>>& dst, vector<shared_ptr<Bond const>> const& src)
 { dst.insert(dst.end(), src.begin(), src.end()); }
 
@@ -367,54 +368,58 @@ rin::graph rin::maker::operator()(parameters const& params) const
     {
     case parameters::interaction_type_t::NONCOVALENT_BONDS:
     {
-        auto const hydrogen_bonds= find_bonds<bond::hydrogen>(
-                _hacceptor_vector,
-                _hdonor_tree,
+        auto hydrogen_bonds = find_bonds<bond::hydrogen>(
+                pimpl->hacceptor_vector,
+                pimpl->hdonor_tree,
                 params.query_dist_hbond(),
                 params);
+        if (params.hbond_realistic())
+            hydrogen_bonds = filter_hbond_realistic(hydrogen_bonds);
 
-        auto const vdw_bonds = find_bonds<bond::vdw>(
-                _vdw_vector,
-                _vdw_tree,
-                params.query_dist_vdw(),
-                params);
+        auto const vdw_bonds = remove_duplicates(
+                find_bonds<bond::vdw>(
+                        pimpl->vdw_vector,
+                        pimpl->vdw_tree,
+                        params.query_dist_vdw(),
+                        params));
 
-        auto const ionic_bonds= find_bonds<bond::ionic>(
-                _negative_ion_vector,
-                _positive_ion_tree,
+        auto const ionic_bonds = find_bonds<bond::ionic>(
+                pimpl->negative_ion_vector,
+                pimpl->positive_ion_tree,
                 params.query_dist_ionic(),
                 params);
 
-        auto const cationpi_bonds= find_bonds<bond::pication>(
-                _cation_vector,
-                _pication_ring_tree,
+        auto const pication_bonds = find_bonds<bond::pication>(
+                pimpl->cation_vector,
+                pimpl->pication_ring_tree,
                 params.query_dist_pica(),
                 params);
 
-        auto const pipistack_bonds= find_bonds<bond::pipistack>(
-                _ring_vector,
-                _ring_tree,
-                params.query_dist_pipi(),
-                params);
+        auto const pipistack_bonds = remove_duplicates(
+                find_bonds<bond::pipistack>(
+                        pimpl->ring_vector,
+                        pimpl->ring_tree,
+                        params.query_dist_pipi(),
+                        params));
 
         switch (params.network_policy())
         {
         case parameters::network_policy_t::ALL:
-            append(results,hydrogen_bonds);
-            append(results,vdw_bonds);
-            append(results,ionic_bonds);
-            append(results,cationpi_bonds);
-            append(results,pipistack_bonds);
-            append(results,_ss_bonds);
+            append(results, hydrogen_bonds);
+            append(results, vdw_bonds);
+            append(results, ionic_bonds);
+            append(results, pication_bonds);
+            append(results, pipistack_bonds);
+            append(results, pimpl->ss_bonds);
             break;
 
         case parameters::network_policy_t::BEST_ONE:
-            append(results,hydrogen_bonds);
-            append(results,vdw_bonds);
-            append(results,ionic_bonds);
-            append(results,cationpi_bonds);
-            append(results,pipistack_bonds);
-            append(results,_ss_bonds);
+            append(results, hydrogen_bonds);
+            append(results, vdw_bonds);
+            append(results, ionic_bonds);
+            append(results, pication_bonds);
+            append(results, pipistack_bonds);
+            append(results, pimpl->ss_bonds);
 
             results = filter_best(results);
             break;
@@ -423,45 +428,44 @@ rin::graph rin::maker::operator()(parameters const& params) const
             append(results, filter_best(hydrogen_bonds));
             append(results, filter_best(vdw_bonds));
             append(results, filter_best(ionic_bonds));
-            append(results, filter_best(cationpi_bonds));
+            append(results, filter_best(pication_bonds));
             append(results, filter_best(pipistack_bonds));
-            append(results, filter_best(_ss_bonds));
+            append(results, filter_best(pimpl->ss_bonds));
             break;
         }
 
-        if (params.hbond_realistic())
-            results = filter_hbond_realistic(results);
-
         break;
     }
 
-    case parameters::interaction_type_t::ALPHA_BACKBONE:
+    case parameters::interaction_type_t::CONTACT_MAP:
     {
-        auto alpha_bonds= find_bonds<bond::generico>(
-                _alpha_carbon_vector,
-                _alpha_carbon_tree,
-                params.query_dist_alpha(),
-                params);
+        vector<shared_ptr<bond::generic_bond const>> generic_bonds;
+        switch (params.cmap_type())
+        {
+        case rin::parameters::contact_map_type_t::ALPHA:
+            generic_bonds = find_bonds<bond::generic_bond>(
+                    pimpl->alpha_carbon_vector,
+                    pimpl->alpha_carbon_tree,
+                    params.query_dist_cmap(),
+                    params);
+            break;
 
-        append(results, filter_best(filter_best(alpha_bonds)));
+        case rin::parameters::contact_map_type_t::BETA:
+            generic_bonds = find_bonds<bond::generic_bond>(
+                    pimpl->beta_carbon_vector,
+                    pimpl->beta_carbon_tree,
+                    params.query_dist_cmap(),
+                    params);
+            break;
+        }
+
+        append(results, filter_best(generic_bonds));
         break;
     }
-
-    case parameters::interaction_type_t::BETA_BACKBONE:
-    {
-        auto beta_bonds= find_bonds<bond::generico>(
-                _beta_carbon_vector,
-                _beta_carbon_tree,
-                params.query_dist_beta(),
-                params);
-
-        append(results, filter_best(filter_best(beta_bonds)));
-        break;
-    }
     }
 
-    results = remove_duplicates(results);
+    // results = remove_duplicates(results);
     lm::main()->info("there are {} valid bonds after filtering", results.size());
 
-    return {_pdb_name, params, _aminoacids, results};
+    return {pimpl->pdb_name, params, pimpl->aminoacids, results};
 }

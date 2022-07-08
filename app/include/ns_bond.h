@@ -1,27 +1,20 @@
 #pragma once
 
+#pragma warning(push, 0)
+
+#include <gemmi/pdb.hpp>
+
+#pragma warning(pop)
+
 #include <string>
 #include <memory>
-#include "prelude.h"
 
 #include "rin_graph.h"
-#include "pdb_records.h"
+
+#include "ns_chemical_entity.h"
 
 #include "energy.h"
 #include "rin_params.h"
-
-namespace chemical_entity
-{
-class aminoacid;
-
-class atom;
-
-class ring;
-
-class ionic_group;
-}
-
-class network;
 
 namespace bond
 {
@@ -52,9 +45,6 @@ public:
     virtual std::string get_interaction() const = 0;
 
     [[nodiscard]]
-    virtual std::string get_type() const = 0;
-
-    [[nodiscard]]
     virtual std::string get_id() const = 0;
 
     [[nodiscard]]
@@ -64,38 +54,31 @@ public:
     virtual explicit operator rin::edge() const = 0;
 };
 
-class generico final : public base
+class generic_bond final : public base
 {
 private:
-    chemical_entity::aminoacid const& _source;
-    chemical_entity::aminoacid const& _target;
-
-    rin::parameters const _params;
+    chemical_entity::atom const _source;
+    chemical_entity::atom const _target;
 
 public:
-    static std::shared_ptr<generico const> test(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
+    static std::shared_ptr<generic_bond const> test(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
-    generico(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
-
-    [[nodiscard]]
-    chemical_entity::aminoacid const& source() const
-    { return _source; }
+    generic_bond(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     [[nodiscard]]
-    chemical_entity::aminoacid const& target() const
-    { return _target; }
+    chemical_entity::aminoacid get_source() const;
+
+    [[nodiscard]]
+    chemical_entity::aminoacid get_target() const;
 
     [[nodiscard]]
     std::string get_interaction() const override;
 
     [[nodiscard]]
-    std::string get_type() const override;
-
-    [[nodiscard]]
     std::string get_id() const override;
 
     [[nodiscard]]
-    virtual std::string get_id_simple() const override;
+    std::string get_id_simple() const override;
 
     [[nodiscard]]
     explicit operator rin::edge() const override
@@ -105,45 +88,38 @@ public:
 class hydrogen final : public base
 {
 private:
-    chemical_entity::atom const& _acceptor;
-    chemical_entity::atom const& _donor;
-    chemical_entity::atom const* _hydrogen;
+    chemical_entity::atom const _acceptor;
+    chemical_entity::atom const _donor;
+    chemical_entity::atom const _hydrogen;
 
     double const _angle;
 
     // returns a pair sigma_ij,epsilon_ij
-    std::pair<double, double> getSigmaEpsilon(
-            chemical_entity::atom const& donor, chemical_entity::atom const& acceptor);
+    static std::pair<double, double> getSigmaEpsilon(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor);
 
-    double energy(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor, chemical_entity::atom const* hydrogen);
+    static double energy(chemical_entity::atom const& donor, chemical_entity::atom const& acceptor, chemical_entity::atom const& hydrogen);
 
 public:
     static std::shared_ptr<hydrogen const> test(rin::parameters const& params, chemical_entity::atom const& acceptor, chemical_entity::atom const& donor);
 
-    hydrogen(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const* hydrogen, double angle);
+    hydrogen(chemical_entity::atom const& acceptor, chemical_entity::atom const& donor, chemical_entity::atom const& hydrogen, double angle);
 
     [[nodiscard]]
-    chemical_entity::atom const& acceptor() const;
+    chemical_entity::atom const& get_acceptor() const;
 
     [[nodiscard]]
-    chemical_entity::atom const& donor() const;
+    chemical_entity::atom const& get_donor() const;
 
     [[nodiscard]]
-    chemical_entity::atom const& source_atom() const
-    { return acceptor(); }
+    chemical_entity::atom const& get_source_atom() const
+    { return get_acceptor(); }
 
     [[nodiscard]]
-    chemical_entity::atom const& target_atom() const
-    { return donor(); }
+    chemical_entity::atom const& get_target_atom() const
+    { return get_donor(); }
 
     [[nodiscard]]
-    chemical_entity::atom const* acceptor_ptr() const;
-
-    [[nodiscard]]
-    chemical_entity::atom const* donor_ptr() const;
-
-    [[nodiscard]]
-    chemical_entity::atom const* hydrogen_ptr() const;
+    chemical_entity::atom const& get_hydrogen_atom() const;
 
     [[nodiscard]]
     double get_angle() const;
@@ -155,21 +131,18 @@ public:
     std::string get_id() const override;
 
     [[nodiscard]]
-    virtual std::string get_id_simple() const override;
+    std::string get_id_simple() const override;
 
     [[nodiscard]]
     explicit operator rin::edge() const override
     { return rin::edge(*this); }
-
-    [[nodiscard]]
-    std::string get_type() const override;
 };
 
 class ionic final : public base
 {
 private:
-    chemical_entity::ionic_group const& _negative;
-    chemical_entity::ionic_group const& _positive;
+    chemical_entity::ionic_group const _negative;
+    chemical_entity::ionic_group const _positive;
 
 public:
     static std::shared_ptr<ionic const> test(rin::parameters const& params, chemical_entity::ionic_group const& a, chemical_entity::ionic_group const& b);
@@ -177,11 +150,11 @@ public:
     ionic(chemical_entity::ionic_group const& negative, chemical_entity::ionic_group const& positive);
 
     [[nodiscard]]
-    chemical_entity::ionic_group const& source_positive() const
+    chemical_entity::ionic_group const& get_source_positive() const
     { return _positive; }
 
     [[nodiscard]]
-    chemical_entity::ionic_group const& target_negative() const
+    chemical_entity::ionic_group const& get_target_negative() const
     { return _negative; }
 
     [[nodiscard]]
@@ -192,20 +165,17 @@ public:
     { return rin::edge(*this); }
 
     [[nodiscard]]
-    std::string get_type() const override;
-
-    [[nodiscard]]
     std::string get_id() const override;
 
     [[nodiscard]]
-    virtual std::string get_id_simple() const override;
+    std::string get_id_simple() const override;
 };
 
 class pication : public base
 {
 private:
-    chemical_entity::atom const& _cation;
-    chemical_entity::ring const& _ring;
+    chemical_entity::atom const _cation;
+    chemical_entity::ring const _ring;
 
     double _angle;
 
@@ -215,15 +185,15 @@ public:
     pication(chemical_entity::ring const& ring, chemical_entity::atom const& cation, double angle);
 
     [[nodiscard]]
-    chemical_entity::ring const& source_ring() const
+    chemical_entity::ring const& get_source_ring() const
     { return _ring; }
 
     [[nodiscard]]
-    chemical_entity::atom const& target_cation() const
+    chemical_entity::atom const& get_target_cation() const
     { return _cation; }
 
     [[nodiscard]]
-    double angle() const;
+    double get_angle() const;
 
     [[nodiscard]]
     std::string get_interaction() const override;
@@ -233,20 +203,23 @@ public:
     { return rin::edge(*this); }
 
     [[nodiscard]]
-    std::string get_type() const override;
-
-    [[nodiscard]]
     std::string get_id() const override;
 
     [[nodiscard]]
-    virtual std::string get_id_simple() const override;
+    std::string get_id_simple() const override;
+
+    static double getKappa(const chemical_entity::atom &cation);
+
+    static double getAlpha(const chemical_entity::ring &ring);
+
+    static double energy(const chemical_entity::ring &ring, const chemical_entity::atom &cation);
 };
 
 class pipistack final : public base
 {
 private:
-    chemical_entity::ring const& _source_ring;
-    chemical_entity::ring const& _target_ring;
+    chemical_entity::ring const _source_ring;
+    chemical_entity::ring const _target_ring;
     double const _angle;
 
 public:
@@ -254,16 +227,18 @@ public:
 
     pipistack(chemical_entity::ring const& a, chemical_entity::ring const& b, double angle);
 
+    static double energy(double angle);
+
     [[nodiscard]]
-    chemical_entity::ring const& source_ring() const
+    chemical_entity::ring const& get_source_ring() const
     { return _source_ring; }
 
     [[nodiscard]]
-    chemical_entity::ring const& target_ring() const
+    chemical_entity::ring const& get_target_ring() const
     { return _target_ring; }
 
     [[nodiscard]]
-    double angle() const;
+    double get_angle() const;
 
     [[nodiscard]]
     std::string get_interaction() const override;
@@ -273,13 +248,10 @@ public:
     { return rin::edge(*this); }
 
     [[nodiscard]]
-    std::string get_type() const override;
-
-    [[nodiscard]]
     std::string get_id() const override;
 
     [[nodiscard]]
-    virtual std::string get_id_simple() const override;
+    std::string get_id_simple() const override;
 };
 
 class ss final : public base
@@ -294,13 +266,13 @@ private:
     std::string const _target_name;
 
 public:
-    explicit ss(records::ss const& record);
+    explicit ss(gemmi::Connection const& connection);
 
     [[nodiscard]]
-    std::string source_id() const;
+    std::string get_source_id() const;
 
     [[nodiscard]]
-    std::string target_id() const;
+    std::string get_target_id() const;
 
     [[nodiscard]]
     std::string get_interaction() const override;
@@ -313,19 +285,16 @@ public:
     std::string get_id() const override;
 
     [[nodiscard]]
-    virtual std::string get_id_simple() const override;
-
-    [[nodiscard]]
-    std::string get_type() const override;
+    std::string get_id_simple() const override;
 };
 
 class vdw final : public base
 {
 private:
-    chemical_entity::atom const& _source_atom;
-    chemical_entity::atom const& _target_atom;
+    chemical_entity::atom const _source_atom;
+    chemical_entity::atom const _target_atom;
 
-    double energy(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
+    static double energy(chemical_entity::atom const& source_atom, chemical_entity::atom const& target_atom);
 
 public:
     static std::shared_ptr<vdw const> test(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
@@ -333,11 +302,11 @@ public:
     vdw(chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     [[nodiscard]]
-    chemical_entity::atom const& source_atom() const
+    chemical_entity::atom const& get_source_atom() const
     { return _source_atom; }
 
     [[nodiscard]]
-    chemical_entity::atom const& target_atom() const
+    chemical_entity::atom const& get_target_atom() const
     { return _target_atom; }
 
     [[nodiscard]]
@@ -348,12 +317,9 @@ public:
     { return rin::edge(*this); }
 
     [[nodiscard]]
-    std::string get_type() const override;
-
-    [[nodiscard]]
     std::string get_id() const override;
 
     [[nodiscard]]
-    virtual std::string get_id_simple() const override;
+    std::string get_id_simple() const override;
 };
 }
