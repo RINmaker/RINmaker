@@ -135,6 +135,35 @@ void assert_ring_correctness(
     }
 }
 
+void assert_ionic_group_correctness(
+    aminoacid const& residue, gemmi::Model const& model, vector<string> const& expected_atom_names, vector<atom> const& actual_atoms)
+{
+    vector<string> actual_atom_names;
+    actual_atom_names.reserve(actual_atoms.size());
+
+    for(auto const& atom : actual_atoms)
+        actual_atom_names.push_back(atom.get_name());
+
+    for(auto const& expected_atom : expected_atom_names)
+    {
+        if (find(actual_atom_names.begin(), actual_atom_names.end(), expected_atom) == actual_atom_names.end())
+        {
+            auto const expected_atoms_str = join_strings(expected_atom_names, ",");
+            auto const actual_atoms_str = get_name_from_atoms(actual_atoms, ",");
+
+            string msg = "malformed ionic group in model " + model.name;
+            msg += " residue " + residue.get_id();
+            msg += " expected atoms={";
+            msg += expected_atoms_str;
+            msg += "} actual atoms={";
+            msg += actual_atoms_str;
+            msg += "}";
+
+            throw std::invalid_argument(msg);
+        }
+    }
+}
+
 chemical_entity::aminoacid::aminoacid(
     gemmi::Residue const& residue,
     gemmi::Chain const& chain,
@@ -239,12 +268,12 @@ chemical_entity::aminoacid::aminoacid(
 
     if (charge == 1)
     {
-        //assert_ionic_group_correctness(*this, model, ionic_group_names, ionic_group_atoms);
+        assert_ionic_group_correctness(*this, model, ionic_group_names, ionic_group_atoms);
         _pimpl->positive_ionic_group = ionic_group(ionic_group_atoms, 1, *this);
     }
     else if (charge == -1)
     {
-        //assert_ionic_group_correctness(*this, model, ionic_group_names, ionic_group_atoms);
+        assert_ionic_group_correctness(*this, model, ionic_group_names, ionic_group_atoms);
         _pimpl->negative_ionic_group = ionic_group(ionic_group_atoms, -1, *this);
     }
 
