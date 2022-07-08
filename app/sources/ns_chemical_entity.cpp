@@ -173,9 +173,35 @@ chemical_entity::aminoacid::aminoacid(
         n_of_rings = 2;
     }
 
-    // note: are they mutually exclusive? should be addressed
-    vector<atom> positive, negative;
-    vector<atom> ring1, ring2;
+    // discover ionic group of this aminoacid
+    int charge = 0;
+    vector<string> ionic_group_names;
+    if (residue.name == "HIS")
+    {
+        charge = 1;
+        ionic_group_names = {"CG", "CD2", "CE1", "ND1", "NE2"};
+    }
+    else if (residue.name == "ARG")
+    {
+        charge = 1;
+        ionic_group_names = {"CZ", "NH2", "NH1", "NE"};
+    }
+    else if (residue.name == "LYS")
+    {
+        charge = 1;
+        ionic_group_names = {"NZ"};
+    }
+    else if (residue.name == "GLU")
+    {
+        charge = -1;
+        ionic_group_names = {"CD", "OE1", "OE2"};
+    }
+    else if (residue.name == "ASP")
+    {
+        charge = -1;
+        ionic_group_names = {"CG", "OD1", "OD2"};
+    }
+    vector<atom> ring1, ring2, ionic_group_atoms;
 
     for (auto const& record: residue.atoms)
     {
@@ -194,11 +220,8 @@ chemical_entity::aminoacid::aminoacid(
         if (n_of_rings == 2 && find(ring2_names.begin(), ring2_names.end(), atom.get_name()) != ring2_names.end())
             ring2.push_back(atom);
 
-        if (atom.in_positive_ionic_group())
-            positive.push_back(atom);
-
-        else if (atom.in_negative_ionic_group())
-            negative.push_back(atom);
+        if (charge != 0 && find(ionic_group_names.begin(), ionic_group_names.end(), atom.get_name()) != ionic_group_names.end())
+            ionic_group_atoms.push_back(atom);
     }
 
     _pimpl->position = center_of_mass(get_atoms());
@@ -214,11 +237,16 @@ chemical_entity::aminoacid::aminoacid(
         _pimpl->secondary_ring = ring(ring2, *this);
     }
 
-    if (!positive.empty())
-        _pimpl->positive_ionic_group = ionic_group(positive, 1, *this);
-
-    if (!negative.empty())
-        _pimpl->negative_ionic_group = ionic_group(negative, -1, *this);
+    if (charge == 1)
+    {
+        //assert_ionic_group_correctness(*this, model, ionic_group_names, ionic_group_atoms);
+        _pimpl->positive_ionic_group = ionic_group(ionic_group_atoms, 1, *this);
+    }
+    else if (charge == -1)
+    {
+        //assert_ionic_group_correctness(*this, model, ionic_group_names, ionic_group_atoms);
+        _pimpl->negative_ionic_group = ionic_group(ionic_group_atoms, -1, *this);
+    }
 
     _pimpl->protein_name = protein.name;
     _pimpl->secondary_structure_name = "NONE";
@@ -337,7 +365,7 @@ bool atom::in_positive_ionic_group() const
         return name == "CG" || name == "CD2" || name == "CE1" || name == "ND1" || name == "NE2";
 
     else if (res_name == "ARG")
-        return name == "CZ" || name == "NH2";
+        return name == "CZ" || name == "NH2" || name == "NH1" || name == "NE";
 
     else if (res_name == "LYS")
         return name == "NZ";
