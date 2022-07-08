@@ -228,7 +228,7 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  b
     tmp_pimpl->alpha_carbon_tree = kdtree<atom, 3>(tmp_pimpl->alpha_carbon_vector);
     tmp_pimpl->beta_carbon_tree = kdtree<atom, 3>(tmp_pimpl->beta_carbon_vector);
 
-    for (auto const& connection : structure.connections)
+    for (auto const& connection : protein.connections)
         if (connection.type == gemmi::Connection::Type::Disulf)
             tmp_pimpl->ss_bonds.push_back(std::make_shared<bond::ss>(connection));
 
