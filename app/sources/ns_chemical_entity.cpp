@@ -278,7 +278,7 @@ chemical_entity::aminoacid::aminoacid(
     }
 
     _pimpl->protein_name = protein.name;
-    _pimpl->secondary_structure_name = "NONE";
+    _pimpl->secondary_structure_name = cfg::graphml::none;
 }
 
 aminoacid::aminoacid(
@@ -286,18 +286,16 @@ aminoacid::aminoacid(
     gemmi::Chain const& chain,
     gemmi::Model const& model,
     gemmi::Structure const& protein,
-    std::optional<gemmi::Helix> const& helix) :
+    std::optional<std::variant<gemmi::Helix, gemmi::Sheet::Strand>> const& secondary_structure) :
     aminoacid(residue, chain, model, protein)
-{ _pimpl->secondary_structure_name = helix.has_value() ? "HELIX" : "LOOP"; }    // fixme find a good name format
-
-aminoacid::aminoacid(
-    gemmi::Residue const& residue,
-    gemmi::Chain const& chain,
-    gemmi::Model const& model,
-    gemmi::Structure const& protein,
-    std::optional<gemmi::Sheet::Strand> const& strand) :
-    aminoacid(residue, chain, model, protein)
-{ _pimpl->secondary_structure_name = strand.has_value() ? "SHEET" : "LOOP"; }   // fixme find a good name format
+{
+    if (!secondary_structure.has_value())
+        _pimpl->secondary_structure_name = "LOOP";
+    else if (std::holds_alternative<gemmi::Helix>(*secondary_structure))
+        _pimpl->secondary_structure_name = "HELIX";
+    else if (std::holds_alternative<gemmi::Sheet::Strand>(*secondary_structure))
+        _pimpl->secondary_structure_name = "SHEET";
+}
 
 aminoacid aminoacid::component::get_residue() const
 {

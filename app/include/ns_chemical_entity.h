@@ -11,6 +11,8 @@
 #include <array>
 #include <memory>
 #include <optional>
+#include <variant>
+#include <set>
 
 #include "config.h"
 #include "rin_graph.h"
@@ -62,14 +64,7 @@ public:
         gemmi::Chain const& chain,
         gemmi::Model const& model,
         gemmi::Structure const& protein,
-        std::optional<gemmi::Helix> const& helix);
-
-    aminoacid(
-        gemmi::Residue const& residue,
-        gemmi::Chain const& chain,
-        gemmi::Model const& model,
-        gemmi::Structure const& protein,
-        std::optional<gemmi::Sheet::Strand> const& strand);
+        std::optional<std::variant<gemmi::Helix, gemmi::Sheet::Strand>> const& secondary_structure);
 
     ~aminoacid();
 

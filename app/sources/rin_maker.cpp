@@ -59,44 +59,51 @@ public:
 };
 
 template <typename Secondary>
-std::tuple<std::string, interval<int>> from_secondary_structure(Secondary sec, gemmi::Model const& model)
-{
-    auto cra_start = model.find_cra(sec.start);
-    auto cra_end = model.find_cra(sec.end);
-
-    auto seq_start = cra_start.residue->seqid.num.value;
-    auto seq_end = cra_end.residue->seqid.num.value;
-
-    return {cra_start.chain->name, {seq_start, seq_end}};
-}
-
-template <typename T>
 struct secondary_structure_helper_map
 {
 private:
-    unordered_map<string, map<interval<int>, T, interval<int>::less>> chain_to_map;
+    unordered_map<string, map<interval<int>, Secondary, interval<int>::less>> chain_to_map;
+
+    static std::optional<std::tuple<std::string, interval<int>>> maybe_chain_and_interval(Secondary sstructure, gemmi::Model const& model)
+    {
+        auto cra_start = model.find_cra(sstructure.start);
+        auto cra_end = model.find_cra(sstructure.end);
+
+        if (cra_start.residue != nullptr && cra_end.residue != nullptr)
+        {
+            auto seq_start = cra_start.residue->seqid.num.value;
+            auto seq_end = cra_end.residue->seqid.num.value;
+
+            return {{cra_start.chain->name, {seq_start, seq_end}}};
+        }
+        else
+        { return std::nullopt; }
+    }
 
 public:
-    void insert(T const& t, gemmi::Model const& model)
+    void maybe_insert(Secondary const& t, gemmi::Model const& model)
     {
-        auto chain_and_interval = from_secondary_structure(t, model);
+        auto maybe_stuff = maybe_chain_and_interval(t, model);
 
-        auto chain_name = std::get<0>(chain_and_interval);
-        auto sequence_interval = std::get<1>(chain_and_interval);
+        if (!maybe_stuff.has_value())
+            return;
+
+        auto chain_name = std::get<0>(*maybe_stuff);
+        auto sequence_interval = std::get<1>(*maybe_stuff);
 
         auto chain_and_ts = chain_to_map.find(chain_name);
         if (chain_and_ts == chain_to_map.end())
         {
-            map<interval<int>, T, interval<int>::less> tmp{{sequence_interval, t}};
+            map<interval<int>, Secondary, interval<int>::less> tmp{{sequence_interval, t}};
             chain_to_map.insert({chain_name, tmp});
         }
         else
         { chain_and_ts->second.insert_or_assign(sequence_interval, t); }
     }
 
-    std::optional<T> find(gemmi::Residue const& residue, gemmi::Chain const& chain)
+    std::optional<Secondary> maybe_find(gemmi::Residue const& residue, gemmi::Chain const& chain)
     {
-        std::optional<T> result{};
+        std::optional<Secondary> result{};
         auto chain_and_ts = chain_to_map.find(chain.name);
         if (chain_and_ts != chain_to_map.end())
         {
@@ -115,12 +122,12 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& structure)
 {
     secondary_structure_helper_map<gemmi::Helix> helix_map;
     for (auto const& helix: structure.helices)
-        helix_map.insert(helix, model);
+        helix_map.maybe_insert(helix, model);
 
     secondary_structure_helper_map<gemmi::Sheet::Strand> strand_map;
     for (auto const& sheet: structure.sheets)
         for (auto const& strand: sheet.strands)
-            strand_map.insert(strand, model);
+            strand_map.maybe_insert(strand, model);
 
     // we are filling the private implementation piece-by-piece, so we need a non-const temporary here
     // at the end of the constructor we will store it in the private member pimpl, which is a const*
