@@ -106,8 +106,8 @@ array<double, 3> center_of_mass(vector<atom> const& atoms)
     return centroid;
 }
 
-void assert_ring_correctness(
-    aminoacid const& residue, gemmi::Model const& model, vector<string> const& expected_atom_names, vector<atom> const& actual_atoms)
+void assert_atom_group_correctness(
+    aminoacid const& residue, gemmi::Model const& model, vector<string> const& expected_atom_names, vector<atom> const& actual_atoms, string const& group_name)
 {
     vector<string> actual_atom_names;
     actual_atom_names.reserve(actual_atoms.size());
@@ -122,36 +122,7 @@ void assert_ring_correctness(
             auto const expected_atoms_str = join_strings(expected_atom_names, ",");
             auto const actual_atoms_str = get_name_from_atoms(actual_atoms, ",");
 
-            string msg = "malformed ring in model " + model.name;
-            msg += " residue " + residue.get_id();
-            msg += " expected atoms={";
-            msg += expected_atoms_str;
-            msg += "} actual atoms={";
-            msg += actual_atoms_str;
-            msg += "}";
-
-            throw std::invalid_argument(msg);
-        }
-    }
-}
-
-void assert_ionic_group_correctness(
-    aminoacid const& residue, gemmi::Model const& model, vector<string> const& expected_atom_names, vector<atom> const& actual_atoms)
-{
-    vector<string> actual_atom_names;
-    actual_atom_names.reserve(actual_atoms.size());
-
-    for(auto const& atom : actual_atoms)
-        actual_atom_names.push_back(atom.get_name());
-
-    for(auto const& expected_atom : expected_atom_names)
-    {
-        if (find(actual_atom_names.begin(), actual_atom_names.end(), expected_atom) == actual_atom_names.end())
-        {
-            auto const expected_atoms_str = join_strings(expected_atom_names, ",");
-            auto const actual_atoms_str = get_name_from_atoms(actual_atoms, ",");
-
-            string msg = "malformed ionic group in model " + model.name;
+            string msg = "malformed " + group_name + " in model " + model.name;
             msg += " residue " + residue.get_id();
             msg += " expected atoms={";
             msg += expected_atoms_str;
@@ -257,23 +228,23 @@ chemical_entity::aminoacid::aminoacid(
 
     if (n_of_rings >= 1)
     {
-        assert_ring_correctness(*this, model, ring1_names, ring1);
+        assert_atom_group_correctness(*this, model, ring1_names, ring1, "ring");
         _pimpl->primary_ring = ring(ring1, *this);
     }
     if (n_of_rings == 2)
     {
-        assert_ring_correctness(*this, model, ring2_names, ring2);
+        assert_atom_group_correctness(*this, model, ring2_names, ring2, "ring");
         _pimpl->secondary_ring = ring(ring2, *this);
     }
 
     if (charge == 1)
     {
-        assert_ionic_group_correctness(*this, model, ionic_group_names, ionic_group_atoms);
+        assert_atom_group_correctness(*this, model, ionic_group_names, ionic_group_atoms, "ionic group");
         _pimpl->positive_ionic_group = ionic_group(ionic_group_atoms, 1, *this);
     }
     else if (charge == -1)
     {
-        assert_ionic_group_correctness(*this, model, ionic_group_names, ionic_group_atoms);
+        assert_atom_group_correctness(*this, model, ionic_group_names, ionic_group_atoms, "ionic group");
         _pimpl->negative_ionic_group = ionic_group(ionic_group_atoms, -1, *this);
     }
 
