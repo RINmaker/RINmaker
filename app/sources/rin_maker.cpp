@@ -118,14 +118,14 @@ public:
     { return chain_to_map.empty(); }
 };
 
-rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& structure)
+rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  bool skip_water, bool skip_malformed)
 {
     secondary_structure_helper_map<gemmi::Helix> helix_map;
-    for (auto const& helix: structure.helices)
+    for (auto const& helix: protein.helices)
         helix_map.maybe_insert(helix, model);
 
     secondary_structure_helper_map<gemmi::Sheet::Strand> strand_map;
-    for (auto const& sheet: structure.sheets)
+    for (auto const& sheet: protein.sheets)
         for (auto const& strand: sheet.strands)
             strand_map.maybe_insert(strand, model);
 
@@ -140,15 +140,15 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& structure)
         for (auto const& residue: chain.residues)
         {
             if (helix_map.empty() && strand_map.empty())
-                tmp_pimpl->aminoacids.emplace_back(residue, chain, model, structure);
+                tmp_pimpl->aminoacids.emplace_back(residue, chain, model, protein);
             else
             {
-                auto maybe_helix = helix_map.find(residue, chain);
+                auto maybe_helix = helix_map.maybe_find(residue, chain);
                 if (maybe_helix.has_value())
-                    tmp_pimpl->aminoacids.emplace_back(residue, chain, model, structure, maybe_helix);
+                    tmp_pimpl->aminoacids.emplace_back(residue, chain, model, protein, maybe_helix);
                 else
                     // in this last case either it is in a sheet or it is in a loop
-                    tmp_pimpl->aminoacids.emplace_back(residue, chain, model, structure, strand_map.find(residue, chain));
+                    tmp_pimpl->aminoacids.emplace_back(residue, chain, model, protein, strand_map.maybe_find(residue, chain));
             }
         }
     }
