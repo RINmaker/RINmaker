@@ -52,7 +52,8 @@ namespace graphml
 {
 extern char const* null;                // "-999.9"
 extern char const* none;                // "None"
-extern char const* default_dirname;     // "./outputs"
+extern char const* default_dirname;     // "."
+extern char const* default_filename;    // "./network.graphml
 extern char const* output_file_suffix;  // ".graphml"
 }
 

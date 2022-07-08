@@ -8,15 +8,30 @@
 
 #include <string>
 #include <optional>
+#include <variant>
 #include <filesystem>
 
 #include "rin_params.h"
 #include "log_manager.h"
 
+struct output_file
+{ std::filesystem::path value; };
+
+struct output_directory
+{ std::filesystem::path value; };
+
 struct arguments final
 {
     rin::parameters params;
-    std::filesystem::path pdb_path, out_dir, log_dir;
+
+    // always a file
+    std::filesystem::path input;
+
+    // might be a single file or a directory
+    std::variant<output_file, output_directory> output;
+
+    // always a directory
+    std::filesystem::path log_dir;
 };
 
 std::optional<arguments> read_args(int argc, const char* argv[]);

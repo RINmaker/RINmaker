@@ -56,6 +56,14 @@ optional<arguments> read_args(int argc, const char* argv[])
         ->required()
         ->check(CLI::ExistingFile);
 
+    // you can either output a single file of the first model, or a directory of all models
+    filesystem::path out_path = cfg::graphml::default_filename;
+    app.add_option("-o,--output", out_path, "Output file (or directory if -d flag is specified)")
+        ->required();
+
+    bool output_as_directory = false;
+    app.add_flag("-d", output_as_directory, "Use -o argument as a directory");
+
     filesystem::path log_dir = cfg::log::default_dirname;
     app.add_option("-l,--log-directory", log_dir, "Log directory")
         ->default_str(cfg::log::default_dirname);
@@ -193,7 +201,14 @@ optional<arguments> read_args(int argc, const char* argv[])
 
     auto params = pcfg.build();
 
-    fs::create_directory(out_dir);
-
-    return arguments{params, pdb_path, out_dir, log_dir};
+    if (output_as_directory)
+    {
+        fs::create_directory(out_path);
+        return arguments{params, pdb_path, {output_directory{out_path}}, log_dir};
+    }
+    else
+    {
+        if (out_path.has_parent_path()) fs::create_directory(out_path.parent_path());
+        return arguments{params, pdb_path, {output_file{out_path}}, log_dir};
+    }
 }
