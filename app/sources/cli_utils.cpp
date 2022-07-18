@@ -52,7 +52,7 @@ optional<arguments> read_args(int argc, const char* argv[])
     app.get_formatter()->column_width(64);
 
     filesystem::path pdb_path;
-    app.add_option("-i, --input", pdb_path, "Path to PDB file (.pdb)")
+    app.add_option("-i, --input", pdb_path, "Path to .pdb or .cif file")
         ->required()
         ->check(CLI::ExistingFile);
 
