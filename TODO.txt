@@ -11,6 +11,8 @@ TODO:
 - mancano unita di misura sulla ui (Francesco)
 - Controllare che le formule dell'energia diano i risultati tutti nella stessa U.M. (kj o kcal)
 - UI avere la conversione tra kj e kcal
+- Jacopo: aggiungere colonne alla tabella sul pdf: NOME del PDB di input; EXPECTED RESULT con spunta booleana; SOURCE, TARGET e tipo di arco/legame
+          RIMUOVERE la colonna TYPE
 
 URGENT:
 - probabilistic rin in case of multiple models (server side)
