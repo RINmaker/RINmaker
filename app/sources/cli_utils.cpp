@@ -68,6 +68,9 @@ optional<arguments> read_args(int argc, const char* argv[])
     app.add_option("-l,--log-directory", log_dir, "Log directory")
         ->default_str(cfg::log::default_dirname);
 
+    bool keep_water = false;
+    app.add_flag("-w,--keep-water", keep_water, "Keep water residues");
+
     int sequence_separation;
     app.add_option("-s,--sequence-separation", sequence_separation, "Minimum sequence separation")
         ->default_val(cfg::params::seq_sep)
@@ -205,6 +208,6 @@ optional<arguments> read_args(int argc, const char* argv[])
     else
     {
         if (out_path.has_parent_path()) fs::create_directory(out_path.parent_path());
-        return arguments{params, pdb_path, {output_file{out_path}}, log_dir};
+        return arguments{params, pdb_path, {output_file{out_path}}, log_dir, !keep_water};
     }
 }

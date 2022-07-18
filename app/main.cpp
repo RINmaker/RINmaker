@@ -43,7 +43,7 @@ int main(int argc, const char* argv[])
                     std::filesystem::path file = protein.name + "_" + model.name + ".graphml";
 
                     // create rin::maker, create graph and write to graphml
-                    rin::maker{model, protein}(parsed_args.params).write_to_file(dir / file);
+                    rin::maker{model, protein, parsed_args.skip_water}(parsed_args.params).write_to_file(dir / file);
                 }
             }
 
@@ -52,7 +52,7 @@ int main(int argc, const char* argv[])
             {
                 auto const file = get<output_file>(parsed_args.output).value;
                 // create rin::maker, create graph and write to graphml
-                rin::maker{protein.first_model(), protein}(parsed_args.params).write_to_file(file);
+                rin::maker{protein.first_model(), protein, parsed_args.skip_water}(parsed_args.params).write_to_file(file);
             }
             //lm::console()->info("done");
 

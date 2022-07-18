@@ -32,6 +32,9 @@ struct arguments final
 
     // always a directory
     std::filesystem::path log_dir;
+
+    // speeds up things by not keeping waters
+    bool skip_water;
 };
 
 std::optional<arguments> read_args(int argc, const char* argv[]);

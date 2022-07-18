@@ -139,16 +139,19 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  b
     {
         for (auto const& residue: chain.residues)
         {
-            if (helix_map.empty() && strand_map.empty())
-                tmp_pimpl->aminoacids.emplace_back(residue, chain, model, protein);
-            else
+            if (!residue.is_water() || !skip_water)
             {
-                auto maybe_helix = helix_map.maybe_find(residue, chain);
-                if (maybe_helix.has_value())
-                    tmp_pimpl->aminoacids.emplace_back(residue, chain, model, protein, maybe_helix);
+                if (helix_map.empty() && strand_map.empty())
+                    tmp_pimpl->aminoacids.emplace_back(residue, chain, model, protein);
                 else
-                    // in this last case either it is in a sheet or it is in a loop
-                    tmp_pimpl->aminoacids.emplace_back(residue, chain, model, protein, strand_map.maybe_find(residue, chain));
+                {
+                    auto maybe_helix = helix_map.maybe_find(residue, chain);
+                    if (maybe_helix.has_value())
+                        tmp_pimpl->aminoacids.emplace_back(residue, chain, model, protein, maybe_helix);
+                    else
+                        // in this last case either it is in a sheet or it is in a loop
+                        tmp_pimpl->aminoacids.emplace_back(residue, chain, model, protein, strand_map.maybe_find(residue, chain));
+                }
             }
         }
     }
