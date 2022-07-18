@@ -106,7 +106,10 @@ array<double, 3> center_of_mass(vector<atom> const& atoms)
     return centroid;
 }
 
-void assert_atom_group_correctness(
+// returning an optional of the error message should be way faster than try/catching
+// exceptions (since a soon-to-be added option will give the possibility to ignore
+// the exception and keep running)
+std::optional<std::string> assert_atom_group_correctness(
     aminoacid const& residue, gemmi::Model const& model, vector<string> const& expected_atom_names, vector<atom> const& actual_atoms, string const& group_name)
 {
     vector<string> actual_atom_names;
@@ -130,9 +133,13 @@ void assert_atom_group_correctness(
             msg += actual_atoms_str;
             msg += "}";
 
-            throw std::invalid_argument(msg);
+            // an invalid atom group happened
+            return msg;
         }
     }
+
+    // no errors here
+    return std::nullopt;
 }
 
 chemical_entity::aminoacid::aminoacid(
@@ -228,23 +235,23 @@ chemical_entity::aminoacid::aminoacid(
 
     if (n_of_rings >= 1)
     {
-        assert_atom_group_correctness(*this, model, ring1_names, ring1, "ring");
+        //assert_atom_group_correctness(*this, model, ring1_names, ring1, "ring");
         _pimpl->primary_ring = ring(ring1, *this);
     }
     if (n_of_rings == 2)
     {
-        assert_atom_group_correctness(*this, model, ring2_names, ring2, "ring");
-        _pimpl->secondary_ring = ring(ring2, *this);
+       //assert_atom_group_correctness(*this, model, ring2_names, ring2, "ring");
+       _pimpl->secondary_ring = ring(ring2, *this);
     }
 
     if (charge == 1)
     {
-        assert_atom_group_correctness(*this, model, ionic_group_names, ionic_group_atoms, "ionic group");
+        //assert_atom_group_correctness(*this, model, ionic_group_names, ionic_group_atoms, "ionic group");
         _pimpl->positive_ionic_group = ionic_group(ionic_group_atoms, 1, *this);
     }
     else if (charge == -1)
     {
-        assert_atom_group_correctness(*this, model, ionic_group_names, ionic_group_atoms, "ionic group");
+        //assert_atom_group_correctness(*this, model, ionic_group_names, ionic_group_atoms, "ionic group");
         _pimpl->negative_ionic_group = ionic_group(ionic_group_atoms, -1, *this);
     }
 
