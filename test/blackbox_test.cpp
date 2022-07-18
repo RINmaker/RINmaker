@@ -21,25 +21,25 @@ bool compare(const double& a, const double& b) { return abs(a - b) < MY_DBL_EPSI
 
 string interaction_name(const edge& e)
 {
-    string const& interaction = e.interaction();
+    string const& interaction = e.get_interaction();
     return interaction.substr(0, interaction.find_first_of(':'));
 }
 string source(const edge& e)
 {
-    string const& source = e.source_id();
+    string const& source = e.get_source_id();
     return source.substr(source.find_last_of(':') + 1, string::npos);
 }
 string target(const edge& e)
 {
-    string const& target = e.target_id();
+    string const& target = e.get_target_id();
     return target.substr(target.find_last_of(':') + 1, string::npos);
 }
-string source_atom(const edge& e) { return e.source_atom(); }
-string target_atom(const edge& e) { return e.target_atom(); }
+string source_atom(const edge& e) { return e.get_source_atom(); }
+string target_atom(const edge& e) { return e.get_target_atom(); }
 
-bool compare_distance(const edge& e, const double& expected) { return compare(stod(e.distance()), expected); }
-bool compare_angle(const edge& e, const double& expected) { return compare(stod(e.angle()), expected); }
-bool compare_energy(const edge& e, const double& expected) { return compare(stod(e.energy()), expected); }
+bool compare_distance(const edge& e, const double& expected) { return compare(stod(e.get_distance()), expected); }
+bool compare_angle(const edge& e, const double& expected) { return compare(stod(e.get_angle()), expected); }
+bool compare_energy(const edge& e, const double& expected) { return compare(stod(e.get_energy()), expected); }
 
 
 class Result

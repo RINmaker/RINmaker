@@ -64,40 +64,40 @@ public:
     ~edge();
 
     [[nodiscard]]
-    std::string const& source_id() const;
+    std::string const& get_source_id() const;
 
     [[nodiscard]]
-    std::string const& target_id() const;
+    std::string const& get_target_id() const;
 
     [[nodiscard]]
-    std::string const& distance() const;
+    std::string const& get_distance() const;
 
     [[nodiscard]]
-    std::string const& energy() const;
+    std::string const& get_energy() const;
 
     [[nodiscard]]
-    std::string const& interaction() const;
+    std::string const& get_interaction() const;
 
     [[nodiscard]]
-    std::string const& source_atom() const;
+    std::string const& get_source_atom() const;
 
     [[nodiscard]]
-    std::string const& target_atom() const;
+    std::string const& get_target_atom() const;
 
     [[nodiscard]]
-    std::string const& angle() const;
+    std::string const& get_angle() const;
 
     [[nodiscard]]
-    std::string const& donor() const;
+    std::string const& get_donor() const;
 
     [[nodiscard]]
-    std::string const& cation() const;
+    std::string const& get_cation() const;
 
     [[nodiscard]]
-    std::string const& positive() const;
+    std::string const& get_positive() const;
 
     [[nodiscard]]
-    std::string const& orientation() const;
+    std::string const& get_orientation() const;
 
     void append_to(pugi::xml_node& rin, bool with_metadata);
 };
@@ -120,7 +120,7 @@ public:
     void inc_degree();
 
     [[nodiscard]]
-    int degree() const;
+    int get_degree() const;
 
     [[nodiscard]]
     std::string const& get_id() const;
@@ -147,10 +147,13 @@ public:
 
     void write_to_file(std::filesystem::path const& out_path) const;
 
-    std::string name() const;
+    [[nodiscard]]
+    std::string get_name() const;
 
-    std::vector<edge> get_edges() const;
+    [[nodiscard]]
+    std::vector<edge> const& get_edges() const;
 
-    std::unordered_map<std::string, node> get_nodes() const;
+    [[nodiscard]]
+    std::unordered_map<std::string, node> const& get_nodes() const;
 };
 }

@@ -169,40 +169,40 @@ edge::edge(bond::generic_bond const& bond)
 
 edge::~edge() = default;
 
-string const& edge::source_id() const
+string const& edge::get_source_id() const
 { return pimpl->source; }
 
-string const& edge::target_id() const
+string const& edge::get_target_id() const
 { return pimpl->target; }
 
-string const& edge::distance() const
+string const& edge::get_distance() const
 { return pimpl->distance; }
 
-string const& edge::energy() const
+string const& edge::get_energy() const
 { return pimpl->energy; }
 
-string const& edge::interaction() const
+string const& edge::get_interaction() const
 { return pimpl->interaction; }
 
-string const& edge::source_atom() const
+string const& edge::get_source_atom() const
 { return pimpl->source_atom; }
 
-string const& edge::target_atom() const
+string const& edge::get_target_atom() const
 { return pimpl->target_atom; }
 
-string const& edge::angle() const
+string const& edge::get_angle() const
 { return pimpl->angle; }
 
-string const& edge::donor() const
+string const& edge::get_donor() const
 { return pimpl->donor; }
 
-string const& edge::cation() const
+string const& edge::get_cation() const
 { return pimpl->cation; }
 
-string const& edge::positive() const
+string const& edge::get_positive() const
 { return pimpl->positive; }
 
-string const& edge::orientation() const
+string const& edge::get_orientation() const
 { return pimpl->orientation; }
 
 void edge::append_to(xml_node& rin, bool with_metadata)
@@ -247,11 +247,11 @@ graph::graph(
     {
         auto edge = (rin::edge) *b;
 
-        auto it = tmp_pimpl->nodes.find(edge.source_id());
+        auto it = tmp_pimpl->nodes.find(edge.get_source_id());
         if (it != tmp_pimpl->nodes.end())
             it->second.inc_degree();
 
-        it = tmp_pimpl->nodes.find(edge.target_id());
+        it = tmp_pimpl->nodes.find(edge.get_target_id());
         if (it != tmp_pimpl->nodes.end())
             it->second.inc_degree();
 
@@ -266,19 +266,22 @@ graph::graph(graph const& other) : pimpl{new impl(*other.pimpl)}
 
 graph::~graph() = default;
 
-string graph::name() const
+string graph::get_name() const
 { return pimpl->name; }
 
-vector<edge> graph::get_edges() const
+vector<edge> const& graph::get_edges() const
 { return pimpl->edges; }
 
-unordered_map<string, node> graph::get_nodes() const
+unordered_map<string, node> const& graph::get_nodes() const
 {
+    /*
     unordered_map<string, node> out;
     for (const auto& i: pimpl->nodes)
         out.insert_or_assign(i.first, i.second);
 
     return out;
+    */
+    return pimpl->nodes;
 }
 
 void graph::write_to_file(fs::path const& out_path) const
@@ -298,7 +301,7 @@ void graph::write_to_file(fs::path const& out_path) const
 
     // <graph>
     pugi::xml_node graph_node = graphml.append_child("graph");
-    graph_node.append_attribute("id") = name().c_str();
+    graph_node.append_attribute("id") = get_name().c_str();
     graph_node.append_attribute("edgedefault") = "undirected";
 
     // graphml requires all key attributes to be listed before the actual node/edges
@@ -352,7 +355,7 @@ node::~node() = default;
 void node::inc_degree()
 { ++pimpl->degree; }
 
-int node::degree() const
+int node::get_degree() const
 { return pimpl->degree; }
 
 [[nodiscard]]
