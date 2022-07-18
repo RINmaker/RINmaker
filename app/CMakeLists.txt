@@ -5,6 +5,8 @@ add_executable(${TARGET_NAME} "main.cpp" ${SRCS})
 
 target_link_libraries(${TARGET_NAME} PRIVATE "spdlog" "pugixml" "CLI11" -static)
 
+#add_compile_options(-Wall -Wno-reorder -O3 -funroll-loops -finline-functions -frename-registers)
+
 target_include_directories(
         ${TARGET_NAME} PRIVATE
         "${CMAKE_CURRENT_SOURCE_DIR}/include"
