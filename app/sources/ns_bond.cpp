@@ -1,11 +1,12 @@
 #include "ns_bond.h"
 
 #include <utility>
+#include <set>
 
 using chemical_entity::aminoacid, chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group;
 using rin::parameters;
 
-using std::string, std::pair, std::make_pair, std::array;
+using std::string, std::pair, std::make_pair, std::array, std::set;
 
 using namespace bond;
 
@@ -28,7 +29,7 @@ template<typename Entity>
 bool operator<(Entity const& a, Entity const& b)
 { return a.get_residue().get_id() < b.get_residue().get_id(); }
 
-generic_bond::generic_bond(parameters const& params, atom const& a, atom const& b) :
+generic_bond::generic_bond(atom const& a, atom const& b) :
     base(geom::distance(a.get_residue().get_position(), b.get_residue().get_position()), 0), // todo should be != 0 ?
     _source(a < b ? a : b),
     _target(a < b ? b : a)
@@ -363,7 +364,7 @@ string pipistack::get_id() const
 std::shared_ptr<generic_bond const> generic_bond::test(parameters const& params, atom const& a, atom const& b)
 {
     if (a.get_residue().satisfies_minimum_sequence_separation(b.get_residue()))
-        return std::make_shared<generic_bond const>(params, a, b);;
+        return std::make_shared<generic_bond const>(a, b);
     return nullptr;
 }
 
@@ -422,3 +423,18 @@ string ionic::get_id_simple() const
 
 string ss::get_id_simple() const
 { return "SS:" + get_source_id() + ":" + get_target_id(); }
+
+std::shared_ptr<hydrophobic const> hydrophobic::test(
+    rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b)
+{
+    static const set<string> names = {"ILE", "LEU", "VAL", "MET", "PHE", "ALA", "TRP", "GLY"};
+    auto resa = a.get_residue();
+    auto resb = b.get_residue();
+    if (resa.satisfies_minimum_sequence_separation(resb) && names.find(resa.get_name()) != names.end())
+        return std::make_shared<hydrophobic>(a, b);
+    return nullptr;
+}
+
+hydrophobic::hydrophobic(chemical_entity::atom const& a, chemical_entity::atom const& b) :
+    generic_bond(a, b)
+{}

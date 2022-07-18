@@ -54,7 +54,7 @@ public:
     virtual explicit operator rin::edge() const = 0;
 };
 
-class generic_bond final : public base
+class generic_bond : public base
 {
 private:
     chemical_entity::atom const _source;
@@ -63,7 +63,7 @@ private:
 public:
     static std::shared_ptr<generic_bond const> test(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
-    generic_bond(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
+    generic_bond(chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     [[nodiscard]]
     chemical_entity::aminoacid get_source() const;
@@ -321,5 +321,14 @@ public:
 
     [[nodiscard]]
     std::string get_id_simple() const override;
+};
+
+class hydrophobic : public generic_bond
+{
+public:
+    static std::shared_ptr<hydrophobic const> test(
+        rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
+
+    hydrophobic(chemical_entity::atom const& a, chemical_entity::atom const& b);
 };
 }
