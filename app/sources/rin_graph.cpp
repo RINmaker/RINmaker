@@ -4,7 +4,6 @@
 #include <memory>
 #include <queue>
 #include <unordered_map>
-#include <utility>
 
 #include "ns_chemical_entity.h"
 #include "ns_bond.h"
@@ -21,9 +20,9 @@ using chemical_entity::aminoacid;
 using namespace rin;
 
 void add_data(
-        xml_node& parent,
-        string const& prefix, string const& type,
-        string const& key_name, string const& key_value, string const& key_type, bool with_metadata)
+    xml_node& parent,
+    string const& prefix, string const& type,
+    string const& key_name, string const& key_value, string const& key_type, bool with_metadata)
 {
     xml_node data = parent.append_child("data");
     data.append_attribute("key") = (prefix + key_name).c_str();
@@ -205,7 +204,7 @@ string const& edge::get_positive() const
 string const& edge::get_orientation() const
 { return pimpl->orientation; }
 
-void edge::append_to(xml_node& rin, bool with_metadata)
+void edge::append_to(xml_node& rin, bool with_metadata) const
 {
     // the xml node representing a rin edge
     xml_node pugi_node = rin.append_child("edge");
@@ -230,10 +229,10 @@ void edge::append_to(xml_node& rin, bool with_metadata)
 }
 
 graph::graph(
-        string const& name,
-        parameters const& params,
-        vector<aminoacid> const& aminoacids,
-        vector<std::shared_ptr<bond::base const>> const& bonds)
+    string const& name,
+    parameters const& params,
+    vector<aminoacid> const& aminoacids,
+    vector<std::shared_ptr<bond::base const>> const& bonds)
 {
     auto tmp_pimpl = std::make_shared<impl>(name, params);
     for (auto a: aminoacids)
@@ -243,17 +242,17 @@ graph::graph(
     }
 
     // adjust nodes degree at edge insertion
-    for (auto b: bonds)
+    for (const auto& b: bonds)
     {
         auto edge = (rin::edge) *b;
 
         auto it = tmp_pimpl->nodes.find(edge.get_source_id());
         if (it != tmp_pimpl->nodes.end())
-            it->second.inc_degree();
+            ++(it->second);
 
         it = tmp_pimpl->nodes.find(edge.get_target_id());
         if (it != tmp_pimpl->nodes.end())
-            it->second.inc_degree();
+            ++(it->second);
 
         tmp_pimpl->edges.push_back(edge);
     }
@@ -305,20 +304,30 @@ void graph::write_to_file(fs::path const& out_path) const
     graph_node.append_attribute("edgedefault") = "undirected";
 
     // graphml requires all key attributes to be listed before the actual node/edges
-    bool with_metadata = true;
-    for (auto e: pimpl->edges)
+    bool first_time = true;
+    for (const auto& e: pimpl->edges)
     {
-        e.append_to(graph_node, with_metadata);
-        if (with_metadata) with_metadata = false;
+        if (first_time)
+        {
+            e.append_to(graph_node, true);
+            first_time = false;
+        }
+        else
+            e.append_to(graph_node);
     }
 
-    with_metadata = true;
-    for (auto kv: pimpl->nodes)
+    first_time = true;
+    for (const auto& kv: pimpl->nodes)
     {
-        if (kv.second.degree() > 0)
+        if (kv.second.get_degree() > 0)
         {
-            kv.second.append_to(graph_node, with_metadata);
-            if (with_metadata) with_metadata = false;
+            if (first_time)
+            {
+                kv.second.append_to(graph_node, true);
+                first_time = false;
+            }
+            else
+                kv.second.append_to(graph_node);
         }
     }
 
@@ -352,8 +361,8 @@ node& node::operator=(node const& rhs)
 
 node::~node() = default;
 
-void node::inc_degree()
-{ ++pimpl->degree; }
+node& node::operator++()
+{ ++pimpl->degree; return *this; }
 
 int node::get_degree() const
 { return pimpl->degree; }

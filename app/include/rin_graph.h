@@ -99,7 +99,7 @@ public:
     [[nodiscard]]
     std::string const& get_orientation() const;
 
-    void append_to(pugi::xml_node& rin, bool with_metadata);
+    void append_to(pugi::xml_node& rin, bool with_metadata = false) const;
 };
 
 class node
@@ -117,7 +117,7 @@ public:
 
     ~node();
 
-    void inc_degree();
+    node& operator++();
 
     [[nodiscard]]
     int get_degree() const;
@@ -125,7 +125,7 @@ public:
     [[nodiscard]]
     std::string const& get_id() const;
 
-    void append_to(pugi::xml_node& graphml, bool with_metadata) const;
+    void append_to(pugi::xml_node& graphml, bool with_metadata = false) const;
 };
 
 class graph
@@ -136,10 +136,10 @@ private:
 
 public:
     graph(
-            std::string const& name,
-            parameters const& params,
-            std::vector<chemical_entity::aminoacid> const& aminoacids,
-            std::vector<std::shared_ptr<bond::base const>> const& bonds);
+        std::string const& name,
+        parameters const& params,
+        std::vector<chemical_entity::aminoacid> const& aminoacids,
+        std::vector<std::shared_ptr<bond::base const>> const& bonds);
 
     graph(graph const& other);
 
