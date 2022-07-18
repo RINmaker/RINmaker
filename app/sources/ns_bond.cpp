@@ -438,3 +438,11 @@ std::shared_ptr<hydrophobic const> hydrophobic::test(
 hydrophobic::hydrophobic(chemical_entity::atom const& a, chemical_entity::atom const& b) :
     generic_bond(a, b)
 {}
+
+std::string hydrophobic::get_interaction() const
+{
+    return "HYDROPHOBIC:" +
+           get_source().get_id() +
+           ":" +
+           get_target().get_id();
+}

@@ -330,5 +330,8 @@ public:
         rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     hydrophobic(chemical_entity::atom const& a, chemical_entity::atom const& b);
+
+    [[nodiscard]]
+    std::string get_interaction() const override;
 };
 }
