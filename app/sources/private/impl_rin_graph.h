@@ -28,7 +28,9 @@ public:
     std::string chain;
     std::string sequence_number;
     std::string name;
-    std::string x, y, z;
+    std::string x;
+    std::string y;
+    std::string z;
     std::string bfactor_ca;
     std::string secondary_structure;
 
@@ -38,7 +40,16 @@ public:
 struct rin::edge::impl final
 {
 public:
-    std::string source, target, source_atom, target_atom;
-    std::string distance, energy, angle, interaction, orientation;
-    std::string donor, cation, positive;
+    std::string source;
+    std::string target;
+    std::string source_atom;
+    std::string target_atom;
+    std::string distance;
+    std::string energy;
+    std::string angle;
+    std::string interaction;
+    std::string orientation;
+    std::string donor;
+    std::string cation;
+    std::string positive;
 };
