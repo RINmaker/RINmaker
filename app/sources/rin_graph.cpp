@@ -235,10 +235,10 @@ graph::graph(
     vector<std::shared_ptr<bond::base const>> const& bonds)
 {
     auto tmp_pimpl = std::make_shared<impl>(name, params);
-    for (auto a: aminoacids)
+    for (const auto& a: aminoacids)
     {
         auto n = (rin::node) a;
-        tmp_pimpl->nodes.insert({n.get_id(), n});
+        tmp_pimpl->nodes.try_emplace(n.get_id(), n);
     }
 
     // adjust nodes degree at edge insertion
@@ -260,7 +260,7 @@ graph::graph(
     pimpl = tmp_pimpl;
 }
 
-graph::graph(graph const& other) : pimpl{new impl(*other.pimpl)}
+graph::graph(graph const& other) : pimpl{std::make_shared<impl>(*other.pimpl)}
 {}
 
 graph::~graph() = default;
@@ -272,16 +272,7 @@ vector<edge> const& graph::get_edges() const
 { return pimpl->edges; }
 
 unordered_map<string, node> const& graph::get_nodes() const
-{
-    /*
-    unordered_map<string, node> out;
-    for (const auto& i: pimpl->nodes)
-        out.insert_or_assign(i.first, i.second);
-
-    return out;
-    */
-    return pimpl->nodes;
-}
+{ return pimpl->nodes; }
 
 void graph::write_to_file(fs::path const& out_path) const
 {
@@ -317,24 +308,24 @@ void graph::write_to_file(fs::path const& out_path) const
     }
 
     first_time = true;
-    for (const auto& kv: pimpl->nodes)
+    for (auto const& [_, node] :  pimpl->nodes)
     {
-        if (kv.second.get_degree() > 0)
+        if (node.get_degree() > 0)
         {
             if (first_time)
             {
-                kv.second.append_to(graph_node, true);
+                node.append_to(graph_node, true);
                 first_time = false;
             }
             else
-                kv.second.append_to(graph_node);
+                node.append_to(graph_node);
         }
     }
 
     doc.save_file(out_path.c_str());
 }
 
-node::node(chemical_entity::aminoacid const& res) : pimpl{new impl()}
+node::node(chemical_entity::aminoacid const& res) : pimpl{std::make_unique<impl>()}
 {
     pimpl->id = res.get_id();
     pimpl->chain = res.get_chain_id();
@@ -349,7 +340,7 @@ node::node(chemical_entity::aminoacid const& res) : pimpl{new impl()}
     pimpl->degree = 0;
 }
 
-node::node(node const& other) : pimpl{new impl(*other.pimpl)}
+node::node(node const& other) : pimpl{std::make_unique<impl>(*other.pimpl)}
 {}
 
 node& node::operator=(node const& rhs)
