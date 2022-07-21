@@ -25,30 +25,23 @@ public:
     };
 
 private:
-    double _query_dist_hbond, _surface_dist_vdw, _query_dist_ionic, _query_dist_pipi, _query_dist_pica;
-    double _query_dist_cmap;
+    double _query_dist_hbond = cfg::params::query_dist_hbond;
+    double _surface_dist_vdw = cfg::params::surface_dist_vdw;
+    double _query_dist_ionic = cfg::params::query_dist_ionic;
+    double _query_dist_pipi = cfg::params::query_dist_pipi;
+    double _query_dist_pica = cfg::params::query_dist_pica;
 
-    int _sequence_separation;
+    double _query_dist_cmap = cfg::params::query_dist_alpha;
 
-    interaction_type_t _interaction_type;
-    network_policy_t _network_policy;
-    contact_map_type_t _cmap_type;
+    int _sequence_separation = cfg::params::seq_sep;
 
-    bool _hbond_realistics;
+    interaction_type_t _interaction_type = interaction_type_t::NONCOVALENT_BONDS;
+    network_policy_t _network_policy = network_policy_t::ALL;
+    contact_map_type_t _cmap_type = contact_map_type_t::ALPHA;
 
-    parameters() :
-            _query_dist_hbond{cfg::params::query_dist_hbond},
-            _surface_dist_vdw{cfg::params::surface_dist_vdw},
-            _query_dist_ionic{cfg::params::query_dist_ionic},
-            _query_dist_pipi{cfg::params::query_dist_pipi},
-            _query_dist_pica{cfg::params::query_dist_pica},
-            _query_dist_cmap{cfg::params::query_dist_alpha},
-            _hbond_realistics{true},
-            _sequence_separation{cfg::params::seq_sep},
-            _interaction_type{interaction_type_t::NONCOVALENT_BONDS},
-            _network_policy{network_policy_t::ALL},
-            _cmap_type{contact_map_type_t::ALPHA}
-    {}
+    bool _hbond_realistics{true};
+
+    parameters() = default;
 
 public:
     struct configurator;
@@ -111,7 +104,8 @@ private:
     parameters params;
 
 public:
-    parameters build()
+    [[nodiscard]]
+    parameters build() const
     { return params; }
 
     configurator& set_query_dist_hbond(double val)
