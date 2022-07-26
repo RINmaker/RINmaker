@@ -330,7 +330,7 @@ std::array<double, 3> const& chemical_entity::aminoacid::get_position() const
 atom::atom(gemmi::Atom const& record, aminoacid const& res) :
     kdpoint<3>({record.pos.x, record.pos.y, record.pos.z}),
     component(res),
-    _pimpl{new impl{record}}
+    _pimpl{std::make_shared<atom::impl>(record)}
 {}
 
 atom::~atom() = default;
@@ -593,7 +593,7 @@ string ring::get_name() const
 { return get_name_from_atoms(_pimpl->atoms); }
 
 ionic_group::ionic_group(vector<atom> const& atoms, int const& charge, aminoacid const& res) :
-    kdpoint<3>({0, 0, 0}), component(res), _pimpl{new impl{atoms, charge}}
+    kdpoint<3>({0, 0, 0}), component(res), _pimpl{std::make_shared<impl>(atoms, charge)}
 { _position = center_of_mass(atoms); }
 
 ionic_group::~ionic_group() = default;
