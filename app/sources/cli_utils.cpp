@@ -39,7 +39,7 @@ string app_full_name()
     return buf;
 }
 
-optional<arguments> read_args(int argc, const char* argv[])
+optional<arguments> read_args(int argc, char const* argv[])
 {
     if (argc <= 1)
     {
@@ -64,9 +64,9 @@ optional<arguments> read_args(int argc, const char* argv[])
     bool output_as_directory = false;
     app.add_flag("-d", output_as_directory, "Use -o argument as a directory");
 
-    filesystem::path log_dir = cfg::log::default_dirname;
-    app.add_option("-l,--log-directory", log_dir, "Log directory")
-        ->default_str(cfg::log::default_dirname);
+    filesystem::path log_dir = cfg::log::default_file_logger_filename;
+    app.add_option("-l,--log", log_dir, "Log file")
+        ->default_str(cfg::log::default_file_logger_filename);
 
     bool keep_water = false;
     app.add_flag("-w,--keep-water", keep_water, "Keep water residues");
@@ -195,7 +195,6 @@ optional<arguments> read_args(int argc, const char* argv[])
     else //if(cmap_app->parsed())
         pcfg.set_interaction_type(rin::parameters::interaction_type_t::CONTACT_MAP);
 
-    fs::create_directory(log_dir);
     log_manager::initialize(log_dir);
 
     auto params = pcfg.build();

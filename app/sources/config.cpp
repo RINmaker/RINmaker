@@ -26,12 +26,10 @@ const unsigned int rev = 3;
 
 namespace log
 {
-const char* main_logger_id = "main";
-const char* console_logger_id = "console";
-const char* file_logger_id = "file";
-
-const char* default_dirname = "./logs";
-const string file_logger_filename = string(main_logger_id) + ".txt";
+char const* const main_logger_id = "main";
+char const* const console_logger_id = "console";
+char const* const file_logger_id = "file";
+char const* const default_file_logger_filename = "./main.txt";
 }
 
 namespace params

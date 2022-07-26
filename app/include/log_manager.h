@@ -19,7 +19,6 @@
 class log_manager
 {
 private:
-    //std::unordered_map<string, std::shared_ptr<spdlog::logger>> loggers;
     std::shared_ptr<spdlog::logger> console_logger = nullptr;
     std::shared_ptr<spdlog::logger> file_logger = nullptr;
     std::shared_ptr<spdlog::logger> main_logger = nullptr;
@@ -33,13 +32,7 @@ private:
     }
 
 public:
-    static void initialize(std::filesystem::path const& log_directory);   // throws
-
-    //static void insert(string const& id, string const& sink_name);
-
-    //static std::shared_ptr<spdlog::logger> get_default();
-    //static std::shared_ptr<spdlog::logger> get(string const& key);
-    //static std::vector<string> get_ids();
+    static void initialize(std::filesystem::path const& log_file);
 
     static std::shared_ptr<spdlog::logger> main()
     { return instance().main_logger; }
@@ -50,5 +43,3 @@ public:
     static std::shared_ptr<spdlog::logger> console()
     { return instance().console_logger; }
 };
-
-// #define LOG (*log_manager::main())

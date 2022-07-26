@@ -16,11 +16,10 @@ namespace cfg
 {
 namespace log
 {
-extern const char* main_logger_id;
-extern const char* console_logger_id;
-extern const char* file_logger_id;
-extern const char* default_dirname;
-extern const std::string file_logger_filename;
+extern char const* const main_logger_id;
+extern char const* const console_logger_id;
+extern char const* const file_logger_id;
+extern char const* const default_file_logger_filename;
 }
 
 namespace params
