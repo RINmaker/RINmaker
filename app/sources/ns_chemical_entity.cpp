@@ -1,6 +1,7 @@
 #include "ns_chemical_entity.h"
 
 #include <memory>
+#include <functional>
 
 #include "energy.h"
 
@@ -142,6 +143,24 @@ std::optional<std::string> assert_atom_group_correctness(
     return std::nullopt;
 }
 
+template<typename Entity>
+void try_assignment(
+    std::optional<Entity>& destination,
+    bool should_throw_if_malformed,
+    std::optional<string> const& maybe_error,
+    std::function<Entity(void)> const& producer)
+{
+    if (maybe_error.has_value())
+    {
+        if (should_throw_if_malformed)
+            throw invalid_argument(*maybe_error);
+    }
+    else
+    {
+        destination = producer();
+    }
+}
+
 chemical_entity::aminoacid::aminoacid(
     gemmi::Residue const& residue,
     gemmi::Chain const& chain,
@@ -149,66 +168,59 @@ chemical_entity::aminoacid::aminoacid(
     gemmi::Structure const& protein) :
     _pimpl(std::make_shared<impl>())
 {
+    // basic info
     _pimpl->name = residue.name;
     _pimpl->sequence_number = residue.seqid.num.value;
     _pimpl->chain_id = chain.name;
 
     _pimpl->id = _pimpl->chain_id + ":" + to_string(_pimpl->sequence_number) + ":_:" + _pimpl->name;
 
+    _pimpl->protein_name = protein.name;
+    _pimpl->secondary_structure_name = cfg::graphml::none;
+
     // discover if this has 0, 1 or 2 aromatic rings
     int n_of_rings = 0;
-    vector<string> ring1_names, ring2_names;
+    vector<string> ring1_names;
+    vector<string> ring2_names;
 
-    if (_pimpl->name == "HIS")
-    {
-        // HIS has a 5-atoms ring
-        ring1_names = {"CD2", "CE1", "CG", "ND1", "NE2"};
-        n_of_rings = 1;
-    }
-    else if (_pimpl->name == "PHE" || _pimpl->name == "TYR")
-    {
-        // PHE, TYR have a 6-atoms ring
-        ring1_names = {"CD1", "CD2", "CE1", "CE2", "CG", "CZ"};
-        n_of_rings = 1;
-    }
-    else if (_pimpl->name == "TRP")
-    {
-        // TRP has both a 6-atoms ring and a 5-atoms ring
-        ring1_names = {"CD2", "CE2", "CE3", "CH2", "CZ2", "CZ3"};
-        ring2_names = {"CD2", "CE2", "CD1", "CG", "NE1"};
+    static std::map<string, std::tuple<int, std::vector<string>, std::vector<string>>, std::less<>> const ring_info = {
+        // HIS has 1 ring
+        {"HIS", {1, {"CD2", "CE1", "CG", "ND1", "NE2"}, {}}},
 
-        n_of_rings = 2;
+        // PHE and TYR have the same aromatic ring
+        {"PHE", {1, {"CD1", "CD2", "CE1", "CE2", "CG", "CZ"}, {}}},
+        {"TYR", {1, {"CD1", "CD2", "CE1", "CE2", "CG", "CZ"}, {}}},
+
+        // TRP is the only one with 2 rings
+        {"TRP", {2, {"CD2", "CE2", "CE3", "CH2", "CZ2", "CZ3"}, {"CD2", "CE2", "CD1", "CG", "NE1"}}},
+    };
+
+    if (auto const entry = ring_info.find(residue.name); entry != ring_info.end())
+    {
+        n_of_rings = std::get<0>(entry->second);
+        ring1_names = std::get<1>(entry->second);
+        ring2_names = std::get<2>(entry->second);
     }
 
-    // discover ionic group of this aminoacid
     int charge = 0;
-    vector<string> ionic_group_names;
-    if (residue.name == "HIS")
+    vector<string> ionic_group_names{};
+    static std::map<string, std::pair<int, std::vector<string>>, std::less<>> const ionic_info = {
+        {"HIS", {1, {"CG", "CD2", "CE1", "ND1", "NE2"}}},
+        {"ARG", {1, {"CZ", "NH2", "NH1", "NE"}}},
+        {"LYS", {1, {"NZ"}}},
+        {"GLU", {-1, {"CD", "OE1", "OE2"}}},
+        {"ASP", {-1, {"CG", "OD1", "OD2"}}},
+    };
+
+    if (auto const entry = ionic_info.find(residue.name); entry != ionic_info.end())
     {
-        charge = 1;
-        ionic_group_names = {"CG", "CD2", "CE1", "ND1", "NE2"};
+        charge = entry->second.first;
+        ionic_group_names = entry->second.second;
     }
-    else if (residue.name == "ARG")
-    {
-        charge = 1;
-        ionic_group_names = {"CZ", "NH2", "NH1", "NE"};
-    }
-    else if (residue.name == "LYS")
-    {
-        charge = 1;
-        ionic_group_names = {"NZ"};
-    }
-    else if (residue.name == "GLU")
-    {
-        charge = -1;
-        ionic_group_names = {"CD", "OE1", "OE2"};
-    }
-    else if (residue.name == "ASP")
-    {
-        charge = -1;
-        ionic_group_names = {"CG", "OD1", "OD2"};
-    }
-    vector<atom> ring1, ring2, ionic_group_atoms;
+
+    vector<atom> ring1;
+    vector<atom> ring2;
+    vector<atom> ionic_group_atoms;
 
     for (auto const& record: residue.atoms)
     {
@@ -233,30 +245,53 @@ chemical_entity::aminoacid::aminoacid(
 
     _pimpl->position = center_of_mass(get_atoms());
 
+    auto create_ring_1 = [this, &ring1]()
+    { return ring(ring1, *this); };
+
+    auto create_ring_2 = [this, &ring2]()
+    { return ring(ring2, *this); };
+
     if (n_of_rings >= 1)
     {
-        //assert_atom_group_correctness(*this, model, ring1_names, ring1, "ring");
-        _pimpl->primary_ring = ring(ring1, *this);
+        auto maybe_error = assert_atom_group_correctness(
+            *this, model, ring1_names, ring1, "ring");
+
+        try_assignment<ring>(
+            _pimpl->primary_ring, false, maybe_error, create_ring_1);
     }
+
     if (n_of_rings == 2)
     {
-       //assert_atom_group_correctness(*this, model, ring2_names, ring2, "ring");
-       _pimpl->secondary_ring = ring(ring2, *this);
+       auto maybe_error =
+           assert_atom_group_correctness(*this, model, ring2_names, ring2, "ring");
+
+       try_assignment<ring>(
+           _pimpl->primary_ring, false, maybe_error, create_ring_2);
     }
+
+    auto create_positive_ionic_group = [this, &ionic_group_atoms]()
+    { return ionic_group(ionic_group_atoms, 1, *this); };
+
+    auto create_negative_ionic_group = [this, &ionic_group_atoms]()
+    { return ionic_group(ionic_group_atoms, -1, *this); };
 
     if (charge == 1)
     {
-        //assert_atom_group_correctness(*this, model, ionic_group_names, ionic_group_atoms, "ionic group");
-        _pimpl->positive_ionic_group = ionic_group(ionic_group_atoms, 1, *this);
-    }
-    else if (charge == -1)
-    {
-        //assert_atom_group_correctness(*this, model, ionic_group_names, ionic_group_atoms, "ionic group");
-        _pimpl->negative_ionic_group = ionic_group(ionic_group_atoms, -1, *this);
+        auto maybe_error = assert_atom_group_correctness(
+            *this, model, ionic_group_names, ionic_group_atoms, "ionic group");
+
+        try_assignment<ionic_group>(
+            _pimpl->positive_ionic_group, false, std::nullopt, create_positive_ionic_group);
     }
 
-    _pimpl->protein_name = protein.name;
-    _pimpl->secondary_structure_name = cfg::graphml::none;
+    else if (charge == -1)
+    {
+        auto maybe_error = assert_atom_group_correctness(
+            *this, model, ionic_group_names, ionic_group_atoms, "ionic group");
+
+        try_assignment<ionic_group>(
+            _pimpl->negative_ionic_group, false, std::nullopt, create_negative_ionic_group);
+    }
 }
 
 aminoacid::aminoacid(
