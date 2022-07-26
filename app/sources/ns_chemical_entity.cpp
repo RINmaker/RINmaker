@@ -11,7 +11,7 @@ using std::vector, std::array, std::string, std::unique_ptr, std::make_unique, s
 
 using chemical_entity::aminoacid, chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group;
 
-string join_strings(std::vector<std::string> const& values, string const& delimiter)
+string join_strings(std::vector<std::string> const& values, std::string_view delimiter)
 {
     string out;
     for (string const& value: values)
@@ -347,7 +347,11 @@ double atom::get_temp_factor() const
 int atom::get_charge() const
 {
     auto c = _pimpl->record.charge;
-    return c > 0 ? 1 : c < 0 ? -1 : 0;
+    if (c > 0)
+        return 1;
+    if (c < 0)
+        return -1;
+    return 0;
 }
 
 bool atom::is_hydrogen() const
@@ -544,8 +548,8 @@ ring::ring(vector<atom> const& atoms, aminoacid const& res) : kdpoint<3>({0, 0, 
 
     // kudos to Giulio Marcolin for the following shortcut
     // it only deviates from a SVD best-fit method no more than 1-2°, on average
-    array<double, 3> const v = (array<double, 3>) (atoms[0] - atoms[1]);
-    array<double, 3> const w = (array<double, 3>) (atoms[2] - atoms[1]);
+    auto const v = (array<double, 3>) (atoms[0] - atoms[1]);
+    auto const w = (array<double, 3>) (atoms[2] - atoms[1]);
     tmp_pimpl->normal = geom::cross(v, w);
 
     _pimpl = tmp_pimpl;
@@ -585,7 +589,7 @@ double ring::get_angle_between_normals(ring const& other) const
 
 double ring::get_angle_between_normal_and_centers_joining(ring const& other) const
 {
-    std::array<double, 3> const centres_joining((std::array<double, 3>) (*this - other));
+    auto const centres_joining((std::array<double, 3>) (*this - other));
     return geom::d_angle<3>(_pimpl->normal, centres_joining);
 }
 
