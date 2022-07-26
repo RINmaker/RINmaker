@@ -166,11 +166,11 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  b
     for (auto const& res: tmp_pimpl->aminoacids)
     {
 
-        auto const ca = res.get_alpha_carbon();
+        auto const& ca = res.get_alpha_carbon();
         if (ca.has_value())
             tmp_pimpl->alpha_carbon_vector.push_back(*ca);
 
-        auto const cb = res.get_beta_carbon();
+        auto const& cb = res.get_beta_carbon();
         if (cb.has_value())
             tmp_pimpl->beta_carbon_vector.push_back(*cb);
 
@@ -189,11 +189,11 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  b
                 tmp_pimpl->cation_vector.push_back(a);
         }
 
-        auto const pos_group = res.get_positive_ionic_group();
+        auto const& pos_group = res.get_positive_ionic_group();
         if (pos_group.has_value())
             positives.push_back(*pos_group);
 
-        auto const neg_group = res.get_negative_ionic_group();
+        auto const& neg_group = res.get_negative_ionic_group();
         if (neg_group.has_value())
             tmp_pimpl->negative_ion_vector.push_back(*neg_group);
 
@@ -245,13 +245,14 @@ vector<shared_ptr<Bond const>>
 find_bonds(vector<Entity1> const& vec, kdtree<Entity2, 3> const& tree, double dist, parameters const& params)
 {
     static_assert(
-            is_base_of<aminoacid::component, Entity1>::value,
-            "template typename Entity1 must inherit from type chemical_entity::aminoacid::component");
+        std::is_base_of_v<aminoacid::component, Entity1>,
+        "template typename Entity1 must inherit from type chemical_entity::aminoacid::component");
     static_assert(
-            is_base_of<aminoacid::component, Entity2>::value,
-            "template typename Entity2 must inherit from type chemical_entity::aminoacid::component");
+        std::is_base_of_v<aminoacid::component, Entity2>,
+        "template typename Entity2 must inherit from type chemical_entity::aminoacid::component");
     static_assert(
-            is_base_of<bond::base, Bond>::value, "template typename Bond must inherit from type bond::base");
+        std::is_base_of_v<bond::base, Bond>,
+        "template typename Bond must inherit from type bond::base");
 
     vector<shared_ptr<Bond const>> bonds;
     for (auto const& e1 : vec)
