@@ -18,7 +18,7 @@ namespace cfg
 {
 namespace ver
 {
-const char* app_name = "RING";
+char const* const app_name = "RINmaker";
 const unsigned int major = 0;
 const unsigned int minor = 1;
 const unsigned int rev = 3;
@@ -59,10 +59,10 @@ const double pication_angle = 45.;
 
 namespace graphml
 {
-char const* null = "-999.9";
-char const* none = "None";
-char const* default_dirname = ".";
-char const* default_filename = "./network.graphml";
-char const* output_file_suffix = ".graphml";
+char const* const null = "-999.9";
+char const* const none = "None";
+char const* const default_dirname = ".";
+char const* const default_filename = "./network.graphml";
+char const* const output_file_suffix = ".graphml";
 }
 }

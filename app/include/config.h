@@ -41,26 +41,26 @@ extern const double max_vdw_radius;
 extern const double max_pipi_atom_atom_distance;
 
 // advanced parameters for deep testing
-extern const double pipistack_normal_normal_angle_range;
-extern const double pipistack_normal_centre_angle_range;
-extern const double hbond_angle;
-extern const double pication_angle;
+extern double const pipistack_normal_normal_angle_range;
+extern double const pipistack_normal_centre_angle_range;
+extern double const hbond_angle;
+extern double const pication_angle;
 }
 
 namespace graphml
 {
-extern char const* null;                // "-999.9"
-extern char const* none;                // "None"
-extern char const* default_dirname;     // "."
-extern char const* default_filename;    // "./network.graphml
-extern char const* output_file_suffix;  // ".graphml"
+extern char const* const null;                // "-999.9"
+extern char const* const none;                // "None"
+extern char const* const default_dirname;     // "."
+extern char const* const default_filename;    // "./network.graphml
+extern char const* const output_file_suffix;  // ".graphml"
 }
 
 namespace ver
 {
-extern const char* app_name;
-extern const unsigned int major;
-extern const unsigned int minor;
-extern const unsigned int rev;
+extern char const* const app_name;
+extern unsigned int const major;
+extern unsigned int const minor;
+extern unsigned int const rev;
 }
 }
