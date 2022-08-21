@@ -254,12 +254,12 @@ std::shared_ptr<hydrogen const> hydrogen::test(parameters const& params, atom co
             auto hydrogens = donor.get_attached_hydrogens();
             for (auto const& h: hydrogens)
             {
-                array<double, 3> const da = (array<double, 3>) (acceptor - donor);
-                array<double, 3> const dh = (array<double, 3>) (h - donor);
+                auto const da = (array<double, 3>) (acceptor - donor);
+                auto const dh = (array<double, 3>) (h - donor);
                 double angle_adh = geom::angle<3>(da, dh);
 
-                array<double, 3> const ha = (array<double, 3>) (acceptor - h);
-                array<double, 3> const hd = (array<double, 3>) (donor - h);
+                auto const ha = (array<double, 3>) (acceptor - h);
+                auto const hd = (array<double, 3>) (donor - h);
                 double angle_ahd = geom::angle<3>(ha, hd);
 
                 if (angle_adh <= cfg::params::hbond_angle) // 63
@@ -435,14 +435,17 @@ string ionic::get_id_simple() const
 string ss::get_id_simple() const
 { return "SS:" + get_source_id() + ":" + get_target_id(); }
 
-std::shared_ptr<hydrophobic const> hydrophobic::test(
-    rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b)
+std::shared_ptr<hydrophobic const> hydrophobic::test(rin::parameters const&, chemical_entity::atom const& a, chemical_entity::atom const& b)
 {
-    static const set<string> names = {"ILE", "LEU", "VAL", "MET", "PHE", "ALA", "TRP", "GLY"};
-    auto resa = a.get_residue();
-    auto resb = b.get_residue();
-    if (resa.satisfies_minimum_sequence_separation(resb) && names.find(resa.get_name()) != names.end())
-        return std::make_shared<hydrophobic>(a, b);
+    static set<string> const names = {"ILE", "LEU", "VAL", "MET", "PHE", "ALA", "TRP", "GLY"};
+    auto res_a = a.get_residue();
+    auto res_b = b.get_residue();
+
+    if (res_a.satisfies_minimum_sequence_separation(res_b)
+        && names.find(res_a.get_name()) != names.end()
+        && names.find(res_b.get_name()) != names.end())
+    { return std::make_shared<hydrophobic>(a, b); }
+
     return nullptr;
 }
 
