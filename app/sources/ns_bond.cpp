@@ -289,11 +289,22 @@ std::shared_ptr<vdw const> vdw::test(parameters const& params, atom const& a, at
 
 string vdw::get_id() const
 {
+    /*
     return get_id_simple() +
         ":" +
         get_source_atom().get_name() +
         ":" +
         get_target_atom().get_name();
+    */
+    return get_id_simple() +
+        ":" +
+        get_source_atom().get_name() +
+        ":" +
+        std::to_string(get_source_atom().get_atom_number()) +
+        ":" +
+        get_target_atom().get_name() +
+        ":" +
+        std::to_string(get_target_atom().get_atom_number());
 }
 
 
