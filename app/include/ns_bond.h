@@ -60,11 +60,10 @@ private:
     chemical_entity::atom const _source;
     chemical_entity::atom const _target;
 
+protected:
+    generic_bond(chemical_entity::atom const& a, chemical_entity::atom const& b, double distance);
+
 public:
-    static std::shared_ptr<generic_bond const> test(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
-
-    generic_bond(chemical_entity::atom const& a, chemical_entity::atom const& b);
-
     [[nodiscard]]
     chemical_entity::aminoacid get_source() const;
 
@@ -83,6 +82,25 @@ public:
     [[nodiscard]]
     explicit operator rin::edge() const override
     { return rin::edge(*this); }
+};
+
+class hydrophobic final : public generic_bond
+{
+public:
+    static std::shared_ptr<hydrophobic const> test(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
+
+    hydrophobic(chemical_entity::atom const& c1, chemical_entity::atom const& c2);
+
+    [[nodiscard]]
+    std::string get_interaction() const override;
+};
+
+class contact final : public generic_bond
+{
+public:
+    static std::shared_ptr<contact const> test(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
+
+    contact(chemical_entity::atom const& a, chemical_entity::atom const& b);
 };
 
 class hydrogen final : public base
@@ -321,17 +339,5 @@ public:
 
     [[nodiscard]]
     std::string get_id_simple() const override;
-};
-
-class hydrophobic : public generic_bond
-{
-public:
-    static std::shared_ptr<hydrophobic const> test(
-        rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
-
-    hydrophobic(chemical_entity::atom const& a, chemical_entity::atom const& b);
-
-    [[nodiscard]]
-    std::string get_interaction() const override;
 };
 }

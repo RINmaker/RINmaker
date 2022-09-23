@@ -29,8 +29,8 @@ template<typename Entity>
 bool operator<(Entity const& a, Entity const& b)
 { return a.get_residue().get_id() < b.get_residue().get_id(); }
 
-generic_bond::generic_bond(atom const& a, atom const& b) :
-    base(geom::distance(a.get_residue().get_position(), b.get_residue().get_position()), 0), // todo should be != 0 ?
+generic_bond::generic_bond(atom const& a, atom const& b, double distance) :
+    base(distance, 0), // todo: energy should be != 0 (?)
     _source(a < b ? a : b),
     _target(a < b ? b : a)
 {}
@@ -372,13 +372,6 @@ string pipistack::get_id() const
         get_target_ring().get_name();
 }
 
-std::shared_ptr<generic_bond const> generic_bond::test(parameters const& params, atom const& a, atom const& b)
-{
-    if (a.get_residue().satisfies_minimum_sequence_separation(b.get_residue()))
-        return std::make_shared<generic_bond const>(a, b);
-    return nullptr;
-}
-
 string generic_bond::get_id() const
 { return get_id_simple(); }
 
@@ -449,14 +442,25 @@ std::shared_ptr<hydrophobic const> hydrophobic::test(rin::parameters const&, che
     return nullptr;
 }
 
-hydrophobic::hydrophobic(chemical_entity::atom const& a, chemical_entity::atom const& b) :
-    generic_bond(a, b)
+hydrophobic::hydrophobic(chemical_entity::atom const& c1, chemical_entity::atom const& c2) :
+    generic_bond(c1, c2, geom::distance((std::array<double, 3>) c1, (std::array<double, 3>) c2))
 {}
 
 std::string hydrophobic::get_interaction() const
 {
     return "HYDROPHOBIC:" +
-           get_source().get_id() +
-           ":" +
-           get_target().get_id();
+        get_source().get_id() +
+        ":" +
+        get_target().get_id();
 }
+
+std::shared_ptr<contact const> contact::test(parameters const& params, atom const& a, atom const& b)
+{
+    if (a.get_residue().satisfies_minimum_sequence_separation(b.get_residue()))
+        return std::make_shared<contact const>(a, b);
+    return nullptr;
+}
+
+contact::contact(const atom& a, const atom& b) :
+    generic_bond(a, b, geom::distance(a.get_residue().get_position(), b.get_residue().get_position()))
+{}

@@ -457,11 +457,11 @@ rin::graph rin::maker::operator()(parameters const& params) const
 
     case parameters::interaction_type_t::CONTACT_MAP:
     {
-        vector<shared_ptr<bond::generic_bond const>> generic_bonds;
+        vector<shared_ptr<bond::contact const>> generic_bonds{};
         switch (params.cmap_type())
         {
         case rin::parameters::contact_map_type_t::ALPHA:
-            generic_bonds = find_bonds<bond::generic_bond>(
+            generic_bonds = find_bonds<bond::contact>(
                     pimpl->alpha_carbon_vector,
                     pimpl->alpha_carbon_tree,
                     params.query_dist_cmap(),
@@ -469,7 +469,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
             break;
 
         case rin::parameters::contact_map_type_t::BETA:
-            generic_bonds = find_bonds<bond::generic_bond>(
+            generic_bonds = find_bonds<bond::contact>(
                     pimpl->beta_carbon_vector,
                     pimpl->beta_carbon_tree,
                     params.query_dist_cmap(),
