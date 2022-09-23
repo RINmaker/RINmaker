@@ -74,7 +74,7 @@ private:
             auto seq_start = cra_start.residue->seqid.num.value;
             auto seq_end = cra_end.residue->seqid.num.value;
 
-            return {{cra_start.chain->name, {seq_start, seq_end}}};
+            return {{cra_start.chain != nullptr ? cra_start.chain->name : "", {seq_start, seq_end}}};
         }
         else
         { return std::nullopt; }
