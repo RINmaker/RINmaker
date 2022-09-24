@@ -142,9 +142,6 @@ optional<arguments> read_args(int argc, char const* argv[])
        ->default_val(cfg::params::pipistack_normal_centre_angle_range)
        ->check(CLI::PositiveNumber);
 
-    bool reduce = false;
-    rin_app->add_flag("-r,--reduce", reduce, "Call reduce on the input file (if .pdb)");
-
     // contact map subcommand
     auto cmap_app = app.add_subcommand(
             "cmap", "Compute the contact map of the protein");
@@ -205,11 +202,11 @@ optional<arguments> read_args(int argc, char const* argv[])
     if (output_as_directory)
     {
         fs::create_directory(out_path);
-        return arguments{params, pdb_path, {output_directory{out_path}}, log_dir, !keep_water, reduce};
+        return arguments{params, pdb_path, {output_directory{out_path}}, log_dir, !keep_water};
     }
     else
     {
         if (out_path.has_parent_path()) fs::create_directory(out_path.parent_path());
-        return arguments{params, pdb_path, {output_file{out_path}}, log_dir, !keep_water, reduce};
+        return arguments{params, pdb_path, {output_file{out_path}}, log_dir, !keep_water};
     }
 }

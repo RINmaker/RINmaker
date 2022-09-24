@@ -26,44 +26,14 @@ int main(int argc, const char* argv[])
         // the actual command line arguments
         auto const& parsed_args = *maybe_args;
 
-        // this might change if reduce has been invoked
-        auto final_input = parsed_args.input;
-        if (parsed_args.reduce)
-        {
-            lm::console()->info("calling reduce...");
-
-            if (parsed_args.input.extension() == ".pdb")
-            {
-                // file path for the reduced input file
-                auto reduced_input =
-                    parsed_args.input.parent_path() / std::filesystem::path{parsed_args.input.stem().string() + "_reduced.pdb"};
-
-                // call reduce on the file with no console output; redirect output to the new file
-                int success = std::system(("reduce -Quiet " + parsed_args.input.string() + " > " + reduced_input.string()).c_str());
-
-                // check exit code
-                if (success != 0)
-                    lm::console()->error("calling reduce returned a nonzero exit code. the original input file will be used.");
-                else
-                {
-                    lm::console()->info("calling reduce was successful");
-                    final_input = reduced_input;
-                }
-            }
-            else
-                log_manager::console()->warn("input file is not a pdb, calling reduce aborted.");
-        }
-
-        lm::console()->info("final input file={}", final_input.filename().string());
-
         std::optional<gemmi::Structure> maybe_protein;
 
         // parse file
-        if (final_input.extension() == ".pdb")
-            maybe_protein = gemmi::read_pdb_file(final_input);
-        else if (final_input.extension() == ".cif")
+        if (parsed_args.input.extension() == ".pdb")
+            maybe_protein = gemmi::read_pdb_file(parsed_args.input);
+        else if (parsed_args.input.extension() == ".cif")
         {
-            auto document = gemmi::cif::read_file(final_input);
+            auto document = gemmi::cif::read_file(parsed_args.input);
             maybe_protein = gemmi::make_structure(document);
         }
 

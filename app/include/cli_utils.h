@@ -35,9 +35,6 @@ struct arguments final
 
     // speeds up things by not keeping waters
     bool skip_water;
-
-    // execute reduce
-    bool reduce;
 };
 
 std::optional<arguments> read_args(int argc, const char* argv[]);
