@@ -60,7 +60,7 @@ const double pication_angle = 45.;
 namespace graphml
 {
 char const* const null = "-999.9";
-char const* const none = "None";
+char const* const none = "NONE";
 char const* const default_dirname = ".";
 char const* const default_filename = "./network.graphml";
 char const* const output_file_suffix = ".graphml";
