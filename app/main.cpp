@@ -21,7 +21,7 @@ int main(int argc, const char* argv[])
     {
         optional<arguments> maybe_args = read_args(argc, argv);
         if (!maybe_args.has_value())
-            return 0;
+            return 1;
 
         // the actual command line arguments
         auto const& parsed_args = *maybe_args;
@@ -82,12 +82,14 @@ int main(int argc, const char* argv[])
     catch (spdlog::spdlog_ex const& e)
     {
         cerr << "log initialization failed: " << e.what() << endl;
-        return 1;
+        return 2;
     }
 
     catch (exception const& e)
     {
         cerr << "exception caught: " << e.what() << endl;
-        return 1;
+        return 2;
     }
+
+    return 0;
 }
