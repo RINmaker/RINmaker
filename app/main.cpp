@@ -13,6 +13,8 @@
 #include "rin_maker.h"
 #include "rin_params.h"
 
+#include "fix_hydrogens.h"
+
 using namespace std;
 using lm = log_manager;
 int main(int argc, const char* argv[])
@@ -46,6 +48,8 @@ int main(int argc, const char* argv[])
         auto protein = *maybe_protein;
 
         lm::main()->info("found {} models in protein {}", protein.models.size(), protein.name);
+
+        fix_hydrogens(protein, gemmi::HydrogenChange::ReAdd);
 
         // do all models
         if (holds_alternative<output_directory>(parsed_args.output))
