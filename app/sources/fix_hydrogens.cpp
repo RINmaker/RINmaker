@@ -11,7 +11,7 @@ void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
     if (structure.models.empty() || structure.models[0].chains.empty())
         throw std::runtime_error{"no atoms in the input file."};
 
-    //lm::main()->info("fixing hydrogens...");
+    lm::main()->info("fixing hydrogens...");
 
     gemmi::setup_entities(structure);
     auto h1 = gemmi::count_hydrogen_sites(structure);
@@ -35,5 +35,5 @@ void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
 
     auto h2 = gemmi::count_hydrogen_sites(structure);
 
-    //lm::main()->info("hydrogen count before fix: {} after fix: {}", h1, h2);
+    lm::main()->info("hydrogen count before fix: {} after fix: {}", h1, h2);
 }

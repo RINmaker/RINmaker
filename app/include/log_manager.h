@@ -19,27 +19,15 @@
 class log_manager
 {
 private:
-    std::shared_ptr<spdlog::logger> console_logger = nullptr;
-    std::shared_ptr<spdlog::logger> file_logger = nullptr;
-    std::shared_ptr<spdlog::logger> main_logger = nullptr;
+    std::shared_ptr<spdlog::logger> main_logger{};
 
     log_manager() = default;
 
-    static log_manager& instance()
-    {
-        static log_manager lm;
-        return lm;
-    }
+    static log_manager& instance();
 
 public:
     static void initialize(std::filesystem::path const& log_file);
 
     static std::shared_ptr<spdlog::logger> main()
     { return instance().main_logger; }
-
-    static std::shared_ptr<spdlog::logger> file()
-    { return instance().file_logger; }
-
-    static std::shared_ptr<spdlog::logger> console()
-    { return instance().console_logger; }
 };

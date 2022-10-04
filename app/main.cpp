@@ -39,18 +39,18 @@ int main(int argc, const char* argv[])
 
         if (!maybe_protein.has_value())
         {
-            lm::console()->error("only .pdb and .cif file formats are supported!");
+            lm::main()->error("only .pdb and .cif file formats are supported!");
             return 1;
         }
 
         auto protein = *maybe_protein;
 
-        lm::console()->info("found {} models in protein {}", protein.models.size(), protein.name);
+        lm::main()->info("found {} models in protein {}", protein.models.size(), protein.name);
 
         // do all models
         if (holds_alternative<output_directory>(parsed_args.output))
         {
-            lm::console()->info("selected all models, computing...");
+            lm::main()->info("selected all models, computing...");
 
             auto dir = get<output_directory>(parsed_args.output).value;
             for (auto const& model: protein.models)
@@ -65,14 +65,14 @@ int main(int argc, const char* argv[])
         // otherwise do just the first one
         else if (holds_alternative<output_file>(parsed_args.output))
         {
-            lm::console()->info("selected first model, computing...");
+            lm::main()->info("selected first model, computing...");
             auto const file = get<output_file>(parsed_args.output).value;
 
             // create rin::maker, create graph and write to graphml
             rin::maker{protein.first_model(), protein, parsed_args.skip_water}(parsed_args.params).write_to_file(file);
         }
 
-        lm::console()->info("done");
+        lm::main()->info("done");
 
 #       if _MSC_VER
         spdlog::drop_all();
