@@ -3,6 +3,8 @@
 #include "config.h"
 #include "log_manager.h"
 
+#include <iostream>
+
 using lm = log_manager;
 
 void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
