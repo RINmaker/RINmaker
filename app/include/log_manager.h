@@ -26,7 +26,7 @@ private:
     static log_manager& instance();
 
 public:
-    static void initialize(std::filesystem::path const& log_file);
+    static void initialize(std::filesystem::path const& log_file, bool verbose);
 
     static std::shared_ptr<spdlog::logger> main()
     { return instance().main_logger; }

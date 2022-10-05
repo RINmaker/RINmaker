@@ -68,6 +68,10 @@ optional<arguments> read_args(int argc, char const* argv[])
     app.add_option("-l,--log", log_dir, "Log file")
         ->default_str(cfg::log::default_file_logger_filename);
 
+    bool verbose{false};
+    app.add_option("-v,--verbose", verbose, "Log in stdout")
+        ->default_val(false);
+
     bool keep_water = false;
     app.add_flag("-w,--keep-water", keep_water, "Keep water residues");
 
@@ -195,7 +199,7 @@ optional<arguments> read_args(int argc, char const* argv[])
     else //if(cmap_app->parsed())
         pcfg.set_interaction_type(rin::parameters::interaction_type_t::CONTACT_MAP);
 
-    log_manager::initialize(log_dir);
+    log_manager::initialize(log_dir, verbose);
 
     auto params = pcfg.build();
 
