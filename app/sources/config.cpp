@@ -16,6 +16,8 @@ const double pipi_c = -25.653;
 
 namespace cfg
 {
+// todo fixme
+char const* const monomer_lib_dir = "monomers"; //"/home/loreh/Desktop/Unive/Librerie/CCP4/monomers";
 namespace ver
 {
 char const* const app_name = "RINmaker";
