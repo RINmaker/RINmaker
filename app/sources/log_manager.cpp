@@ -31,5 +31,6 @@ void log_manager::initialize(filesystem::path const& log_file, bool verbose)
 #   else
     lm.main_logger->set_level(spdlog::level::info);
 #   endif
-    // TODO call set_pattern correctly
+
+    lm.main_logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%^%l%$] %v");
 }
