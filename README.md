@@ -8,9 +8,14 @@ git clone -b dev https://github.com/RINmaker/RINmaker.git
 
 ```bash
 cd RINmaker
-git submodule init
-git submodule update
+git submodule update --init --recursive
 ```
+
+```bash
+mkdir ~/.RINmaker
+tar -xf monomers.tar.gz -C ~/.RINmaker/monomers
+```
+
 
 ## Configure project:
 
