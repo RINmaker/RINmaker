@@ -69,8 +69,7 @@ optional<arguments> read_args(int argc, char const* argv[])
         ->default_str(cfg::log::default_file_logger_filename);
 
     bool verbose{false};
-    app.add_option("-v,--verbose", verbose, "Log in stdout")
-        ->default_val(false);
+    app.add_flag("-v,--verbose", verbose, "Log also to stdout");
 
     bool keep_water = false;
     app.add_flag("-w,--keep-water", keep_water, "Keep water residues");
