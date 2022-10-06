@@ -3,11 +3,31 @@
 #include "config.h"
 #include "log_manager.h"
 
-#include <iostream>
+#include <ostream>
 #include <filesystem>
 
 using lm = log_manager;
 namespace fs = std::filesystem;
+
+class custom_stringbuf final : public std::stringbuf
+{
+public:
+    int sync() override
+    {
+        // get contents
+        auto s = this->str();
+
+        // compact in one line
+        replace_if(s.begin(), s.end(), [](auto ch) { return ch == '\n'; }, ' ');
+
+        // log
+        lm::main()->warn("[gemmi] in fix_hydrogens: {}", s);
+
+        // clear buffer
+        this->str("");
+        return 0;
+    }
+};
 
 void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
 {
@@ -37,8 +57,10 @@ void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
             true
         );
 
+        custom_stringbuf buff{};
+        std::ostream warn{&buff};
         for (size_t i = 0; i < structure.models.size(); ++i)
-            prepare_topology(structure, monlib, i, what, false, &std::cerr);
+            prepare_topology(structure, monlib, i, what, false, &warn);
     }
 
     auto h2 = gemmi::count_hydrogen_sites(structure);
