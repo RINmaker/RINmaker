@@ -49,7 +49,8 @@ int main(int argc, const char* argv[])
 
         lm::main()->info("found {} models in protein {}", protein.models.size(), protein.name);
 
-        fix_hydrogens(protein, gemmi::HydrogenChange::ReAdd);
+        if (!parsed_args.no_hydrogen())
+            fix_hydrogens(protein, gemmi::HydrogenChange::ReAdd);
 
         // do all models
         if (holds_alternative<rin::parameters::output_directory>(parsed_args.output()))

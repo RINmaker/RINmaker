@@ -71,7 +71,10 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
     bool verbose{false};
     app.add_flag("-v,--verbose", verbose, "Log also to stdout");
 
-    bool keep_water = false;
+    bool no_hydrogen{false};
+    app.add_flag("-n,--no-hydrogen", no_hydrogen, "Skip hydrogen fixing");
+
+    bool keep_water{false};
     app.add_flag("-w,--keep-water", keep_water, "Keep water residues");
 
     int sequence_separation;
@@ -193,6 +196,7 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
             .set_cmap_type(cmap_type)
 
             .set_skip_water(!keep_water)
+            .set_no_hydrogen(no_hydrogen)
 
             .set_input(pdb_path)
             .set_output(out_path, output_as_directory);

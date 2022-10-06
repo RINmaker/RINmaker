@@ -56,7 +56,7 @@ private:
     std::filesystem::path _input{};
     std::variant<output_file, output_directory> _output{};
 
-    bool _skip_water{false};
+    bool _skip_water{false}, _no_hydrogen{false};
 
     parameters() = default;
 
@@ -126,6 +126,10 @@ public:
     [[nodiscard]]
     auto skip_water() const
     { return _skip_water; }
+
+    [[nodiscard]]
+    auto no_hydrogen() const
+    { return _no_hydrogen; }
 };
 
 struct parameters::configurator final
@@ -224,6 +228,12 @@ public:
     configurator& set_skip_water(bool skip_water)
     {
         params._skip_water = skip_water;
+        return *this;
+    }
+
+    configurator& set_no_hydrogen(bool no_hydrogen)
+    {
+        params._no_hydrogen = no_hydrogen;
         return *this;
     }
 };
