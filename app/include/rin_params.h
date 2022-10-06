@@ -2,6 +2,10 @@
 
 #include <algorithm>
 #include <string>
+#include <optional>
+#include <variant>
+#include <filesystem>
+
 #include "config.h"
 
 namespace rin
@@ -24,6 +28,13 @@ public:
         ALPHA, BETA
     };
 
+    // general stuff
+    struct output_file
+    { std::filesystem::path value; };
+
+    struct output_directory
+    { std::filesystem::path value; };
+
 private:
     double _query_dist_hbond = cfg::params::query_dist_hbond;
     double _surface_dist_vdw = cfg::params::surface_dist_vdw;
@@ -40,6 +51,12 @@ private:
     contact_map_type_t _cmap_type = contact_map_type_t::ALPHA;
 
     bool _hbond_realistics{true};
+
+    // general stuff
+    std::filesystem::path _input{};
+    std::variant<output_file, output_directory> _output{};
+
+    bool _skip_water{false};
 
     parameters() = default;
 
@@ -96,6 +113,19 @@ public:
 
     [[nodiscard]]
     std::string pretty() const;
+
+    // general stuff
+    [[nodiscard]]
+    auto const& input() const
+    { return _input; }
+
+    [[nodiscard]]
+    auto const& output() const
+    { return _output; }
+
+    [[nodiscard]]
+    auto skip_water() const
+    { return _skip_water; }
 };
 
 struct parameters::configurator final
@@ -171,6 +201,29 @@ public:
     configurator& set_hbond_realistic(bool val)
     {
         params._hbond_realistics = val;
+        return *this;
+    }
+
+    // general stuff
+    configurator& set_input(std::filesystem::path const& path)
+    {
+        params._input = path;
+        return *this;
+    }
+
+    configurator& set_output(std::filesystem::path const& path, bool is_directory)
+    {
+        if (is_directory)
+            params._output = rin::parameters::output_directory{path};
+        else
+            params._output = rin::parameters::output_file{path};
+
+        return *this;
+    }
+
+    configurator& set_skip_water(bool skip_water)
+    {
+        params._skip_water = skip_water;
         return *this;
     }
 };

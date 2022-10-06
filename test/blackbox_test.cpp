@@ -91,12 +91,12 @@ protected:
 
         // RINmaker -i filename rin
         const char* args[5] = { exePath.c_str(), "-i", pdbPath.c_str(), "-o dummy", "rin"};
-        std::optional<arguments> maybe_args = read_args(5, args);
+        auto maybe_args = read_args(5, args);
         // won't throw std::bad_optional because args are hand crafted above
         auto const parsed_args = maybe_args.value();
-        auto protein_structure = gemmi::read_pdb_file(parsed_args.input.string());
+        auto protein_structure = gemmi::read_pdb_file(parsed_args.input().string());
         // again, won't throw because tests are hand crafted to have 1 model each
-        return Result(rin::maker{protein_structure.first_model(), protein_structure}, parsed_args.params);
+        return Result(rin::maker{protein_structure.first_model(), protein_structure}, parsed_args);
     }
 
     void TearDown() override { }

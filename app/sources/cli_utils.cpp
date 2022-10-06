@@ -39,7 +39,7 @@ string app_full_name()
     return buf;
 }
 
-optional<arguments> read_args(int argc, char const* argv[])
+optional<rin::parameters> read_args(int argc, char const* argv[])
 {
     if (argc <= 1)
     {
@@ -190,7 +190,12 @@ optional<arguments> read_args(int argc, char const* argv[])
             .set_hbond_realistic(hbond_realistic_flag)
 
             .set_network_policy(network_policy)
-            .set_cmap_type(cmap_type);
+            .set_cmap_type(cmap_type)
+
+            .set_skip_water(!keep_water)
+
+            .set_input(pdb_path)
+            .set_output(out_path, output_as_directory);
 
     if(rin_app->parsed())
         pcfg.set_interaction_type(rin::parameters::interaction_type_t::NONCOVALENT_BONDS);
@@ -198,18 +203,13 @@ optional<arguments> read_args(int argc, char const* argv[])
     else //if(cmap_app->parsed())
         pcfg.set_interaction_type(rin::parameters::interaction_type_t::CONTACT_MAP);
 
+    if (output_as_directory)
+        fs::create_directory(out_path);
+
+    else if (out_path.has_parent_path())
+        fs::create_directory(out_path.parent_path());
+
     log_manager::initialize(log_dir, verbose);
 
-    auto params = pcfg.build();
-
-    if (output_as_directory)
-    {
-        fs::create_directory(out_path);
-        return arguments{params, pdb_path, {output_directory{out_path}}, log_dir, !keep_water};
-    }
-    else
-    {
-        if (out_path.has_parent_path()) fs::create_directory(out_path.parent_path());
-        return arguments{params, pdb_path, {output_file{out_path}}, log_dir, !keep_water};
-    }
+    return pcfg.build();
 }
