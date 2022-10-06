@@ -4,6 +4,7 @@
 #include "log_manager.h"
 
 #include <ostream>
+#include <optional>
 #include <filesystem>
 
 using lm = log_manager;
@@ -31,40 +32,66 @@ public:
 
 void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
 {
-#ifndef _MSC_VER
-    // todo: is this necessary?
-    if (structure.models.empty() || structure.models[0].chains.empty())
-        throw std::runtime_error{"the input file is empty"};
-
-    lm::main()->info("fixing hydrogens...");
+#ifdef _MSC_VER
+    // todo this will be fixed before release!
+    lm::main()->warn("fixing hydrogens is supported on linux only");
+    lm::main()->warn("fixing hydrogens not performed");
+#else
+    if (structure.models.empty() || structure.models.front().chains.empty())
+    {
+        lm::main()->warn("the input file has no models/has empty models");
+        lm::main()->warn("fixing hydrogens not performed");
+        return;
+    }
 
     gemmi::setup_entities(structure);
     auto h1 = gemmi::count_hydrogen_sites(structure);
 
-    // todo add non-linux alternatives
-    fs::path home{getenv("HOME")};
-
     if (what == gemmi::HydrogenChange::Remove)
+    {
+        lm::main()->info("removing hydrogens...");
         gemmi::remove_hydrogens(structure);
+    }
     else
     {
-        auto const res_names = structure.models[0].get_all_residue_names();
-        auto monlib = gemmi::read_monomer_lib(
-            (home / std::filesystem::path{cfg::monomer_lib_dir}).string(),
-            res_names,
-            gemmi::cif::read_file,
-            {},
-            true
-        );
+        auto const res_names = structure.models.front().get_all_residue_names();
+
+        fs::path home{getenv("HOME")};
+        fs::path monomer_dir = home / std::filesystem::path{cfg::monomer_lib_dir};
+
+        lm::main()->info("reading monomer library: {}", monomer_dir.string());
+
+        std::optional<gemmi::MonLib> monlib{std::nullopt};
+        try
+        {
+            monlib = gemmi::read_monomer_lib(
+                monomer_dir.string(),
+                res_names,
+                gemmi::cif::read_file,
+                {},
+                true
+            );
+        }
+        catch (std::exception const& e)
+        {
+            lm::main()->error("in fix_hydrogens: monomer library not found");
+            lm::main()->warn("fixing hydrogens not performed");
+            return;
+        }
 
         custom_stringbuf buff{};
         std::ostream warn{&buff};
         for (size_t i = 0; i < structure.models.size(); ++i)
-            prepare_topology(structure, monlib, i, what, false, &warn);
+        {
+            lm::main()->info("fixing hydrogens in model {} of {}...", i+1, structure.models.size());
+            prepare_topology(structure, *monlib, i, what, false, &warn);
+        }
+
     }
 
     auto h2 = gemmi::count_hydrogen_sites(structure);
-
-    lm::main()->info("hydrogen count before fix: {} after fix: {}", h1, h2);
+    lm::main()->info(
+        "hydrogen count (across {} models) before fix: {} after fix: {}",
+        structure.models.size(), h1, h2);
 #endif
 }
