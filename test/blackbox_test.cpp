@@ -94,7 +94,7 @@ protected:
         std::optional<arguments> maybe_args = read_args(5, args);
         // won't throw std::bad_optional because args are hand crafted above
         auto const parsed_args = maybe_args.value();
-        auto protein_structure = gemmi::read_pdb_file(parsed_args.input);
+        auto protein_structure = gemmi::read_pdb_file(parsed_args.input.string());
         // again, won't throw because tests are hand crafted to have 1 model each
         return Result(rin::maker{protein_structure.first_model(), protein_structure}, parsed_args.params);
     }
@@ -116,13 +116,13 @@ TEST_F(BlackBoxTest, IonIon2) {
     EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "IONIC"; }), 2);
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "IONIC" && source(e) == "HIS" && target(e) == "ASP" &&
-               compare_distance(e, 1.21934) &&
-               source_atom(e) == "CD2:CE1:CG:ND1:NE2" && target_atom(e) == "CG:OD1:OD2";
+               source_atom(e) == "CD2:CE1:CG:ND1:NE2" && target_atom(e) == "CG:OD1:OD2" &&
+               compare_distance(e, 1.21934) && compare_energy(e, 3.96073);
     }));
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "IONIC" && source(e) == "LYS" && target(e) == "GLU" &&
-               compare_distance(e, 1.68740) &&
-               source_atom(e) == "NZ" && target_atom(e) == "CD:OE1:OE2";
+               source_atom(e) == "NZ" && target_atom(e) == "CD:OE1:OE2" &&
+               compare_distance(e, 1.68740) && compare_energy(e, 8.05503);
     }));
 }
 TEST_F(BlackBoxTest, IonIon3) {
@@ -131,18 +131,18 @@ TEST_F(BlackBoxTest, IonIon3) {
     EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "IONIC"; }), 3);
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "IONIC" && source(e) == "LYS" && target(e) == "GLU" &&
-               compare_distance(e, 3.22121) &&
-               source_atom(e) == "NZ" && target_atom(e) == "CD:OE1:OE2";
+               source_atom(e) == "NZ" && target_atom(e) == "CD:OE1:OE2" &&
+               compare_distance(e, 3.22121) && compare_energy(e, 4.21956);
     }));
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "IONIC" && source(e) == "HIS" && target(e) == "GLU" &&
-               compare_distance(e, 1.60990) &&
-               source_atom(e) == "CD2:CE1:CG:ND1:NE2" && target_atom(e) == "CD:OE1:OE2";
+               source_atom(e) == "CD2:CE1:CG:ND1:NE2" && target_atom(e) == "CD:OE1:OE2" &&
+               compare_distance(e, 1.60990) && compare_energy(e, 5.01294);
     }));
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "IONIC" && source(e) == "LYS" && target(e) == "ASP" &&
-               compare_distance(e, 2.55251) &&
-               source_atom(e) == "NZ" && target_atom(e) == "CG:OD1:OD2";
+               source_atom(e) == "NZ" && target_atom(e) == "CG:OD1:OD2" &&
+               compare_distance(e, 2.55251) && compare_energy(e, 3.18660);
     }));
 }
 TEST_F(BlackBoxTest, IonIon4) {
@@ -151,8 +151,8 @@ TEST_F(BlackBoxTest, IonIon4) {
     EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "IONIC"; }), 1);
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "IONIC" && source(e) == "LYS" && target(e) == "GLU" &&
-               compare_distance(e, 2.56018) &&
-               source_atom(e) == "NZ" && target_atom(e) == "OE1";
+               source_atom(e) == "NZ" && target_atom(e) == "OE1" &&
+               compare_distance(e, 2.56018) && compare_energy(e, 5.30904);
     }));
 }
 TEST_F(BlackBoxTest, IonIon5) {
@@ -161,13 +161,13 @@ TEST_F(BlackBoxTest, IonIon5) {
     EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "IONIC"; }), 2);
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "IONIC" && source(e) == "LYS" && target(e) == "GLU" &&
-               compare_distance(e, 1.95108) &&
-               source_atom(e) == "NZ" && target_atom(e) == "OE1";
+               source_atom(e) == "NZ" && target_atom(e) == "OE1" &&
+               compare_distance(e, 1.95108) && compare_energy(e, 6.96644);
     }));
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "IONIC" && source(e) == "ARG" && target(e) == "GLU" &&
-               compare_distance(e, 2.03282) &&
-               source_atom(e) == "NH2" && target_atom(e) == "OE1";
+               source_atom(e) == "NH2" && target_atom(e) == "OE1" &&
+               compare_distance(e, 2.03282) && compare_energy(e, 2.71632);
     }));
 }
 TEST_F(BlackBoxTest, IonIon6) {
@@ -186,8 +186,8 @@ TEST_F(BlackBoxTest, IonIon8) {
     EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "IONIC"; }), 1);
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "IONIC" && source(e) == "LYS" && target(e) == "ASP" &&
-               compare_distance(e, 3.19828) &&
-               source_atom(e) == "NZ" && target_atom(e) == "CG:OD1:OD2";
+               source_atom(e) == "NZ" && target_atom(e) == "CG:OD1:OD2" &&
+               compare_distance(e, 3.19828) && compare_energy(e, 2.54320);
     }));
 }
 TEST_F(BlackBoxTest, IonIon9) {
@@ -215,9 +215,9 @@ TEST_F(BlackBoxTest, HBond3) {
 
     EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "HBOND"; }), 1);
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
-        return interaction_name(e) == "HBOND" && source(e) == "ASP" && target(e) == "ARG" && source_atom(e) == "OD1" &&
-               target_atom(e) == "NH2" &&
-               compare_distance(e, 2.11193) && compare_angle(e, 177.61115);
+        return interaction_name(e) == "HBOND" && source(e) == "ASP" && target(e) == "ARG" &&
+               source_atom(e) == "OD1" && target_atom(e) == "NH2" &&
+               compare_distance(e, 2.11193) && compare_angle(e, 177.61115) && compare_energy(e, -6864.73748);
     }));
 }
 TEST_F(BlackBoxTest, HBond4) {
@@ -225,9 +225,9 @@ TEST_F(BlackBoxTest, HBond4) {
 
     EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "HBOND"; }), 1);
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
-        return interaction_name(e) == "HBOND" && source(e) == "GLN" && target(e) == "LYS" && source_atom(e) == "OE1" &&
-               target_atom(e) == "NZ" &&
-               compare_distance(e, 2.53981) && compare_angle(e, 179.91626);
+        return interaction_name(e) == "HBOND" && source(e) == "GLN" && target(e) == "LYS" &&
+               source_atom(e) == "OE1" && target_atom(e) == "NZ" &&
+               compare_distance(e, 2.53981) && compare_angle(e, 179.91626) && compare_energy(e, -21052.13189);
     }));
 }
 TEST_F(BlackBoxTest, HBond5) {
@@ -235,14 +235,14 @@ TEST_F(BlackBoxTest, HBond5) {
 
     EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "HBOND"; }), 2);
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
-        return interaction_name(e) == "HBOND" && source(e) == "ASN" && target(e) == "ASN" && source_atom(e) == "OD1" &&
-               target_atom(e) == "ND2" &&
-               compare_distance(e, 2.01970) && compare_angle(e, 179.96223);
+        return interaction_name(e) == "HBOND" && source(e) == "ASN" && target(e) == "ASN" &&
+               source_atom(e) == "OD1" && target_atom(e) == "ND2" &&
+               compare_distance(e, 2.01970) && compare_angle(e, 179.96223) && compare_energy(e, -20882.11645);
     }));
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
-        return interaction_name(e) == "HBOND" && source(e) == "ASN" && target(e) == "ASN" && source_atom(e) == "OD1" &&
-               target_atom(e) == "ND2" &&
-               compare_distance(e, 2.02333) && compare_angle(e, 179.96160);
+        return interaction_name(e) == "HBOND" && source(e) == "ASN" && target(e) == "ASN" &&
+               source_atom(e) == "OD1" && target_atom(e) == "ND2" &&
+               compare_distance(e, 2.02333) && compare_angle(e, 179.96160) && compare_energy(e, -20920.96430);
     }));
 }
 TEST_F(BlackBoxTest, HBond6) {
@@ -250,19 +250,19 @@ TEST_F(BlackBoxTest, HBond6) {
 
     EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "HBOND"; }), 3);
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
-        return interaction_name(e) == "HBOND" && source(e) == "SER" && target(e) == "LYS" && source_atom(e) == "OG" &&
-               target_atom(e) == "NZ" &&
-               compare_distance(e, 2.02752) && compare_angle(e, 179.97440);
+        return interaction_name(e) == "HBOND" && source(e) == "SER" && target(e) == "LYS" &&
+               source_atom(e) == "OG" && target_atom(e) == "NZ" &&
+               compare_distance(e, 2.02752) && compare_angle(e, 179.97440) && compare_energy(e, -31293.78545);
     }));
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
-        return interaction_name(e) == "HBOND" && source(e) == "SER" && target(e) == "LYS" && source_atom(e) == "OG" &&
-               target_atom(e) == "NZ" &&
-               compare_distance(e, 2.00981) && compare_angle(e, 179.94896);
+        return interaction_name(e) == "HBOND" && source(e) == "SER" && target(e) == "LYS" &&
+               source_atom(e) == "OG" && target_atom(e) == "NZ" &&
+               compare_distance(e, 2.00981) && compare_angle(e, 179.94896) && compare_energy(e, -31329.57651);
     }));
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
-        return interaction_name(e) == "HBOND" && source(e) == "SER" && target(e) == "LYS" && source_atom(e) == "OG" &&
-               target_atom(e) == "NZ" &&
-               compare_distance(e, 2.02536) && compare_angle(e, 179.95765);
+        return interaction_name(e) == "HBOND" && source(e) == "SER" && target(e) == "LYS" &&
+               source_atom(e) == "OG" && target_atom(e) == "NZ" &&
+               compare_distance(e, 2.02536) && compare_angle(e, 179.95765) && compare_energy(e, -31379.24148);
     }));
 }
 TEST_F(BlackBoxTest, HBond7) {
@@ -272,7 +272,7 @@ TEST_F(BlackBoxTest, HBond7) {
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "HBOND" && source(e) == "SER" && target(e) == "LYS" && source_atom(e) == "OG" &&
                target_atom(e) == "NZ" &&
-               compare_distance(e, 2.02752) && compare_angle(e, 179.97440);
+               compare_distance(e, 2.02752) && compare_angle(e, 179.97440) && compare_energy(e, -31293.78545);
     }));
 }
 TEST_F(BlackBoxTest, HBond8) {
@@ -282,7 +282,7 @@ TEST_F(BlackBoxTest, HBond8) {
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "HBOND" && source(e) == "GLN" && target(e) == "LYS" && source_atom(e) == "OE1" &&
                target_atom(e) == "NZ" &&
-               compare_distance(e, 2.56130) && compare_angle(e, 67.88154);
+               compare_distance(e, 2.56130) && compare_angle(e, 67.88154) && compare_energy(e, 0.64979);
     }));
 }
 
@@ -317,7 +317,7 @@ TEST_F(BlackBoxTest, PiPi5) {
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "PIPISTACK" && source(e) == "PHE" && target(e) == "PHE" &&
                source_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" && target_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" &&
-               compare_distance(e, 1) && compare_angle(e, 0);
+               compare_distance(e, 1) && compare_angle(e, 0) && compare_energy(e, -0.52740);
     }));
 }
 
@@ -328,7 +328,7 @@ TEST_F(BlackBoxTest, PiPi6) {
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "PIPISTACK" && source(e) == "PHE" && target(e) == "PHE" &&
                source_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" && target_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" &&
-               compare_distance(e, 1.99982) && compare_angle(e, 0);
+               compare_distance(e, 1.99982) && compare_angle(e, 0) && compare_energy(e, -0.52740);
     }));
 }
 
@@ -340,6 +340,11 @@ TEST_F(BlackBoxTest, vdw1) {
     Result r = SetUp("vdw/1.pdb");
 
     EXPECT_EQ(r.count_edges([](const edge &e) { return interaction_name(e) == "VDW"; }), 1);
+    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+        return interaction_name(e) == "VDW" && source(e) == "ASN" && target(e) == "GLN" &&
+                source_atom(e) == "ND2" && target_atom(e) == "OE1" &&
+               compare_distance(e, 3.30000) && compare_energy(e, -0.16185);
+    }));
 }
 TEST_F(BlackBoxTest, vdw2) {
     Result r = SetUp("vdw/2.pdb");
@@ -414,23 +419,18 @@ TEST_F(BlackBoxTest, picat2) {
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "PICATION" && source(e) == "TYR" && target(e) == "LYS" &&
                source_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" && target_atom(e) == "NZ" &&
-               compare_distance(e, 3.99983) && compare_angle(e, 60.00134);
+               compare_distance(e, 3.99983) && compare_angle(e, 60.00134) && compare_energy(e, -0.74231);
     }));
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "PICATION" && source(e) == "TYR" && target(e) == "LYS" &&
                source_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" && target_atom(e) == "NZ" &&
-               compare_distance(e, 4) && compare_angle(e, 89.99761);
+               compare_distance(e, 4.00013) && compare_angle(e, 70.00445) && compare_energy(e, -0.74209);
     }));
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    EXPECT_EQ(r.count_edges([](const edge &e) {
         return interaction_name(e) == "PICATION" && source(e) == "TYR" && target(e) == "LYS" &&
                source_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" && target_atom(e) == "NZ" &&
-               compare_distance(e, 4.00013) && compare_angle(e, 70.00445);
-    }));
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
-        return interaction_name(e) == "PICATION" && source(e) == "TYR" && target(e) == "LYS" &&
-               source_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" && target_atom(e) == "NZ" &&
-               compare_distance(e, 4) && compare_angle(e, 89.99761);
-    }));
+               compare_distance(e, 4) && compare_angle(e, 89.99761) && compare_energy(e, -0.74219);
+    }), 2);
 }
 TEST_F(BlackBoxTest, picat3) {
     Result r = SetUp("picat/3.pdb");
@@ -449,7 +449,7 @@ TEST_F(BlackBoxTest, picat5) {
     EXPECT_TRUE(r.contain_edge([](const edge &e) {
         return interaction_name(e) == "PICATION" && source(e) == "TYR" && target(e) == "LYS" &&
                source_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" && target_atom(e) == "NZ" &&
-               compare_distance(e, 2.99985) && compare_angle(e, 70.00357);
+               compare_distance(e, 2.99985) && compare_angle(e, 70.00357) && compare_energy(e, -2.34615);
     }));
 }
 

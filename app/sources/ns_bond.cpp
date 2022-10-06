@@ -171,7 +171,7 @@ string pication::get_interaction() const
 double pipistack::energy(double angle)
 {
     double cos_part = cos(1. / (angle + 10.));
-    return constant::pipi_a + (constant::pipi_b * angle) + (constant::pipi_c*angle * cos_part);
+    return constant::pipi_a + (constant::pipi_b * angle) + (constant::pipi_c * angle * cos_part);
 }
 
 pipistack::pipistack(ring const& a, ring const& b, double angle) :

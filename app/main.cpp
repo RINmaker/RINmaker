@@ -32,10 +32,10 @@ int main(int argc, const char* argv[])
 
         // parse file
         if (parsed_args.input.extension() == ".pdb")
-            maybe_protein = gemmi::read_pdb_file(parsed_args.input);
+            maybe_protein = gemmi::read_pdb_file(parsed_args.input.string());
         else if (parsed_args.input.extension() == ".cif")
         {
-            auto document = gemmi::cif::read_file(parsed_args.input);
+            auto document = gemmi::cif::read_file(parsed_args.input.string());
             maybe_protein = gemmi::make_structure(document);
         }
 
