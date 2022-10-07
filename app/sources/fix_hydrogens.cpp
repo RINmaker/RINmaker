@@ -10,6 +10,22 @@
 using lm = log_manager;
 namespace fs = std::filesystem;
 
+#ifdef _MSC_VER
+#include <windows.h>
+fs::path exec_path()
+{
+    TCHAR  buffer[MAX_PATH] = { 0 };
+    GetModuleFileName(NULL, buffer, MAX_PATH);
+    std::string path_str{buffer};
+    return { path_str };
+}
+#else
+fs::path exec_path()
+{
+    return fs::canonical({ "/proc/self/exe" });
+}
+#endif
+
 class custom_stringbuf final : public std::stringbuf
 {
 public:
@@ -32,11 +48,6 @@ public:
 
 void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
 {
-#ifdef _MSC_VER
-    // todo this will be fixed before release!
-    lm::main()->warn("fixing hydrogens is supported on linux only");
-    lm::main()->warn("fixing hydrogens not performed");
-#else
     if (structure.models.empty() || structure.models.front().chains.empty())
     {
         lm::main()->warn("the input file has no models/has empty models");
@@ -56,8 +67,7 @@ void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
     {
         auto const res_names = structure.models.front().get_all_residue_names();
 
-        fs::path home{getenv("HOME")};
-        fs::path monomer_dir = home / std::filesystem::path{cfg::monomer_lib_dir};
+        fs::path monomer_dir = exec_path().parent_path() / std::filesystem::path{ cfg::monomer_lib_name };
 
         lm::main()->info("reading monomer library: {}", monomer_dir.string());
 
@@ -74,7 +84,7 @@ void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
         }
         catch (std::exception const& e)
         {
-            lm::main()->error("in fix_hydrogens: monomer library not found");
+            lm::main()->error("[gemmi] exception in fix_hydrogens: {}", e.what());
             lm::main()->warn("fixing hydrogens not performed");
             return;
         }
@@ -93,5 +103,4 @@ void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
     lm::main()->info(
         "hydrogen count (across {} models) before fix: {} after fix: {}",
         structure.models.size(), h1, h2);
-#endif
 }

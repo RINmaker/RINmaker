@@ -14,7 +14,7 @@ extern const double pipi_c;
 
 namespace cfg
 {
-extern char const* const monomer_lib_dir;
+extern char const* const monomer_lib_name;
 
 namespace log
 {

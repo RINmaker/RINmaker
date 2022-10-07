@@ -16,8 +16,7 @@ const double pipi_c = -25.653;
 
 namespace cfg
 {
-// todo add for windows
-char const* const monomer_lib_dir = ".RINmaker/monomers";
+char const* const monomer_lib_name = "monomers";
 namespace ver
 {
 char const* const app_name = "RINmaker";
