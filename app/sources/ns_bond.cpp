@@ -262,7 +262,7 @@ std::shared_ptr<hydrogen const> hydrogen::test(parameters const& params, atom co
                 auto const hd = (array<double, 3>) (donor - h);
                 double angle_ahd = geom::angle<3>(ha, hd);
 
-                if (angle_adh <= cfg::params::hbond_angle) // 63
+                if (angle_adh <= params.hbond_angle()) // 63
                     return std::make_shared<hydrogen const>(acceptor, donor, h, angle_ahd);
             }
         }

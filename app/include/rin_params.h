@@ -44,6 +44,8 @@ private:
 
     double _query_dist_cmap = cfg::params::query_dist_alpha;
 
+    double _hbond_angle{cfg::params::hbond_angle};
+
     int _sequence_separation = cfg::params::seq_sep;
 
     interaction_type_t _interaction_type = interaction_type_t::NONCOVALENT_BONDS;
@@ -98,6 +100,10 @@ public:
     [[nodiscard]]
     bool hbond_realistic() const
     { return _hbond_realistics; }
+
+    [[nodiscard]]
+    auto hbond_angle() const
+    { return _hbond_angle; }
 
     [[nodiscard]]
     interaction_type_t interaction_type() const
@@ -205,6 +211,12 @@ public:
     configurator& set_hbond_realistic(bool val)
     {
         params._hbond_realistics = val;
+        return *this;
+    }
+
+    configurator& set_hbond_angle(double val)
+    {
+        params._hbond_angle = val;
         return *this;
     }
 
