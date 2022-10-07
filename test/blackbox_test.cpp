@@ -197,29 +197,54 @@ TEST_F(BlackBoxTest, IonIon3) {
     }
 }
 TEST_F(BlackBoxTest, IonIon4) {
-    Result r = SetUp("ionion/4.pdb");
-
-    EXPECT_EQ(r.count_edges(isIonicFunc), 1);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "IONIC" && source(e) == "LYS" && target(e) == "GLU" &&
                source_atom(e) == "NZ" && target_atom(e) == "OE1" &&
                compare_distance(e, 2.56018) && compare_energy(e, 5.30904);
-    }));
+    };
+
+    {
+        Result r = SetUp("ionion/4.pdb");
+
+        EXPECT_EQ(r.count_edges(isIonicFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
+    {
+        Result r = SetUp("ionion/4.pdb", {"--ionic-bond", "2.54"});
+
+        EXPECT_EQ(r.count_edges(isIonicFunc), 0);
+    }
 }
 TEST_F(BlackBoxTest, IonIon5) {
-    Result r = SetUp("ionion/5.pdb");
-
-    EXPECT_EQ(r.count_edges(isIonicFunc), 2);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "IONIC" && source(e) == "LYS" && target(e) == "GLU" &&
                source_atom(e) == "NZ" && target_atom(e) == "OE1" &&
                compare_distance(e, 1.95108) && compare_energy(e, 6.96644);
-    }));
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    };
+    auto e2 = [](const edge &e) {
         return interaction_name(e) == "IONIC" && source(e) == "ARG" && target(e) == "GLU" &&
                source_atom(e) == "NH2" && target_atom(e) == "OE1" &&
                compare_distance(e, 2.03282) && compare_energy(e, 2.71632);
-    }));
+    };
+
+    {
+        Result r = SetUp("ionion/5.pdb");
+
+        EXPECT_EQ(r.count_edges(isIonicFunc), 2);
+        EXPECT_TRUE(r.contain_edge(e1));
+        EXPECT_TRUE(r.contain_edge(e2));
+    }
+    {
+        Result r = SetUp("ionion/5.pdb", {"--ionic-bond", "1.98"});
+
+        EXPECT_EQ(r.count_edges(isIonicFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
+    {
+        Result r = SetUp("ionion/5.pdb", {"--ionic-bond", "1.93"});
+
+        EXPECT_EQ(r.count_edges(isIonicFunc), 0);
+    }
 }
 TEST_F(BlackBoxTest, IonIon6) {
     Result r = SetUp("ionion/6.pdb");
@@ -232,14 +257,23 @@ TEST_F(BlackBoxTest, IonIon7) {
     EXPECT_EQ(r.count_edges(isIonicFunc), 0);
 }
 TEST_F(BlackBoxTest, IonIon8) {
-    Result r = SetUp("ionion/8.pdb");
-
-    EXPECT_EQ(r.count_edges(isIonicFunc), 1);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "IONIC" && source(e) == "LYS" && target(e) == "ASP" &&
                source_atom(e) == "NZ" && target_atom(e) == "CG:OD1:OD2" &&
                compare_distance(e, 3.19828) && compare_energy(e, 2.54320);
-    }));
+    };
+
+    {
+        Result r = SetUp("ionion/8.pdb");
+
+        EXPECT_EQ(r.count_edges(isIonicFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
+    {
+        Result r = SetUp("ionion/8.pdb", {"--ionic-bond", "3.1"});
+
+        EXPECT_EQ(r.count_edges(isIonicFunc), 0);
+    }
 }
 TEST_F(BlackBoxTest, IonIon9) {
     Result r = SetUp("ionion/9.pdb");
@@ -262,79 +296,210 @@ TEST_F(BlackBoxTest, HBond2) {
     EXPECT_EQ(r.count_edges(isHbondFunc), 0);
 }
 TEST_F(BlackBoxTest, HBond3) {
-    Result r = SetUp("hbond/3.pdb");
-
-    EXPECT_EQ(r.count_edges(isHbondFunc), 1);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "HBOND" && source(e) == "ASP" && target(e) == "ARG" &&
                source_atom(e) == "OD1" && target_atom(e) == "NH2" &&
                compare_distance(e, 2.11193) && compare_angle(e, 177.61115) && compare_energy(e, -6864.73748);
-    }));
+    };//angle_adh 1.23
+
+    {
+        Result r = SetUp("hbond/3.pdb");
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
+    {
+        Result r = SetUp("hbond/3.pdb", {"--hydrogen-bond", "2"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 0);
+    }
+
+    {
+        Result r = SetUp("hbond/3.pdb", {"--h-bond-angle", "1.2"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 0);
+    }
 }
 TEST_F(BlackBoxTest, HBond4) {
-    Result r = SetUp("hbond/4.pdb");
-
-    EXPECT_EQ(r.count_edges(isHbondFunc), 1);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "HBOND" && source(e) == "GLN" && target(e) == "LYS" &&
                source_atom(e) == "OE1" && target_atom(e) == "NZ" &&
                compare_distance(e, 2.53981) && compare_angle(e, 179.91626) && compare_energy(e, -21052.13189);
-    }));
+    };//angle_adh 0.032959
+
+    {
+        Result r = SetUp("hbond/4.pdb");
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
+    {
+        Result r = SetUp("hbond/4.pdb", {"--hydrogen-bond", "2.4"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 0);
+    }
+
+    {
+        Result r = SetUp("hbond/4.pdb", {"--h-bond-angle", "0.03"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 0);
+    }
 }
 TEST_F(BlackBoxTest, HBond5) {
-    Result r = SetUp("hbond/5.pdb");
-
-    EXPECT_EQ(r.count_edges(isHbondFunc), 2);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "HBOND" && source(e) == "ASN" && target(e) == "ASN" &&
                source_atom(e) == "OD1" && target_atom(e) == "ND2" &&
                compare_distance(e, 2.01970) && compare_angle(e, 179.96223) && compare_energy(e, -20882.11645);
-    }));
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    };//angle_adh 0.018706
+    auto e2 = [](const edge &e) {
         return interaction_name(e) == "HBOND" && source(e) == "ASN" && target(e) == "ASN" &&
                source_atom(e) == "OD1" && target_atom(e) == "ND2" &&
                compare_distance(e, 2.02333) && compare_angle(e, 179.96160) && compare_energy(e, -20920.96430);
-    }));
+    };//angle_adh 0.018979
+
+    {
+        Result r = SetUp("hbond/5.pdb");
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 2);
+        EXPECT_TRUE(r.contain_edge(e1));
+        EXPECT_TRUE(r.contain_edge(e2));
+    }
+    {
+        Result r = SetUp("hbond/5.pdb", {"--hydrogen-bond", "2.02"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
+    {
+        Result r = SetUp("hbond/5.pdb", {"--hydrogen-bond", "2"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 0);
+    }
+
+    {
+        Result r = SetUp("hbond/5.pdb", {"--h-bond-angle", "0.0189"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
+    {
+        Result r = SetUp("hbond/5.pdb", {"--h-bond-angle", "0.0186"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 0);
+    }
 }
 TEST_F(BlackBoxTest, HBond6) {
-    Result r = SetUp("hbond/6.pdb");
-
-    EXPECT_EQ(r.count_edges(isHbondFunc), 3);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
-        return interaction_name(e) == "HBOND" && source(e) == "SER" && target(e) == "LYS" &&
-               source_atom(e) == "OG" && target_atom(e) == "NZ" &&
-               compare_distance(e, 2.02752) && compare_angle(e, 179.97440) && compare_energy(e, -31293.78545);
-    }));
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "HBOND" && source(e) == "SER" && target(e) == "LYS" &&
                source_atom(e) == "OG" && target_atom(e) == "NZ" &&
                compare_distance(e, 2.00981) && compare_angle(e, 179.94896) && compare_energy(e, -31329.57651);
-    }));
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    };//angle_adh 0.025399
+    auto e2 = [](const edge &e) {
         return interaction_name(e) == "HBOND" && source(e) == "SER" && target(e) == "LYS" &&
                source_atom(e) == "OG" && target_atom(e) == "NZ" &&
                compare_distance(e, 2.02536) && compare_angle(e, 179.95765) && compare_energy(e, -31379.24148);
-    }));
+    };//angle_adh 0.020911
+    auto e3 = [](const edge &e) {
+        return interaction_name(e) == "HBOND" && source(e) == "SER" && target(e) == "LYS" &&
+               source_atom(e) == "OG" && target_atom(e) == "NZ" &&
+               compare_distance(e, 2.02752) && compare_angle(e, 179.97440) && compare_energy(e, -31293.78545);
+    };//angle_adh 0.012631
+
+    {
+        Result r = SetUp("hbond/6.pdb");
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 3);
+        EXPECT_TRUE(r.contain_edge(e1));
+        EXPECT_TRUE(r.contain_edge(e2));
+        EXPECT_TRUE(r.contain_edge(e3));
+    }
+    {
+        Result r = SetUp("hbond/6.pdb", {"--hydrogen-bond", "2.026"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 2);
+        EXPECT_TRUE(r.contain_edge(e1));
+        EXPECT_TRUE(r.contain_edge(e2));
+    }
+    {
+        Result r = SetUp("hbond/6.pdb", {"--hydrogen-bond", "2.01"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
+    {
+        Result r = SetUp("hbond/6.pdb", {"--hydrogen-bond", "2"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 0);
+    }
+
+    {
+        Result r = SetUp("hbond/6.pdb", {"--h-bond-angle", "0.025"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 2);
+        EXPECT_TRUE(r.contain_edge(e2));
+        EXPECT_TRUE(r.contain_edge(e3));
+    }
+    {
+        Result r = SetUp("hbond/6.pdb", {"--h-bond-angle", "0.020"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e3));
+    }
+    {
+        Result r = SetUp("hbond/6.pdb", {"--h-bond-angle", "0.012"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 0);
+    }
 }
 TEST_F(BlackBoxTest, HBond7) {
-    Result r = SetUp("hbond/7.pdb");
-
-    EXPECT_EQ(r.count_edges(isHbondFunc), 1);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "HBOND" && source(e) == "SER" && target(e) == "LYS" && source_atom(e) == "OG" &&
                target_atom(e) == "NZ" &&
                compare_distance(e, 2.02752) && compare_angle(e, 179.97440) && compare_energy(e, -31293.78545);
-    }));
+    };//angle_adh 0.012631
+
+    {
+            Result r = SetUp("hbond/7.pdb");
+
+            EXPECT_EQ(r.count_edges(isHbondFunc), 1);
+            EXPECT_TRUE(r.contain_edge(e1));
+    }
+    {
+        Result r = SetUp("hbond/7.pdb", {"--hydrogen-bond", "2.01"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 0);
+    }
+
+    {
+        Result r = SetUp("hbond/7.pdb", {"--h-bond-angle", "0.012"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 0);
+    }
 }
 TEST_F(BlackBoxTest, HBond8) {
-    Result r = SetUp("hbond/8.pdb");
-
-    EXPECT_EQ(r.count_edges(isHbondFunc), 1);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "HBOND" && source(e) == "GLN" && target(e) == "LYS" && source_atom(e) == "OE1" &&
                target_atom(e) == "NZ" &&
                compare_distance(e, 2.56130) && compare_angle(e, 67.88154) && compare_energy(e, 0.64979);
-    }));
+    };//angle_adh 0.649794
+
+    {
+        Result r = SetUp("hbond/8.pdb");
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
+    {
+        Result r = SetUp("hbond/8.pdb", {"--hydrogen-bond", "2.55"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 0);
+    }
+
+    {
+        Result r = SetUp("hbond/8.pdb", {"--h-bond-angle", "0.64"});
+
+        EXPECT_EQ(r.count_edges(isHbondFunc), 0);
+    }
 }
 
 #pragma endregion
