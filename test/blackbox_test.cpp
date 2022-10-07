@@ -527,32 +527,51 @@ TEST_F(BlackBoxTest, PiPi4) {
     EXPECT_EQ(r.count_edges(isPipiFunc), 0);
 }
 TEST_F(BlackBoxTest, PiPi5) {
-    Result r = SetUp("pipi/5.pdb");
-
-    EXPECT_EQ(r.count_edges(isPipiFunc), 1);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "PIPISTACK" && source(e) == "PHE" && target(e) == "PHE" &&
                source_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" && target_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" &&
                compare_distance(e, 1) && compare_angle(e, 0) && compare_energy(e, -0.52740);
-    }));
+    };//normal center angles = 0 - 0
+
+    {
+        Result r = SetUp("pipi/5.pdb");
+
+        EXPECT_EQ(r.count_edges(isPipiFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
 }
 
 TEST_F(BlackBoxTest, PiPi6) {
-    Result r = SetUp("pipi/6.pdb");
-
-    EXPECT_EQ(r.count_edges(isPipiFunc), 1);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "PIPISTACK" && source(e) == "PHE" && target(e) == "PHE" &&
                source_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" && target_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" &&
                compare_distance(e, 1.99982) && compare_angle(e, 0) && compare_energy(e, -0.52740);
-    }));
+    };//normal center angles = 45.003376 - 45.003376
+
+    {
+        Result r = SetUp("pipi/6.pdb");
+
+        EXPECT_EQ(r.count_edges(isPipiFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
+
+    {
+        Result r = SetUp("pipi/6.pdb", {"--pipistack-bond", "1.9"});
+
+        EXPECT_EQ(r.count_edges(isPipiFunc), 0);
+    }
+    {
+        Result r = SetUp("pipi/6.pdb", {"--pipistack-normal-centre", "45"});
+
+        EXPECT_EQ(r.count_edges(isPipiFunc), 0);
+    }
 }
 
 #pragma endregion
 
 #pragma region VDW
 
-TEST_F(BlackBoxTest, vdw1) {
+TEST_F(BlackBoxTest, Vdw1) {
     auto e1 = [](const edge &e) {
         return interaction_name(e) == "VDW" && source(e) == "ASN" && target(e) == "GLN" &&
                source_atom(e) == "ND2" && target_atom(e) == "OE1" &&
@@ -572,27 +591,27 @@ TEST_F(BlackBoxTest, vdw1) {
         EXPECT_TRUE(r.contain_edge(e1));
     }
 }
-TEST_F(BlackBoxTest, vdw2) {
+TEST_F(BlackBoxTest, Vdw2) {
     Result r = SetUp("vdw/2.pdb");
     EXPECT_EQ(r.count_edges(isVdwFunc), 0);
 }
-TEST_F(BlackBoxTest, vdw3) {
+TEST_F(BlackBoxTest, Vdw3) {
     Result r = SetUp("vdw/3.pdb");
     EXPECT_EQ(r.count_edges(isVdwFunc), 0);
 }
-TEST_F(BlackBoxTest, vdw4) {
+TEST_F(BlackBoxTest, Vdw4) {
     Result r = SetUp("vdw/4.pdb");
     EXPECT_EQ(r.count_edges(isVdwFunc), 0);
 }
-TEST_F(BlackBoxTest, vdw5) {
+TEST_F(BlackBoxTest, Vdw5) {
     Result r = SetUp("vdw/5.pdb");
     EXPECT_EQ(r.count_edges(isVdwFunc), 0);
 }
-TEST_F(BlackBoxTest, vdw6) {
+TEST_F(BlackBoxTest, Vdw6) {
     Result r = SetUp("vdw/6.pdb");
     EXPECT_EQ(r.count_edges(isVdwFunc), 0);
 }
-TEST_F(BlackBoxTest, vdw7) {
+TEST_F(BlackBoxTest, Vdw7) {
     auto e1 = [](const edge &e) {
         return interaction_name(e) == "VDW" && target(e) == "ASN" && source(e) == "GLN" &&
                target_atom(e) == "CB" && source_atom(e) == "NE2" &&
@@ -611,7 +630,7 @@ TEST_F(BlackBoxTest, vdw7) {
         EXPECT_EQ(r.count_edges(isVdwFunc), 0);
     }
 }
-TEST_F(BlackBoxTest, vdw8) {
+TEST_F(BlackBoxTest, Vdw8) {
     auto e1 = [](const edge &e) {
         return interaction_name(e) == "VDW" && source(e) == "ASN" && target(e) == "ASN" &&
                source_atom(e) == "ND2" && target_atom(e) == "CB" &&
@@ -674,51 +693,84 @@ TEST_F(BlackBoxTest, vdw8) {
 
 #pragma region Pication
 
-TEST_F(BlackBoxTest, picat1) {
+TEST_F(BlackBoxTest, Picat1) {
     Result r = SetUp("picat/1.pdb");
 
 
     EXPECT_EQ(r.count_edges(isPicatFunc), 0);
 }
-TEST_F(BlackBoxTest, picat2) {
-    Result r = SetUp("picat/2.pdb");
-
-    EXPECT_EQ(r.count_edges(isPicatFunc), 4);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+TEST_F(BlackBoxTest, Picat2) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "PICATION" && source(e) == "TYR" && target(e) == "LYS" &&
                source_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" && target_atom(e) == "NZ" &&
                compare_distance(e, 3.99983) && compare_angle(e, 60.00134) && compare_energy(e, -0.74231);
-    }));
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
-        return interaction_name(e) == "PICATION" && source(e) == "TYR" && target(e) == "LYS" &&
-               source_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" && target_atom(e) == "NZ" &&
-               compare_distance(e, 4.00013) && compare_angle(e, 70.00445) && compare_energy(e, -0.74209);
-    }));
-    EXPECT_EQ(r.count_edges([](const edge &e) {
+    };
+    auto e2_3 = [](const edge &e) {
         return interaction_name(e) == "PICATION" && source(e) == "TYR" && target(e) == "LYS" &&
                source_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" && target_atom(e) == "NZ" &&
                compare_distance(e, 4) && compare_angle(e, 89.99761) && compare_energy(e, -0.74219);
-    }), 2);
+    };
+    auto e4 = [](const edge &e) {
+        return interaction_name(e) == "PICATION" && source(e) == "TYR" && target(e) == "LYS" &&
+               source_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" && target_atom(e) == "NZ" &&
+               compare_distance(e, 4.00013) && compare_angle(e, 70.00445) && compare_energy(e, -0.74209);
+    };
+
+    {
+        Result r = SetUp("picat/2.pdb");
+
+        EXPECT_EQ(r.count_edges(isPicatFunc), 4);
+        EXPECT_TRUE(r.contain_edge(e1));
+        EXPECT_EQ(r.count_edges(e2_3), 2);
+        EXPECT_TRUE(r.contain_edge(e4));
+    }
+    {
+        Result r = SetUp("picat/2.pdb", {"--pication-bond", "4.0001"});
+
+        EXPECT_EQ(r.count_edges(isPicatFunc), 3);
+        EXPECT_TRUE(r.contain_edge(e1));
+        EXPECT_TRUE(r.contain_edge(e2_3));
+    }
+    {
+        Result r = SetUp("picat/2.pdb", {"--pication-bond", "3.9999"});
+
+        EXPECT_EQ(r.count_edges(isPicatFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
+    {
+        Result r = SetUp("picat/2.pdb", {"--pication-bond", "3.9"});
+
+        EXPECT_EQ(r.count_edges(isPicatFunc), 0);
+    }
 }
-TEST_F(BlackBoxTest, picat3) {
+TEST_F(BlackBoxTest, Picat3) {
     Result r = SetUp("picat/3.pdb");
 
     EXPECT_EQ(r.count_edges(isPicatFunc), 0);
 }
-TEST_F(BlackBoxTest, picat4) {
+TEST_F(BlackBoxTest, Picat4) {
     Result r = SetUp("picat/4.pdb");
 
     EXPECT_EQ(r.count_edges(isPicatFunc), 0);
 }
-TEST_F(BlackBoxTest, picat5) {
-    Result r = SetUp("picat/5.pdb");
-
-    EXPECT_EQ(r.count_edges(isPicatFunc), 1);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+TEST_F(BlackBoxTest, Picat5) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "PICATION" && source(e) == "TYR" && target(e) == "LYS" &&
                source_atom(e) == "CD1:CD2:CE1:CE2:CG:CZ" && target_atom(e) == "NZ" &&
                compare_distance(e, 2.99985) && compare_angle(e, 70.00357) && compare_energy(e, -2.34615);
-    }));
+    };
+
+    {
+        Result r = SetUp("picat/5.pdb");
+
+        EXPECT_EQ(r.count_edges(isPicatFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
+    {
+        Result r = SetUp("picat/5.pdb", {"--pication-bond", "2.98"});
+
+        EXPECT_EQ(r.count_edges(isPicatFunc), 0);
+    }
 }
 
 #pragma endregion
