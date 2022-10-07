@@ -35,6 +35,11 @@ public:
     struct output_directory
     { std::filesystem::path value; };
 
+    enum class illformed_policy_t
+    {
+        FAIL, SKIP_RES, KEEP_RES
+    };
+
 private:
     double _query_dist_hbond = cfg::params::query_dist_hbond;
     double _surface_dist_vdw = cfg::params::surface_dist_vdw;
@@ -62,6 +67,8 @@ private:
     std::variant<output_file, output_directory> _output{};
 
     bool _skip_water{false}, _no_hydrogen{false};
+
+    illformed_policy_t _illformed{};
 
     parameters() = default;
 
@@ -151,6 +158,10 @@ public:
     [[nodiscard]]
     auto no_hydrogen() const
     { return _no_hydrogen; }
+
+    [[nodiscard]]
+    auto illformed_policy() const
+    { return _illformed; }
 };
 
 struct parameters::configurator final
@@ -279,6 +290,12 @@ public:
     configurator& set_no_hydrogen(bool no_hydrogen)
     {
         params._no_hydrogen = no_hydrogen;
+        return *this;
+    }
+
+    configurator& set_illformed_policy(illformed_policy_t on_malformed)
+    {
+        params._illformed = on_malformed;
         return *this;
     }
 };

@@ -82,6 +82,19 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
         ->default_val(cfg::params::seq_sep)
         ->check(CLI::PositiveNumber);
 
+    auto illformed = rin::parameters::illformed_policy_t::SKIP_RES;
+    std::map<std::string, rin::parameters::illformed_policy_t> ill_map{
+        {"fail", rin::parameters::illformed_policy_t::FAIL},
+        {"sres", rin::parameters::illformed_policy_t::SKIP_RES},
+        {"kres", rin::parameters::illformed_policy_t::KEEP_RES}};
+
+    app.add_option(
+            "-f,--illformed", illformed, "Behaviour in case of malformed ring or ionic group")
+        ->transform(
+            CLI::CheckedTransformer(ill_map, CLI::ignore_case).description(
+                CLI::detail::generate_map(CLI::detail::smart_deref(ill_map), true)))
+        ->default_val("sres");
+
     // rin subcommand
     auto rin_app = app.add_subcommand(
             "rin", "Compute the residue interaction network");
@@ -202,6 +215,8 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
 
             .set_skip_water(!keep_water)
             .set_no_hydrogen(no_hydrogen)
+
+            .set_illformed_policy(illformed)
 
             .set_input(pdb_path)
             .set_output(out_path, output_as_directory);
