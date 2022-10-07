@@ -553,14 +553,24 @@ TEST_F(BlackBoxTest, PiPi6) {
 #pragma region VDW
 
 TEST_F(BlackBoxTest, vdw1) {
-    Result r = SetUp("vdw/1.pdb");
-
-    EXPECT_EQ(r.count_edges(isVdwFunc), 1);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "VDW" && source(e) == "ASN" && target(e) == "GLN" &&
                source_atom(e) == "ND2" && target_atom(e) == "OE1" &&
                compare_distance(e, 3.30000) && compare_energy(e, -0.16185);
-    }));
+    };//surface distance 0.150000
+
+    {
+        Result r = SetUp("vdw/1.pdb");
+
+        EXPECT_EQ(r.count_edges(isVdwFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
+    {
+        Result r = SetUp("vdw/1.pdb", {"--vdw-bond", "3.2"});
+
+        EXPECT_EQ(r.count_edges(isVdwFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
 }
 TEST_F(BlackBoxTest, vdw2) {
     Result r = SetUp("vdw/2.pdb");
@@ -583,39 +593,81 @@ TEST_F(BlackBoxTest, vdw6) {
     EXPECT_EQ(r.count_edges(isVdwFunc), 0);
 }
 TEST_F(BlackBoxTest, vdw7) {
-    Result r = SetUp("vdw/7.pdb");
-
-    EXPECT_EQ(r.count_edges(isVdwFunc), 1);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "VDW" && target(e) == "ASN" && source(e) == "GLN" &&
                target_atom(e) == "CB" && source_atom(e) == "NE2" &&
                compare_distance(e, 3.85866) && compare_energy(e, -0.13357);
-    }));
+    };//surface dist 0.488660
+
+    {
+        Result r = SetUp("vdw/7.pdb");
+
+        EXPECT_EQ(r.count_edges(isVdwFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e1));
+    }
+    {
+        Result r = SetUp("vdw/7.pdb", {"--vdw-bond", "0.48"});
+
+        EXPECT_EQ(r.count_edges(isVdwFunc), 0);
+    }
 }
 TEST_F(BlackBoxTest, vdw8) {
-    Result r = SetUp("vdw/8.pdb");
-
-    EXPECT_EQ(r.count_edges(isVdwFunc), 4);
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    auto e1 = [](const edge &e) {
         return interaction_name(e) == "VDW" && source(e) == "ASN" && target(e) == "ASN" &&
                source_atom(e) == "ND2" && target_atom(e) == "CB" &&
                compare_distance(e, 3.74499) && compare_energy(e, -0.10873);
-    }));
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    };//surface dist 0.374989
+    auto e2 = [](const edge &e) {
         return interaction_name(e) == "VDW" && source(e) == "GLN" && target(e) == "ASN" &&
                source_atom(e) == "OE1" && target_atom(e) == "CB" &&
                compare_distance(e, 1.73218) && compare_energy(e, 2022.14052);
-    }));
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    };//surface dist -1.587821
+    auto e3 = [](const edge &e) {
         return interaction_name(e) == "VDW" && source(e) == "GLN" && target(e) == "GLN" &&
                source_atom(e) == "OE1" && target_atom(e) == "NE2" &&
                compare_distance(e, 3.49130) && compare_energy(e, -0.18889);
-    }));
-    EXPECT_TRUE(r.contain_edge([](const edge &e) {
+    };//surface dist 0.341303
+    auto e4 = [](const edge &e) {
         return interaction_name(e) == "VDW" && source(e) == "ASN" && target(e) == "GLN" &&
                source_atom(e) == "CB" && target_atom(e) == "NE2" &&
                compare_distance(e, 1.75928) && compare_energy(e, 2653.90001);
-    }));
+    };//surface dist -1.610719
+
+    {
+        Result r = SetUp("vdw/8.pdb");
+
+        EXPECT_EQ(r.count_edges(isVdwFunc), 4);
+        EXPECT_TRUE(r.contain_edge(e1));
+        EXPECT_TRUE(r.contain_edge(e2));
+        EXPECT_TRUE(r.contain_edge(e3));
+        EXPECT_TRUE(r.contain_edge(e4));
+    }
+    {
+        Result r = SetUp("vdw/8.pdb", {"--vdw-bond", "0.37"});
+
+        EXPECT_EQ(r.count_edges(isVdwFunc), 3);
+        EXPECT_TRUE(r.contain_edge(e2));
+        EXPECT_TRUE(r.contain_edge(e3));
+        EXPECT_TRUE(r.contain_edge(e4));
+    }
+    {
+        Result r = SetUp("vdw/8.pdb", {"--vdw-bond", "0.34"});
+
+        EXPECT_EQ(r.count_edges(isVdwFunc), 2);
+        EXPECT_TRUE(r.contain_edge(e2));
+        EXPECT_TRUE(r.contain_edge(e4));
+    }
+    {
+        Result r = SetUp("vdw/8.pdb", {"--vdw-bond", "-1.59"});
+
+        EXPECT_EQ(r.count_edges(isVdwFunc), 1);
+        EXPECT_TRUE(r.contain_edge(e4));
+    }
+    {
+        Result r = SetUp("vdw/8.pdb", {"--vdw-bond", "-1.62"});
+
+        EXPECT_EQ(r.count_edges(isVdwFunc), 0);
+    }
 }
 
 #pragma endregion
