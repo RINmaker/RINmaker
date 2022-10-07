@@ -190,6 +190,9 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
             .set_query_dist_pipi(pipistack_distance)
 
             .set_hbond_angle(hbond_angle)
+            .set_pication_angle(pication_angle)
+            .set_pipistack_normal_centre_angle_range(pipistack_normal_centre_angle_range)
+            .set_pipistack_normal_normal_angle_range(pipistack_normal_normal_angle_range)
 
             .set_sequence_separation(sequence_separation)
             .set_hbond_realistic(hbond_realistic_flag)

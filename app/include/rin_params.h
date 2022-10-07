@@ -44,7 +44,10 @@ private:
 
     double _query_dist_cmap = cfg::params::query_dist_alpha;
 
-    double _hbond_angle{cfg::params::hbond_angle};
+    double _hbond_angle{cfg::params::hbond_angle},
+        _pipistack_normal_centre_angle_range{cfg::params::pipistack_normal_centre_angle_range},
+        _pipistack_normal_normal_angle_range{cfg::params::pipistack_normal_normal_angle_range},
+        _pication_angle{cfg::params::pication_angle};
 
     int _sequence_separation = cfg::params::seq_sep;
 
@@ -104,6 +107,18 @@ public:
     [[nodiscard]]
     auto hbond_angle() const
     { return _hbond_angle; }
+
+    [[nodiscard]]
+    auto pipistack_normal_centre_angle_range() const
+    { return _pipistack_normal_centre_angle_range; }
+
+    [[nodiscard]]
+    auto pipistack_normal_normal_angle_range() const
+    { return _pipistack_normal_normal_angle_range; }
+
+    [[nodiscard]]
+    auto pication_angle() const
+    { return _pication_angle; }
 
     [[nodiscard]]
     interaction_type_t interaction_type() const
@@ -217,6 +232,24 @@ public:
     configurator& set_hbond_angle(double val)
     {
         params._hbond_angle = val;
+        return *this;
+    }
+
+    configurator& set_pipistack_normal_centre_angle_range(double val)
+    {
+        params._pipistack_normal_centre_angle_range = val;
+        return *this;
+    }
+
+    configurator& set_pipistack_normal_normal_angle_range(double val)
+    {
+        params._pipistack_normal_normal_angle_range = val;
+        return *this;
+    }
+
+    configurator& set_pication_angle(double val)
+    {
+        params._pication_angle = val;
         return *this;
     }
 
