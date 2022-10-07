@@ -119,8 +119,7 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
 
     double vdw_distance;
     rin_app->add_option("--vdw-bond", vdw_distance, "Surface distance for vdw bonds")
-       ->default_val(cfg::params::surface_dist_vdw)
-       ->check(CLI::PositiveNumber);
+       ->default_val(cfg::params::surface_dist_vdw);
 
     double ionic_distance;
     rin_app->add_option("--ionic-bond", ionic_distance, "Query distance for ionic bonds")
