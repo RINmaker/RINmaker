@@ -37,7 +37,7 @@ public:
 
     enum class illformed_policy_t
     {
-        FAIL, SKIP_RES, KEEP_RES
+        FAIL, SKIP_RES, KEEP_RES, KEEP_ALL
     };
 
 private:

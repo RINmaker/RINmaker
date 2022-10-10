@@ -86,7 +86,8 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
     std::map<std::string, rin::parameters::illformed_policy_t> ill_map{
         {"fail", rin::parameters::illformed_policy_t::FAIL},
         {"sres", rin::parameters::illformed_policy_t::SKIP_RES},
-        {"kres", rin::parameters::illformed_policy_t::KEEP_RES}};
+        {"kres", rin::parameters::illformed_policy_t::KEEP_RES},
+        {"kall", rin::parameters::illformed_policy_t::KEEP_ALL}};
 
     app.add_option(
             "-f,--illformed", illformed, "Behaviour in case of malformed ring or ionic group")

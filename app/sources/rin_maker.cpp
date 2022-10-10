@@ -133,8 +133,6 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  r
     // at the end of the constructor we will store it in the private member pimpl, which is a const*
     auto tmp_pimpl = make_shared<rin::maker::impl>();
 
-    auto const keep_res = params.illformed_policy() == rin::parameters::illformed_policy_t::KEEP_RES;
-
     // GEMMI already parses all records and then groups atoms together in the respective residues
     // so all information is already here. We will just need to rebuild rings and ionic groups
     for (auto const& chain: model.chains)
@@ -147,13 +145,7 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  r
                 {
                     if (helix_map.empty() && strand_map.empty())
                     {
-                        tmp_pimpl->aminoacids.emplace_back(
-                            residue,
-                            chain,
-                            model,
-                            protein,
-                            !keep_res
-                        );
+                        tmp_pimpl->aminoacids.emplace_back(residue, chain, model, protein, params);
                     }
                     else
                     {
@@ -161,29 +153,18 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  r
                         if (!(maybe_sstruct = helix_map.maybe_find(residue, chain)).has_value())
                             maybe_sstruct = strand_map.maybe_find(residue, chain);
 
-                        tmp_pimpl->aminoacids.emplace_back(
-                            residue,
-                            chain,
-                            model,
-                            protein,
-                            !keep_res,
-                            maybe_sstruct
-                        );
+                        tmp_pimpl->aminoacids.emplace_back(residue, chain, model, protein, params, maybe_sstruct);
                     }
                 }
                 catch (std::exception const& e)
                 {
                     switch (params.illformed_policy())
                     {
-                    case rin::parameters::illformed_policy_t::SKIP_RES:
-                        lm::main()->warn("illformed residue skipped: {}", e.what());
-                        break;
                     case rin::parameters::illformed_policy_t::FAIL:
-                        lm::main()->error("illformed residue (aborting): {}", e.what());
+                        lm::main()->error("aborting on: {}", e.what());
                         throw;
-                    case rin::parameters::illformed_policy_t::KEEP_RES:
-                        lm::main()->warn(
-                            "misbehaviour: illformed residue should have not thrown, skipping: {}", e.what());
+                    default:
+                        lm::main()->warn("skipping on: {}", e.what());
                         break;
                     }
                 }

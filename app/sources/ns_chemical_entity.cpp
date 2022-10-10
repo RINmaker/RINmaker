@@ -108,11 +108,13 @@ array<double, 3> center_of_mass(vector<atom> const& atoms)
     return centroid;
 }
 
-// returning an optional of the error message should be way faster than try/catching
-// exceptions (since a soon-to-be added option will give the possibility to ignore
-// the exception and keep running)
-std::optional<std::string> assert_atom_group_correctness(
-    aminoacid const& residue, gemmi::Model const& model, vector<string> const& expected_atom_names, vector<atom> const& actual_atoms, string const& group_name)
+void assert_atom_group_correctness(
+    aminoacid const& residue,
+    gemmi::Model const& model,
+    vector<string> const& expected_atom_names,
+    vector<atom> const& actual_atoms,
+    string const& group_name
+    )
 {
     vector<string> actual_atom_names;
     actual_atom_names.reserve(actual_atoms.size());
@@ -127,7 +129,7 @@ std::optional<std::string> assert_atom_group_correctness(
             auto const expected_atoms_str = join_strings(expected_atom_names, ",");
             auto const actual_atoms_str = get_name_from_atoms(actual_atoms, ",");
 
-            string msg = "malformed " + group_name + " in model " + model.name;
+            string msg = "illformed " + group_name + " in model " + model.name;
             msg += " residue " + residue.get_id();
             msg += " expected atoms={";
             msg += expected_atoms_str;
@@ -135,32 +137,45 @@ std::optional<std::string> assert_atom_group_correctness(
             msg += actual_atoms_str;
             msg += "}";
 
-            // an invalid atom group happened
-            return msg;
+            // here always throw
+            throw std::runtime_error{msg};
         }
     }
-
-    // no errors here
-    return std::nullopt;
 }
 
 template<typename Entity>
 void try_assignment(
+    aminoacid const& residue,
+    gemmi::Model const& model,
+    vector<string> const& expected_atom_names,
+    vector<atom> const& actual_atoms,
+    string const& group_name,
+    rin::parameters::illformed_policy_t illformed_policy,
     std::optional<Entity>& destination,
-    bool should_throw_if_malformed,
-    std::optional<string> const& maybe_error,
-    std::function<Entity(void)> const& producer)
+    std::function<Entity(void)> const& producer
+    )
 {
-    if (maybe_error.has_value())
+    try
     {
-        if (should_throw_if_malformed)
-            throw invalid_argument(*maybe_error);
-        else
-            log_manager::main()->warn("illformed residue (not skipping): {}", *maybe_error);
-    }
-    else
-    {
+        assert_atom_group_correctness(residue, model, expected_atom_names, actual_atoms, group_name);
         destination = producer();
+    }
+    catch (std::exception const& e)
+    {
+        switch(illformed_policy)
+        {
+        case rin::parameters::illformed_policy_t::FAIL:
+        case rin::parameters::illformed_policy_t::SKIP_RES:
+            log_manager::main()->warn("caught: {}", e.what());
+            throw;
+        case rin::parameters::illformed_policy_t::KEEP_RES:
+            log_manager::main()->warn("skipping: {}", e.what());
+            break;
+        case rin::parameters::illformed_policy_t::KEEP_ALL:
+            log_manager::main()->warn("(unstable) keeping: {}", e.what());
+            destination = producer();
+            break;
+        }
     }
 }
 
@@ -169,7 +184,7 @@ chemical_entity::aminoacid::aminoacid(
     gemmi::Chain const& chain,
     gemmi::Model const& model,
     gemmi::Structure const& protein,
-    bool throw_if_malformed) :
+    rin::parameters const& params) :
     _pimpl(std::make_shared<impl>())
 {
     // basic info
@@ -257,38 +272,30 @@ chemical_entity::aminoacid::aminoacid(
 
     if (n_of_rings >= 1)
     {
-        auto maybe_error = assert_atom_group_correctness(
+        try_assignment<ring>(
             *this,
             model,
             ring1_names,
             ring1,
-            "ring"
-            );
-
-        try_assignment<ring>(
+            "ring",
+            params.illformed_policy(),
             _pimpl->primary_ring,
-            throw_if_malformed,
-            maybe_error,
             create_ring_1
-            );
+        );
     }
 
     if (n_of_rings == 2)
     {
-       auto maybe_error = assert_atom_group_correctness(
-           *this,
-           model,
-           ring2_names,
-           ring2,
-           "ring"
-           );
-
-       try_assignment<ring>(
-           _pimpl->primary_ring,
-           throw_if_malformed,
-           maybe_error,
-           create_ring_2
-           );
+        try_assignment<ring>(
+            *this,
+            model,
+            ring1_names,
+            ring1,
+            "ring",
+            params.illformed_policy(),
+            _pimpl->secondary_ring,
+            create_ring_2
+        );
     }
 
     auto create_positive_ionic_group = [this, &ionic_group_atoms]()
@@ -299,38 +306,30 @@ chemical_entity::aminoacid::aminoacid(
 
     if (charge == 1)
     {
-        auto maybe_error = assert_atom_group_correctness(
+        try_assignment<ionic_group>(
             *this,
             model,
             ionic_group_names,
             ionic_group_atoms,
-            "ionic group"
-            );
-
-        try_assignment<ionic_group>(
+            "ionic group",
+            params.illformed_policy(),
             _pimpl->positive_ionic_group,
-            throw_if_malformed,
-            maybe_error,
             create_positive_ionic_group
-            );
+        );
     }
 
     else if (charge == -1)
     {
-        auto maybe_error = assert_atom_group_correctness(
+        try_assignment<ionic_group>(
             *this,
             model,
             ionic_group_names,
             ionic_group_atoms,
-            "ionic group"
-            );
-
-        try_assignment<ionic_group>(
+            "ionic group",
+            params.illformed_policy(),
             _pimpl->negative_ionic_group,
-            throw_if_malformed,
-            maybe_error,
             create_negative_ionic_group
-            );
+        );
     }
 }
 
@@ -339,9 +338,9 @@ aminoacid::aminoacid(
     gemmi::Chain const& chain,
     gemmi::Model const& model,
     gemmi::Structure const& protein,
-    bool throw_if_malformed,
+    rin::parameters const& params,
     std::optional<std::variant<gemmi::Helix, gemmi::Sheet::Strand>> const& secondary_structure) :
-    aminoacid(residue, chain, model, protein, throw_if_malformed)
+    aminoacid(residue, chain, model, protein, params)
 {
     if (!secondary_structure.has_value())
         _pimpl->secondary_structure_name = "LOOP";
