@@ -95,7 +95,7 @@ protected:
         string pdbPath = (running_folder / test_case_folder / filename).string();
 
         // RINmaker -i filename rin
-        vector<const char*> mandatoryParameters = { exePath.c_str(), "-i", pdbPath.c_str(), "-o dummy", "rin"};
+        vector<const char*> mandatoryParameters = { exePath.c_str(), "-i", pdbPath.c_str(), "-o dummy", "--illformed=kall", "rin"};
 
         vector<const char*> parameters;
         parameters.reserve(mandatoryParameters.size() + additionalParameters.size());
@@ -107,7 +107,7 @@ protected:
         auto const parsed_args = maybe_args.value();
         auto protein_structure = gemmi::read_pdb_file(parsed_args.input().string());
         // again, won't throw because tests are handcrafted to have 1 model each
-        return Result(rin::maker{protein_structure.first_model(), protein_structure}, parsed_args);
+        return Result(rin::maker{protein_structure.first_model(), protein_structure, parsed_args}, parsed_args);
     }
 
     void TearDown() override { }
