@@ -6,6 +6,7 @@
 #include "energy.h"
 
 #include "private/impl_chemical_entity.h"
+#include "log_manager.h"
 
 using std::vector, std::array, std::string, std::unique_ptr, std::make_unique, std::to_string, std::invalid_argument;
 
@@ -154,6 +155,8 @@ void try_assignment(
     {
         if (should_throw_if_malformed)
             throw invalid_argument(*maybe_error);
+        else
+            log_manager::main()->warn("illformed residue (not skipping): {}", *maybe_error);
     }
     else
     {
@@ -165,7 +168,8 @@ chemical_entity::aminoacid::aminoacid(
     gemmi::Residue const& residue,
     gemmi::Chain const& chain,
     gemmi::Model const& model,
-    gemmi::Structure const& protein) :
+    gemmi::Structure const& protein,
+    bool throw_if_malformed) :
     _pimpl(std::make_shared<impl>())
 {
     // basic info
@@ -254,19 +258,37 @@ chemical_entity::aminoacid::aminoacid(
     if (n_of_rings >= 1)
     {
         auto maybe_error = assert_atom_group_correctness(
-            *this, model, ring1_names, ring1, "ring");
+            *this,
+            model,
+            ring1_names,
+            ring1,
+            "ring"
+            );
 
         try_assignment<ring>(
-            _pimpl->primary_ring, false, maybe_error, create_ring_1);
+            _pimpl->primary_ring,
+            throw_if_malformed,
+            maybe_error,
+            create_ring_1
+            );
     }
 
     if (n_of_rings == 2)
     {
-       auto maybe_error =
-           assert_atom_group_correctness(*this, model, ring2_names, ring2, "ring");
+       auto maybe_error = assert_atom_group_correctness(
+           *this,
+           model,
+           ring2_names,
+           ring2,
+           "ring"
+           );
 
        try_assignment<ring>(
-           _pimpl->primary_ring, false, maybe_error, create_ring_2);
+           _pimpl->primary_ring,
+           throw_if_malformed,
+           maybe_error,
+           create_ring_2
+           );
     }
 
     auto create_positive_ionic_group = [this, &ionic_group_atoms]()
@@ -278,19 +300,37 @@ chemical_entity::aminoacid::aminoacid(
     if (charge == 1)
     {
         auto maybe_error = assert_atom_group_correctness(
-            *this, model, ionic_group_names, ionic_group_atoms, "ionic group");
+            *this,
+            model,
+            ionic_group_names,
+            ionic_group_atoms,
+            "ionic group"
+            );
 
         try_assignment<ionic_group>(
-            _pimpl->positive_ionic_group, false, std::nullopt, create_positive_ionic_group);
+            _pimpl->positive_ionic_group,
+            throw_if_malformed,
+            maybe_error,
+            create_positive_ionic_group
+            );
     }
 
     else if (charge == -1)
     {
         auto maybe_error = assert_atom_group_correctness(
-            *this, model, ionic_group_names, ionic_group_atoms, "ionic group");
+            *this,
+            model,
+            ionic_group_names,
+            ionic_group_atoms,
+            "ionic group"
+            );
 
         try_assignment<ionic_group>(
-            _pimpl->negative_ionic_group, false, std::nullopt, create_negative_ionic_group);
+            _pimpl->negative_ionic_group,
+            throw_if_malformed,
+            maybe_error,
+            create_negative_ionic_group
+            );
     }
 }
 
@@ -299,8 +339,9 @@ aminoacid::aminoacid(
     gemmi::Chain const& chain,
     gemmi::Model const& model,
     gemmi::Structure const& protein,
+    bool throw_if_malformed,
     std::optional<std::variant<gemmi::Helix, gemmi::Sheet::Strand>> const& secondary_structure) :
-    aminoacid(residue, chain, model, protein)
+    aminoacid(residue, chain, model, protein, throw_if_malformed)
 {
     if (!secondary_structure.has_value())
         _pimpl->secondary_structure_name = "LOOP";

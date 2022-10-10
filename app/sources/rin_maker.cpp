@@ -118,7 +118,7 @@ public:
     { return chain_to_map.empty(); }
 };
 
-rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  bool skip_water, bool skip_malformed)
+rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  rin::parameters const& params)
 {
     secondary_structure_helper_map<gemmi::Helix> helix_map;
     for (auto const& helix: protein.helices)
@@ -133,24 +133,59 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  b
     // at the end of the constructor we will store it in the private member pimpl, which is a const*
     auto tmp_pimpl = make_shared<rin::maker::impl>();
 
+    auto const keep_res = params.illformed_policy() == rin::parameters::illformed_policy_t::KEEP_RES;
+
     // GEMMI already parses all records and then groups atoms together in the respective residues
     // so all information is already here. We will just need to rebuild rings and ionic groups
     for (auto const& chain: model.chains)
     {
         for (auto const& residue: chain.residues)
         {
-            if (!residue.is_water() || !skip_water)
+            if (!residue.is_water() || !params.skip_water())
             {
-                if (helix_map.empty() && strand_map.empty())
-                    tmp_pimpl->aminoacids.emplace_back(residue, chain, model, protein);
-                else
+                try
                 {
-                    auto maybe_helix = helix_map.maybe_find(residue, chain);
-                    if (maybe_helix.has_value())
-                        tmp_pimpl->aminoacids.emplace_back(residue, chain, model, protein, maybe_helix);
+                    if (helix_map.empty() && strand_map.empty())
+                    {
+                        tmp_pimpl->aminoacids.emplace_back(
+                            residue,
+                            chain,
+                            model,
+                            protein,
+                            !keep_res
+                        );
+                    }
                     else
-                        // in this last case either it is in a sheet or it is in a loop
-                        tmp_pimpl->aminoacids.emplace_back(residue, chain, model, protein, strand_map.maybe_find(residue, chain));
+                    {
+                        std::optional<std::variant<gemmi::Helix, gemmi::Sheet::Strand>> maybe_sstruct{std::nullopt};
+                        if (!(maybe_sstruct = helix_map.maybe_find(residue, chain)).has_value())
+                            maybe_sstruct = strand_map.maybe_find(residue, chain);
+
+                        tmp_pimpl->aminoacids.emplace_back(
+                            residue,
+                            chain,
+                            model,
+                            protein,
+                            !keep_res,
+                            maybe_sstruct
+                        );
+                    }
+                }
+                catch (std::exception const& e)
+                {
+                    switch (params.illformed_policy())
+                    {
+                    case rin::parameters::illformed_policy_t::SKIP_RES:
+                        lm::main()->warn("illformed residue skipped: {}", e.what());
+                        break;
+                    case rin::parameters::illformed_policy_t::FAIL:
+                        lm::main()->error("illformed residue (aborting): {}", e.what());
+                        throw;
+                    case rin::parameters::illformed_policy_t::KEEP_RES:
+                        lm::main()->warn(
+                            "misbehaviour: illformed residue should have not thrown, skipping: {}", e.what());
+                        break;
+                    }
                 }
             }
         }

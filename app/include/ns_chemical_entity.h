@@ -57,13 +57,15 @@ public:
         gemmi::Residue const& residue,
         gemmi::Chain const& chain,
         gemmi::Model const& model,
-        gemmi::Structure const& protein);
+        gemmi::Structure const& protein,
+        bool throw_if_malformed);
 
     aminoacid(
         gemmi::Residue const& residue,
         gemmi::Chain const& chain,
         gemmi::Model const& model,
         gemmi::Structure const& protein,
+        bool throw_if_malformed,
         std::optional<std::variant<gemmi::Helix, gemmi::Sheet::Strand>> const& secondary_structure);
 
     ~aminoacid();

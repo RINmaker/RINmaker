@@ -21,7 +21,7 @@ private:
     std::shared_ptr<impl const> pimpl;
 
 public:
-    maker(gemmi::Model const& model, gemmi::Structure const& protein, bool skip_water = true, bool skip_malformed = false);
+    maker(gemmi::Model const& model, gemmi::Structure const& protein, rin::parameters const& params);
 
     ~maker();
 
