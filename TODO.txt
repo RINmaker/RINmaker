@@ -1,5 +1,15 @@
 TODO:
 
+- write a sensible README with:
+    * [ ] cloning the repo
+    * [ ] how/what to build
+    * [ ] output of `./RINmaker -H`
+    * [ ] minimal example usage for:
+        - [ ] rin
+        - [ ] cmap
+        - [ ] tests
+    * [ ] copyright notice and license
+
 - riportare atom1=catione atom2=anione negli edge ionion in graphml. possibilità:
     1. usare i nomi di tutti gli atomi nel gruppo
     2. usare il nome dell'atomo che dà la carica al gruppo
