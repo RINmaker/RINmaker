@@ -94,7 +94,7 @@ protected:
         string exePath = running_path.string();
         string pdbPath = (running_folder / test_case_folder / filename).string();
 
-        // RINmaker -i filename rin
+        // RINmaker -i filename -o dummy --illformed=kall rin
         vector<const char*> mandatoryParameters = { exePath.c_str(), "-i", pdbPath.c_str(), "-o dummy", "--illformed=kall", "rin"};
 
         vector<const char*> parameters;
@@ -117,7 +117,7 @@ protected:
 
 
 TEST_F(BlackBoxTest, IonIon1) {
-    Result r = SetUp("ionion/1.pdb");
+    Result r = SetUp("ionion/ionion1.pdb");
 
     EXPECT_EQ(r.count_edges(isIonicFunc), 0);
 }
@@ -134,20 +134,20 @@ TEST_F(BlackBoxTest, IonIon2) {
     };
 
     {
-        Result r = SetUp("ionion/2.pdb");
+        Result r = SetUp("ionion/ionion2.pdb");
 
         EXPECT_EQ(r.count_edges(isIonicFunc), 2);
         EXPECT_TRUE(r.contain_edge(e1));
         EXPECT_TRUE(r.contain_edge(e2));
     }
     {
-        Result r = SetUp("ionion/2.pdb", {"--ionic-bond", "1.23"});
+        Result r = SetUp("ionion/ionion2.pdb", {"--ionic-bond", "1.23"});
 
         EXPECT_EQ(r.count_edges(isIonicFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("ionion/2.pdb", {"--ionic-bond", "1.2"});
+        Result r = SetUp("ionion/ionion2.pdb", {"--ionic-bond", "1.2"});
 
         EXPECT_EQ(r.count_edges(isIonicFunc), 0);
     }
@@ -170,7 +170,7 @@ TEST_F(BlackBoxTest, IonIon3) {
     };
 
     {
-        Result r = SetUp("ionion/3.pdb");
+        Result r = SetUp("ionion/ionion3.pdb");
 
         EXPECT_EQ(r.count_edges(isIonicFunc), 3);
         EXPECT_TRUE(r.contain_edge(e1));
@@ -178,20 +178,20 @@ TEST_F(BlackBoxTest, IonIon3) {
         EXPECT_TRUE(r.contain_edge(e3));
     }
     {
-        Result r = SetUp("ionion/3.pdb", {"--ionic-bond", "3.2"});
+        Result r = SetUp("ionion/ionion3.pdb", {"--ionic-bond", "3.2"});
 
         EXPECT_EQ(r.count_edges(isIonicFunc), 2);
         EXPECT_TRUE(r.contain_edge(e1));
         EXPECT_TRUE(r.contain_edge(e2));
     }
     {
-        Result r = SetUp("ionion/3.pdb", {"--ionic-bond", "1.8"});
+        Result r = SetUp("ionion/ionion3.pdb", {"--ionic-bond", "1.8"});
 
         EXPECT_EQ(r.count_edges(isIonicFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("ionion/3.pdb", {"--ionic-bond", "1.59"});
+        Result r = SetUp("ionion/ionion3.pdb", {"--ionic-bond", "1.59"});
 
         EXPECT_EQ(r.count_edges(isIonicFunc), 0);
     }
@@ -204,13 +204,13 @@ TEST_F(BlackBoxTest, IonIon4) {
     };
 
     {
-        Result r = SetUp("ionion/4.pdb");
+        Result r = SetUp("ionion/ionion4.pdb");
 
         EXPECT_EQ(r.count_edges(isIonicFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("ionion/4.pdb", {"--ionic-bond", "2.54"});
+        Result r = SetUp("ionion/ionion4.pdb", {"--ionic-bond", "2.54"});
 
         EXPECT_EQ(r.count_edges(isIonicFunc), 0);
     }
@@ -228,31 +228,31 @@ TEST_F(BlackBoxTest, IonIon5) {
     };
 
     {
-        Result r = SetUp("ionion/5.pdb");
+        Result r = SetUp("ionion/ionion5.pdb");
 
         EXPECT_EQ(r.count_edges(isIonicFunc), 2);
         EXPECT_TRUE(r.contain_edge(e1));
         EXPECT_TRUE(r.contain_edge(e2));
     }
     {
-        Result r = SetUp("ionion/5.pdb", {"--ionic-bond", "1.98"});
+        Result r = SetUp("ionion/ionion5.pdb", {"--ionic-bond", "1.98"});
 
         EXPECT_EQ(r.count_edges(isIonicFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("ionion/5.pdb", {"--ionic-bond", "1.93"});
+        Result r = SetUp("ionion/ionion5.pdb", {"--ionic-bond", "1.93"});
 
         EXPECT_EQ(r.count_edges(isIonicFunc), 0);
     }
 }
 TEST_F(BlackBoxTest, IonIon6) {
-    Result r = SetUp("ionion/6.pdb");
+    Result r = SetUp("ionion/ionion6.pdb");
 
     EXPECT_EQ(r.count_edges(isIonicFunc), 0);
 }
 TEST_F(BlackBoxTest, IonIon7) {
-    Result r = SetUp("ionion/7.pdb");
+    Result r = SetUp("ionion/ionion7.pdb");
 
     EXPECT_EQ(r.count_edges(isIonicFunc), 0);
 }
@@ -264,19 +264,19 @@ TEST_F(BlackBoxTest, IonIon8) {
     };
 
     {
-        Result r = SetUp("ionion/8.pdb");
+        Result r = SetUp("ionion/ionion8.pdb");
 
         EXPECT_EQ(r.count_edges(isIonicFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("ionion/8.pdb", {"--ionic-bond", "3.1"});
+        Result r = SetUp("ionion/ionion8.pdb", {"--ionic-bond", "3.1"});
 
         EXPECT_EQ(r.count_edges(isIonicFunc), 0);
     }
 }
 TEST_F(BlackBoxTest, IonIon9) {
-    Result r = SetUp("ionion/9.pdb");
+    Result r = SetUp("ionion/ionion9.pdb");
 
     EXPECT_EQ(r.count_edges(isIonicFunc), 0);
 }
@@ -286,12 +286,12 @@ TEST_F(BlackBoxTest, IonIon9) {
 #pragma region HBond
 
 TEST_F(BlackBoxTest, HBond1) {
-    Result r = SetUp("hbond/1.pdb");
+    Result r = SetUp("hbond/hbond1.pdb");
 
     EXPECT_EQ(r.count_edges(isHbondFunc), 0);
 }
 TEST_F(BlackBoxTest, HBond2) {
-    Result r = SetUp("hbond/2.pdb");
+    Result r = SetUp("hbond/hbond2.pdb");
 
     EXPECT_EQ(r.count_edges(isHbondFunc), 0);
 }
@@ -303,19 +303,19 @@ TEST_F(BlackBoxTest, HBond3) {
     };//angle_adh 1.23
 
     {
-        Result r = SetUp("hbond/3.pdb");
+        Result r = SetUp("hbond/hbond3.pdb");
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("hbond/3.pdb", {"--hydrogen-bond", "2"});
+        Result r = SetUp("hbond/hbond3.pdb", {"--hydrogen-bond", "2"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 0);
     }
 
     {
-        Result r = SetUp("hbond/3.pdb", {"--h-bond-angle", "1.2"});
+        Result r = SetUp("hbond/hbond3.pdb", {"--h-bond-angle", "1.2"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 0);
     }
@@ -328,19 +328,19 @@ TEST_F(BlackBoxTest, HBond4) {
     };//angle_adh 0.032959
 
     {
-        Result r = SetUp("hbond/4.pdb");
+        Result r = SetUp("hbond/hbond4.pdb");
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("hbond/4.pdb", {"--hydrogen-bond", "2.4"});
+        Result r = SetUp("hbond/hbond4.pdb", {"--hydrogen-bond", "2.4"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 0);
     }
 
     {
-        Result r = SetUp("hbond/4.pdb", {"--h-bond-angle", "0.03"});
+        Result r = SetUp("hbond/hbond4.pdb", {"--h-bond-angle", "0.03"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 0);
     }
@@ -358,32 +358,32 @@ TEST_F(BlackBoxTest, HBond5) {
     };//angle_adh 0.018979
 
     {
-        Result r = SetUp("hbond/5.pdb");
+        Result r = SetUp("hbond/hbond5.pdb");
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 2);
         EXPECT_TRUE(r.contain_edge(e1));
         EXPECT_TRUE(r.contain_edge(e2));
     }
     {
-        Result r = SetUp("hbond/5.pdb", {"--hydrogen-bond", "2.02"});
+        Result r = SetUp("hbond/hbond5.pdb", {"--hydrogen-bond", "2.02"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("hbond/5.pdb", {"--hydrogen-bond", "2"});
+        Result r = SetUp("hbond/hbond5.pdb", {"--hydrogen-bond", "2"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 0);
     }
 
     {
-        Result r = SetUp("hbond/5.pdb", {"--h-bond-angle", "0.0189"});
+        Result r = SetUp("hbond/hbond5.pdb", {"--h-bond-angle", "0.0189"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("hbond/5.pdb", {"--h-bond-angle", "0.0186"});
+        Result r = SetUp("hbond/hbond5.pdb", {"--h-bond-angle", "0.0186"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 0);
     }
@@ -406,7 +406,7 @@ TEST_F(BlackBoxTest, HBond6) {
     };//angle_adh 0.012631
 
     {
-        Result r = SetUp("hbond/6.pdb");
+        Result r = SetUp("hbond/hbond6.pdb");
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 3);
         EXPECT_TRUE(r.contain_edge(e1));
@@ -414,39 +414,39 @@ TEST_F(BlackBoxTest, HBond6) {
         EXPECT_TRUE(r.contain_edge(e3));
     }
     {
-        Result r = SetUp("hbond/6.pdb", {"--hydrogen-bond", "2.026"});
+        Result r = SetUp("hbond/hbond6.pdb", {"--hydrogen-bond", "2.026"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 2);
         EXPECT_TRUE(r.contain_edge(e1));
         EXPECT_TRUE(r.contain_edge(e2));
     }
     {
-        Result r = SetUp("hbond/6.pdb", {"--hydrogen-bond", "2.01"});
+        Result r = SetUp("hbond/hbond6.pdb", {"--hydrogen-bond", "2.01"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("hbond/6.pdb", {"--hydrogen-bond", "2"});
+        Result r = SetUp("hbond/hbond6.pdb", {"--hydrogen-bond", "2"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 0);
     }
 
     {
-        Result r = SetUp("hbond/6.pdb", {"--h-bond-angle", "0.025"});
+        Result r = SetUp("hbond/hbond6.pdb", {"--h-bond-angle", "0.025"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 2);
         EXPECT_TRUE(r.contain_edge(e2));
         EXPECT_TRUE(r.contain_edge(e3));
     }
     {
-        Result r = SetUp("hbond/6.pdb", {"--h-bond-angle", "0.020"});
+        Result r = SetUp("hbond/hbond6.pdb", {"--h-bond-angle", "0.020"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 1);
         EXPECT_TRUE(r.contain_edge(e3));
     }
     {
-        Result r = SetUp("hbond/6.pdb", {"--h-bond-angle", "0.012"});
+        Result r = SetUp("hbond/hbond6.pdb", {"--h-bond-angle", "0.012"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 0);
     }
@@ -459,19 +459,19 @@ TEST_F(BlackBoxTest, HBond7) {
     };//angle_adh 0.012631
 
     {
-            Result r = SetUp("hbond/7.pdb");
+            Result r = SetUp("hbond/hbond7.pdb");
 
             EXPECT_EQ(r.count_edges(isHbondFunc), 1);
             EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("hbond/7.pdb", {"--hydrogen-bond", "2.01"});
+        Result r = SetUp("hbond/hbond7.pdb", {"--hydrogen-bond", "2.01"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 0);
     }
 
     {
-        Result r = SetUp("hbond/7.pdb", {"--h-bond-angle", "0.012"});
+        Result r = SetUp("hbond/hbond7.pdb", {"--h-bond-angle", "0.012"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 0);
     }
@@ -484,19 +484,19 @@ TEST_F(BlackBoxTest, HBond8) {
     };//angle_adh 0.649794
 
     {
-        Result r = SetUp("hbond/8.pdb");
+        Result r = SetUp("hbond/hbond8.pdb");
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("hbond/8.pdb", {"--hydrogen-bond", "2.55"});
+        Result r = SetUp("hbond/hbond8.pdb", {"--hydrogen-bond", "2.55"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 0);
     }
 
     {
-        Result r = SetUp("hbond/8.pdb", {"--h-bond-angle", "0.64"});
+        Result r = SetUp("hbond/hbond8.pdb", {"--h-bond-angle", "0.64"});
 
         EXPECT_EQ(r.count_edges(isHbondFunc), 0);
     }
@@ -507,22 +507,22 @@ TEST_F(BlackBoxTest, HBond8) {
 #pragma region PiPi
 
 TEST_F(BlackBoxTest, PiPi1) {
-    Result r = SetUp("pipi/1.pdb");
+    Result r = SetUp("pipi/pipi1.pdb");
 
     EXPECT_EQ(r.count_edges(isPipiFunc), 0);
 }
 TEST_F(BlackBoxTest, PiPi2) {
-    Result r = SetUp("pipi/2.pdb");
+    Result r = SetUp("pipi/pipi2.pdb");
 
     EXPECT_EQ(r.count_edges(isPipiFunc), 0);
 }
 TEST_F(BlackBoxTest, PiPi3) {
-    Result r = SetUp("pipi/3.pdb");
+    Result r = SetUp("pipi/pipi3.pdb");
 
     EXPECT_EQ(r.count_edges(isPipiFunc), 0);
 }
 TEST_F(BlackBoxTest, PiPi4) {
-    Result r = SetUp("pipi/4.pdb");
+    Result r = SetUp("pipi/pipi4.pdb");
 
     EXPECT_EQ(r.count_edges(isPipiFunc), 0);
 }
@@ -534,7 +534,7 @@ TEST_F(BlackBoxTest, PiPi5) {
     };//normal center angles = 0 - 0
 
     {
-        Result r = SetUp("pipi/5.pdb");
+        Result r = SetUp("pipi/pipi5.pdb");
 
         EXPECT_EQ(r.count_edges(isPipiFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
@@ -549,19 +549,19 @@ TEST_F(BlackBoxTest, PiPi6) {
     };//normal center angles = 45.003376 - 45.003376
 
     {
-        Result r = SetUp("pipi/6.pdb");
+        Result r = SetUp("pipi/pipi6.pdb");
 
         EXPECT_EQ(r.count_edges(isPipiFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
 
     {
-        Result r = SetUp("pipi/6.pdb", {"--pipistack-bond", "1.9"});
+        Result r = SetUp("pipi/pipi6.pdb", {"--pipistack-bond", "1.9"});
 
         EXPECT_EQ(r.count_edges(isPipiFunc), 0);
     }
     {
-        Result r = SetUp("pipi/6.pdb", {"--pipistack-normal-centre", "45"});
+        Result r = SetUp("pipi/pipi6.pdb", {"--pipistack-normal-centre", "45"});
 
         EXPECT_EQ(r.count_edges(isPipiFunc), 0);
     }
@@ -579,36 +579,36 @@ TEST_F(BlackBoxTest, Vdw1) {
     };//surface distance 0.150000
 
     {
-        Result r = SetUp("vdw/1.pdb");
+        Result r = SetUp("vdw/vdw1.pdb");
 
         EXPECT_EQ(r.count_edges(isVdwFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("vdw/1.pdb", {"--vdw-bond", "3.2"});
+        Result r = SetUp("vdw/vdw1.pdb", {"--vdw-bond", "3.2"});
 
         EXPECT_EQ(r.count_edges(isVdwFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
 }
 TEST_F(BlackBoxTest, Vdw2) {
-    Result r = SetUp("vdw/2.pdb");
+    Result r = SetUp("vdw/vdw2.pdb");
     EXPECT_EQ(r.count_edges(isVdwFunc), 0);
 }
 TEST_F(BlackBoxTest, Vdw3) {
-    Result r = SetUp("vdw/3.pdb");
+    Result r = SetUp("vdw/vdw3.pdb");
     EXPECT_EQ(r.count_edges(isVdwFunc), 0);
 }
 TEST_F(BlackBoxTest, Vdw4) {
-    Result r = SetUp("vdw/4.pdb");
+    Result r = SetUp("vdw/vdw4.pdb");
     EXPECT_EQ(r.count_edges(isVdwFunc), 0);
 }
 TEST_F(BlackBoxTest, Vdw5) {
-    Result r = SetUp("vdw/5.pdb");
+    Result r = SetUp("vdw/vdw5.pdb");
     EXPECT_EQ(r.count_edges(isVdwFunc), 0);
 }
 TEST_F(BlackBoxTest, Vdw6) {
-    Result r = SetUp("vdw/6.pdb");
+    Result r = SetUp("vdw/vdw6.pdb");
     EXPECT_EQ(r.count_edges(isVdwFunc), 0);
 }
 TEST_F(BlackBoxTest, Vdw7) {
@@ -619,13 +619,13 @@ TEST_F(BlackBoxTest, Vdw7) {
     };//surface dist 0.488660
 
     {
-        Result r = SetUp("vdw/7.pdb");
+        Result r = SetUp("vdw/vdw7.pdb");
 
         EXPECT_EQ(r.count_edges(isVdwFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("vdw/7.pdb", {"--vdw-bond", "0.48"});
+        Result r = SetUp("vdw/vdw7.pdb", {"--vdw-bond", "0.48"});
 
         EXPECT_EQ(r.count_edges(isVdwFunc), 0);
     }
@@ -653,7 +653,7 @@ TEST_F(BlackBoxTest, Vdw8) {
     };//surface dist -1.610719
 
     {
-        Result r = SetUp("vdw/8.pdb");
+        Result r = SetUp("vdw/vdw8.pdb");
 
         EXPECT_EQ(r.count_edges(isVdwFunc), 4);
         EXPECT_TRUE(r.contain_edge(e1));
@@ -662,7 +662,7 @@ TEST_F(BlackBoxTest, Vdw8) {
         EXPECT_TRUE(r.contain_edge(e4));
     }
     {
-        Result r = SetUp("vdw/8.pdb", {"--vdw-bond", "0.37"});
+        Result r = SetUp("vdw/vdw8.pdb", {"--vdw-bond", "0.37"});
 
         EXPECT_EQ(r.count_edges(isVdwFunc), 3);
         EXPECT_TRUE(r.contain_edge(e2));
@@ -670,20 +670,20 @@ TEST_F(BlackBoxTest, Vdw8) {
         EXPECT_TRUE(r.contain_edge(e4));
     }
     {
-        Result r = SetUp("vdw/8.pdb", {"--vdw-bond", "0.34"});
+        Result r = SetUp("vdw/vdw8.pdb", {"--vdw-bond", "0.34"});
 
         EXPECT_EQ(r.count_edges(isVdwFunc), 2);
         EXPECT_TRUE(r.contain_edge(e2));
         EXPECT_TRUE(r.contain_edge(e4));
     }
     {
-        Result r = SetUp("vdw/8.pdb", {"--vdw-bond", "-1.59"});
+        Result r = SetUp("vdw/vdw8.pdb", {"--vdw-bond", "-1.59"});
 
         EXPECT_EQ(r.count_edges(isVdwFunc), 1);
         EXPECT_TRUE(r.contain_edge(e4));
     }
     {
-        Result r = SetUp("vdw/8.pdb", {"--vdw-bond", "-1.62"});
+        Result r = SetUp("vdw/vdw8.pdb", {"--vdw-bond", "-1.62"});
 
         EXPECT_EQ(r.count_edges(isVdwFunc), 0);
     }
@@ -694,7 +694,7 @@ TEST_F(BlackBoxTest, Vdw8) {
 #pragma region Pication
 
 TEST_F(BlackBoxTest, Picat1) {
-    Result r = SetUp("picat/1.pdb");
+    Result r = SetUp("picat/picat1.pdb");
 
 
     EXPECT_EQ(r.count_edges(isPicatFunc), 0);
@@ -717,7 +717,7 @@ TEST_F(BlackBoxTest, Picat2) {
     };
 
     {
-        Result r = SetUp("picat/2.pdb");
+        Result r = SetUp("picat/picat2.pdb");
 
         EXPECT_EQ(r.count_edges(isPicatFunc), 4);
         EXPECT_TRUE(r.contain_edge(e1));
@@ -725,31 +725,31 @@ TEST_F(BlackBoxTest, Picat2) {
         EXPECT_TRUE(r.contain_edge(e4));
     }
     {
-        Result r = SetUp("picat/2.pdb", {"--pication-bond", "4.0001"});
+        Result r = SetUp("picat/picat2.pdb", {"--pication-bond", "4.0001"});
 
         EXPECT_EQ(r.count_edges(isPicatFunc), 3);
         EXPECT_TRUE(r.contain_edge(e1));
         EXPECT_TRUE(r.contain_edge(e2_3));
     }
     {
-        Result r = SetUp("picat/2.pdb", {"--pication-bond", "3.9999"});
+        Result r = SetUp("picat/picat2.pdb", {"--pication-bond", "3.9999"});
 
         EXPECT_EQ(r.count_edges(isPicatFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("picat/2.pdb", {"--pication-bond", "3.9"});
+        Result r = SetUp("picat/picat2.pdb", {"--pication-bond", "3.9"});
 
         EXPECT_EQ(r.count_edges(isPicatFunc), 0);
     }
 }
 TEST_F(BlackBoxTest, Picat3) {
-    Result r = SetUp("picat/3.pdb");
+    Result r = SetUp("picat/picat3.pdb");
 
     EXPECT_EQ(r.count_edges(isPicatFunc), 0);
 }
 TEST_F(BlackBoxTest, Picat4) {
-    Result r = SetUp("picat/4.pdb");
+    Result r = SetUp("picat/picat4.pdb");
 
     EXPECT_EQ(r.count_edges(isPicatFunc), 0);
 }
@@ -761,13 +761,13 @@ TEST_F(BlackBoxTest, Picat5) {
     };
 
     {
-        Result r = SetUp("picat/5.pdb");
+        Result r = SetUp("picat/picat5.pdb");
 
         EXPECT_EQ(r.count_edges(isPicatFunc), 1);
         EXPECT_TRUE(r.contain_edge(e1));
     }
     {
-        Result r = SetUp("picat/5.pdb", {"--pication-bond", "2.98"});
+        Result r = SetUp("picat/picat5.pdb", {"--pication-bond", "2.98"});
 
         EXPECT_EQ(r.count_edges(isPicatFunc), 0);
     }

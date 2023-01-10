@@ -462,12 +462,12 @@ rin::graph rin::maker::operator()(parameters const& params) const
         }
 
         // hydrophobic bonds are just put into the rin _after_ fltering
-        append(results, find_bonds<bond::hydrophobic>(
+        append(results, remove_duplicates(find_bonds<bond::hydrophobic>(
             pimpl->alpha_carbon_vector,
             pimpl->alpha_carbon_tree,
             7.5,
             params
-        ));
+        )));
         break;
     }
 
