@@ -119,44 +119,32 @@ cmap
 
 ## Build instructions <a name="build"></a>
 
+You will need: 
+* `cmake` 
+* A suitable C++ compiler. For *nix systems `g++`; for Windows, you can use `MSVC`.
+
+Clone and initialize the project:
+
 ```bash
 git clone -b dev https://github.com/RINmaker/RINmaker.git
-```
-
-```bash
 cd RINmaker
 git submodule update --init --recursive
-```
-
-## Configure project:
-
-```bash
 cmake -S . -B build
 ```
-
 ### App <a name="app"></a>
-
-#### Build
 
 ```bash
 cmake --build build --target RINmaker
 ```
-
-#### Run
-
-```bash
-./build/app/RINmaker -h
-```
+The application's executable will be located at: `./build/app/RINmaker`.
 
 ### Tests <a name="tests"></a>
-
-#### Build
 
 ```bash
 cmake --build build --target RINmaker_test
 ```
 
-#### Run
+To run the _full_ test suite (assuming you are in the project's root):
 
 ```bash
 ./build/test/RINmaker_test
