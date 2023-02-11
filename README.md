@@ -130,9 +130,6 @@ CMake will automatically fetch the following dependencies:
 - [pugixml](https://github.com/zeux/pugixml)
 - [gemmi](https://github.com/project-gemmi/gemmi)
 
-**NOTE**: we perform hydrogen fixing using GEMMI, but it needs an additional non-software dependency. You will need to download the REFMAC5 monomer library ([paper](http://scripts.iucr.org/cgi-bin/paper?ba5073)) and extract it alongside the executable.
-- [link](https://www2.mrc-lmb.cam.ac.uk/groups/murshudov/) under > Home > Software > REFMAC5 > Dictionary
-
 Clone and initialize the project:
 
 ```bash
@@ -147,6 +144,19 @@ cmake -S . -B build
 cmake --build build --target RINmaker
 ```
 The application's executable will be located at: `./build/app/RINmaker`.
+
+**NOTE**: we perform hydrogen fixing using GEMMI, but it needs an additional non-software dependency, that is a suitable monomer library. 
+The CCP4 monomer library is suggested by GEMMI, but we do not distribute it.
+You must get it either from your copy of the CCP4 software suite, or by following the process detailed in [this paper](https://journals.iucr.org/d/issues/2022/04/00/rr5213/) (section _6. Open research data: availability and reproducibility_).
+
+We report the updated instructions using [breezy](https://www.breezy-vcs.org/), a fork of bazaar:
+
+```bash
+brz checkout https://ccp4serv6.rc-harwell.ac.uk/anonscm/bzr/monomers/trunk mon_lib
+mv mon_lib ./build/app/monomers
+```
+
+The `monomers` directory must reside alongside the `RINmaker` executable.
 
 ### Tests <a name="tests"></a>
 
