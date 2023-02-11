@@ -1,6 +1,19 @@
 # RINmaker
 
-## CLI Usage
+## Table of Contents
+
+* [CLI Usage](#usage)
+    * [Example](#example)
+    * [Help](#help)
+    * [Options](#options)
+    * [Subcommands](#subcommands)
+        * [rin](#rin)
+        * [cmap](#cmap)
+* [Build instructions](#build)
+    * [App](#app)
+    * [Tests](#tests)
+
+## CLI Usage <a name="usage"></a>
 
 Assuming `RINmaker` is on `$PATH`:
 
@@ -62,7 +75,7 @@ cmap
     --distance FLOAT:POSITIVE=6                                   Query distance between alpha/beta carbons
 ```
 
-### Options
+### Options <a name="options"></a>
 
 |         Param.          | Abbr. |     Default     | Meaning                                                                                                                                                                                                                    |
 |:-----------------------:|:-----:|:---------------:|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -78,9 +91,9 @@ cmap
 | `--sequence-separation` | `-s`  |        3        | Minimum sequence separation                                                                                                                                                                                                |
 |      `--illformed`      | `-f`  |     `sres`      | <ul><li>`kall`: keep everything.</li><li>`kres`: keep the residue _without_ considering the malformed part.</li><li>`sres`: skip the residue altogether.</li><li>`fail`: halt with error.</li></ul>                        |
 
-### Subcommands
+### Subcommands <a name="subcommands"></a>
 
-#### `rin` options
+#### `rin` options <a name="rin"></a>
 
 |           Param.            | Default | Meaning                                                                                                                                                                                                                    |
 |:---------------------------:|:-------:|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -96,7 +109,7 @@ cmap
 | `--pipistack-normal-normal` |   30    | Angle range from normal to normal for pi-pi stackings.                                                                                                                                                                     |
 | `--pipistack-normal-centre` |   60    | Angle range from normal to centre for pi-pi stackings.                                                                                                                                                                     |
 
-#### `cmap` options
+#### `cmap` options <a name="cmap"></a>
 
 |    Param.    | Default | Meaning                                                                                                                              |
 |:------------:|:-------:|--------------------------------------------------------------------------------------------------------------------------------------|
@@ -104,15 +117,7 @@ cmap
 | `--distance` |   3.5   | Query distance between alpha/beta carbons.                                                                                           |
 
 
-### Example
-
-```bash
-RINmaker -i 6j8j.pdb -o testrun.graphml rin
-```
-
-Will parse the first model in the *6j8j* pdb. 
-
-## Clone this repo
+## Build instructions <a name="build"></a>
 
 ```bash
 git clone -b dev https://github.com/RINmaker/RINmaker.git
@@ -129,7 +134,7 @@ git submodule update --init --recursive
 cmake -S . -B build
 ```
 
-## App
+### App <a name="app"></a>
 
 #### Build
 
@@ -143,7 +148,7 @@ cmake --build build --target RINmaker
 ./build/app/RINmaker -h
 ```
 
-## Test
+### Tests <a name="tests"></a>
 
 #### Build
 
