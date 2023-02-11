@@ -123,6 +123,16 @@ You will need:
 * `cmake` 
 * A suitable C++ compiler. For *nix systems `g++`; for Windows, you can use `MSVC`.
 
+CMake will automatically fetch the following dependencies:
+
+- [spdlog](https://github.com/gabime/spdlog)
+- [CLI11](https://github.com/CLIUtils/CLI11)
+- [pugixml](https://github.com/zeux/pugixml)
+- [gemmi](https://github.com/project-gemmi/gemmi)
+
+**NOTE**: we perform hydrogen fixing using GEMMI, but it needs an additional non-software dependency. You will need to download the REFMAC5 monomer library ([paper](http://scripts.iucr.org/cgi-bin/paper?ba5073)) and extract it alongside the executable.
+- [link](https://www2.mrc-lmb.cam.ac.uk/groups/murshudov/) under > Home > Software > REFMAC5 > Dictionary
+
 Clone and initialize the project:
 
 ```bash
