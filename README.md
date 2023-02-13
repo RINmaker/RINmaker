@@ -152,8 +152,7 @@ You must get it either from your copy of the CCP4 software suite, or by followin
 We report the updated instructions using [breezy](https://www.breezy-vcs.org/), a fork of bazaar:
 
 ```bash
-brz checkout https://ccp4serv6.rc-harwell.ac.uk/anonscm/bzr/monomers/trunk mon_lib
-mv mon_lib ./build/app/monomers
+brz checkout https://ccp4serv6.rc-harwell.ac.uk/anonscm/bzr/monomers/trunk monomers
 ```
 
 The `monomers` directory must reside alongside the `RINmaker` executable.
