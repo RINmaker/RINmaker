@@ -25,6 +25,7 @@ int main(int argc, const char* argv[])
 
         // Actual CLI arguments.
         auto const& parsed_args = *maybe_args;
+        lm::main()->info("{}", parsed_args.pretty());
 
         std::optional<gemmi::Structure> maybe_protein{std::nullopt};
 
