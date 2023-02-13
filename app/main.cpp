@@ -71,8 +71,10 @@ int main(int argc, const char* argv[])
             lm::main()->info("processing all models...");
 
             auto dir = get<rin::parameters::output_directory>(parsed_args.output()).value;
+            size_t cnt = 1;
             for (auto const& model: protein.models)
             {
+                lm::main()->info("processing model: {}", cnt++);
                 std::filesystem::path file = protein.name + "_" + model.name + ".graphml";
 
                 // create rin::maker, create graph and write to graphml
