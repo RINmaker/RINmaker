@@ -54,11 +54,16 @@ int main(int argc, const char* argv[])
             lm::main()->info("==> {}: {}", k, v);
         }
 
-        lm::main()->info("n. of models found: {}", protein.models.size());
-
         // Hydrogen fixing is performed by GEMMI
         if (!parsed_args.no_hydrogen())
+        {
+            lm::main()->info("trying to fix hydrogens...");
             fix_hydrogens(protein, gemmi::HydrogenChange::ReAdd);
+        }
+        else
+            lm::main()->info("hydrogen fixing not performed.");
+
+        lm::main()->info("n. of models found: {}", protein.models.size());
 
         // If -d, then do all models and output the results in the directory specified with --output.
         if (holds_alternative<rin::parameters::output_directory>(parsed_args.output()))
