@@ -140,9 +140,7 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  r
         try
         {
             if (helix_map.empty() && strand_map.empty())
-            {
                 tmp_pimpl->aminoacids.emplace_back(residue, chain, model, protein, params);
-            }
             else
             {
                 std::optional<std::variant<gemmi::Helix, gemmi::Sheet::Strand>> maybe_sstruct{std::nullopt};
@@ -154,30 +152,22 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  r
         }
         catch (std::exception const& e)
         {
-            switch (params.illformed_policy())
+            if (params.illformed_policy() == rin::parameters::illformed_policy_t::FAIL)
             {
-            case rin::parameters::illformed_policy_t::FAIL:
                 lm::main()->error("aborting on: {}", e.what());
                 throw;
-            default:
-                lm::main()->warn("skipping on: {}", e.what());
-                break;
             }
+            else
+                lm::main()->warn("skipping on: {}", e.what());
         }
     };
 
     // GEMMI already parses all records and then groups atoms together in the respective residues
     // so all information is already here. We will just need to rebuild rings and ionic groups
     for (auto const& chain: model.chains)
-    {
         for (auto const& residue: chain.residues)
-        {
             if (!residue.is_water() || !params.skip_water())
-            {
                 try_build_aminoacid(residue, chain);
-            }
-        }
-    }
 
 
     lm::main()->info("retrieving components from aminoacids...");
