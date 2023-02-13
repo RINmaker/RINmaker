@@ -6,8 +6,6 @@
 
 #pragma warning(pop)
 
-#include <cstdlib>
-
 #include "cli_utils.h"
 
 #include "rin_maker.h"
@@ -25,12 +23,13 @@ int main(int argc, const char* argv[])
         if (!maybe_args.has_value())
             return 1;
 
-        // the actual command line arguments
+        // Actual CLI arguments.
         auto const& parsed_args = *maybe_args;
 
-        std::optional<gemmi::Structure> maybe_protein;
+        std::optional<gemmi::Structure> maybe_protein{std::nullopt};
 
-        // parse file
+        // Parsing is handled by GEMMI.
+        // Currently, only PDB and PDBx/mmCIF formats are supported.
         if (parsed_args.input().extension() == ".pdb")
             maybe_protein = gemmi::read_pdb_file(parsed_args.input().string());
         else if (parsed_args.input().extension() == ".cif")
@@ -39,6 +38,7 @@ int main(int argc, const char* argv[])
             maybe_protein = gemmi::make_structure(document);
         }
 
+        // If true, either extensions were not correct or parsing went wrong.
         if (!maybe_protein.has_value())
         {
             lm::main()->error("only .pdb and .cif file formats are supported!");
@@ -47,15 +47,23 @@ int main(int argc, const char* argv[])
 
         auto protein = *maybe_protein;
 
-        lm::main()->info("found {} models in protein {}", protein.models.size(), protein.name);
+        // Generic information about the protein.
+        lm::main()->info("general entry information:");
+        for (auto [k,v] : protein.info)
+        {
+            lm::main()->info("==> {}: {}", k, v);
+        }
 
+        lm::main()->info("n. of models found: {}", protein.models.size());
+
+        // Hydrogen fixing is performed by GEMMI
         if (!parsed_args.no_hydrogen())
             fix_hydrogens(protein, gemmi::HydrogenChange::ReAdd);
 
-        // do all models
+        // If -d, then do all models and output the results in the directory specified with --output.
         if (holds_alternative<rin::parameters::output_directory>(parsed_args.output()))
         {
-            lm::main()->info("selected all models, computing...");
+            lm::main()->info("processing all models...");
 
             auto dir = get<rin::parameters::output_directory>(parsed_args.output()).value;
             for (auto const& model: protein.models)
@@ -67,17 +75,17 @@ int main(int argc, const char* argv[])
             }
         }
 
-        // otherwise do just the first one
+        // Otherwise do just the first one
         else if (holds_alternative<rin::parameters::output_file>(parsed_args.output()))
         {
-            lm::main()->info("selected first model, computing...");
+            lm::main()->info("processing only first model...");
             auto const file = get<rin::parameters::output_file>(parsed_args.output()).value;
 
             // create rin::maker, create graph and write to graphml
             rin::maker{protein.first_model(), protein, parsed_args}(parsed_args).write_to_file(file);
         }
 
-        lm::main()->info("done");
+        lm::main()->info("done.");
 
 #       if _MSC_VER
         spdlog::drop_all();
