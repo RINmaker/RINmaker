@@ -104,11 +104,10 @@ public:
     std::optional<Secondary> maybe_find(gemmi::Residue const& residue, gemmi::Chain const& chain)
     {
         std::optional<Secondary> result{};
-        auto chain_and_ts = chain_to_map.find(chain.name);
-        if (chain_and_ts != chain_to_map.end())
+        if (auto chain_and_ts = chain_to_map.find(chain.name); chain_and_ts != chain_to_map.end())
         {
-            auto t = chain_and_ts->second.find(interval(residue.seqid.num.value, residue.seqid.num.value));
-            if (t != chain_and_ts->second.end())
+            if (auto t = chain_and_ts->second.find(interval(residue.seqid.num.value, residue.seqid.num.value));
+                t != chain_and_ts->second.end())
                 result = {t->second};
         }
         return result;
@@ -178,13 +177,10 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  r
 
     for (auto const& res: tmp_pimpl->aminoacids)
     {
-
-        auto const& ca = res.get_alpha_carbon();
-        if (ca.has_value())
+        if (auto const& ca = res.get_alpha_carbon(); ca.has_value())
             tmp_pimpl->alpha_carbon_vector.push_back(*ca);
 
-        auto const& cb = res.get_beta_carbon();
-        if (cb.has_value())
+        if (auto const& cb = res.get_beta_carbon(); cb.has_value())
             tmp_pimpl->beta_carbon_vector.push_back(*cb);
 
         for (auto const& a : res.get_atoms())
@@ -202,12 +198,10 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  r
                 tmp_pimpl->cation_vector.push_back(a);
         }
 
-        auto const& pos_group = res.get_positive_ionic_group();
-        if (pos_group.has_value())
+        if (auto const& pos_group = res.get_positive_ionic_group(); pos_group.has_value())
             positives.push_back(*pos_group);
 
-        auto const& neg_group = res.get_negative_ionic_group();
-        if (neg_group.has_value())
+        if (auto const& neg_group = res.get_negative_ionic_group(); neg_group.has_value())
             tmp_pimpl->negative_ion_vector.push_back(*neg_group);
 
         auto const ring_setup = [&](std::optional<ring> const& ring)
