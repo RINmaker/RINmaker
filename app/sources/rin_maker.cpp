@@ -156,13 +156,15 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  r
         {
             if (params.illformed_policy() == rin::parameters::illformed_policy_t::FAIL)
             {
-                lm::main()->error("aborting on: {}", e.what());
+                lm::main()->error("aborting: {}", e.what());
                 throw;
             }
             else
-                lm::main()->warn("skipping on: {}", e.what());
+                lm::main()->warn("skipping residue: {}", e.what());
         }
     };
+
+    lm::main()->info("building aminoacids...");
 
     // GEMMI already parses all records and then groups atoms together in the respective residues
     // so all information is already here. We will just need to rebuild rings and ionic groups
@@ -171,8 +173,7 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  r
             if (!residue.is_water() || !params.skip_water())
                 try_build_aminoacid(residue, chain);
 
-
-    lm::main()->info("retrieving components from aminoacids...");
+    lm::main()->info("extracting ionic groups, rings and other entities...");
 
     // these are used only to build the corresponding kdtrees
     vector<atom> hdonors;
@@ -226,10 +227,10 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  r
     lm::main()->info("hydrogen donors: {}", hdonors.size());
     lm::main()->info("vdw candidates: {}", tmp_pimpl->vdw_vector.size());
     lm::main()->info("cations: {}", tmp_pimpl->cation_vector.size());
-    lm::main()->info("aromatic rings: {}", tmp_pimpl->ring_vector.size());
-    lm::main()->info("aromatic rings (valid for pication): {}", tmp_pimpl->ring_vector.size());
+    lm::main()->info("aromatic rings (total): {}", tmp_pimpl->ring_vector.size());
+    lm::main()->info("aromatic rings (cation-pi only): {}", tmp_pimpl->pication_ring_vector.size());
 
-    lm::main()->info("building acceleration structures...");
+    lm::main()->info("building kdtrees...");
 
     tmp_pimpl->hdonor_tree = kdtree<atom, 3>(hdonors);
     tmp_pimpl->vdw_tree = kdtree<atom, 3>(tmp_pimpl->vdw_vector);
@@ -389,6 +390,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
     {
     case parameters::interaction_type_t::NONCOVALENT_BONDS:
     {
+        lm::main()->info("finding all bonds...");
         auto hydrogen_bonds = find_bonds<bond::hydrogen>(
                 pimpl->hacceptor_vector,
                 pimpl->hdonor_tree,
@@ -467,6 +469,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
 
     case parameters::interaction_type_t::CONTACT_MAP:
     {
+        lm::main()->info("generating contact map...");
         vector<shared_ptr<bond::contact const>> generic_bonds{};
         switch (params.cmap_type())
         {
@@ -492,8 +495,7 @@ rin::graph rin::maker::operator()(parameters const& params) const
     }
     }
 
-    // results = remove_duplicates(results);
-    lm::main()->info("there are {} valid bonds after filtering", results.size());
+    lm::main()->info("count: {}", results.size());
 
     return {pimpl->pdb_name, pimpl->aminoacids, results};
 }
