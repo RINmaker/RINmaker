@@ -3,7 +3,6 @@
 #include "config.h"
 #include "log_manager.h"
 
-#include <ostream>
 #include <optional>
 #include <filesystem>
 
@@ -31,16 +30,16 @@ class custom_stringbuf final : public std::stringbuf
 public:
     int sync() override
     {
-        // get contents
+        // Get contents.
         auto s = this->str();
 
-        // compact in one line
+        // Compact in one line.
         replace_if(s.begin(), s.end(), [](auto ch) { return ch == '\n'; }, ' ');
 
-        // log
-        lm::main()->warn("[gemmi] in fix_hydrogens: {}", s);
+        // Log...
+        lm::main()->warn("[fix hydrogens] gemmi warning: {}", s);
 
-        // clear buffer
+        // Clear buffer.
         this->str("");
         return 0;
     }
@@ -50,8 +49,7 @@ void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
 {
     if (structure.models.empty() || structure.models.front().chains.empty())
     {
-        lm::main()->warn("the input file has no models/has empty models");
-        lm::main()->warn("fixing hydrogens not performed");
+        lm::main()->warn("[fix hydrogens] the input file has no models/has empty models!");
         return;
     }
 
@@ -60,7 +58,7 @@ void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
 
     if (what == gemmi::HydrogenChange::Remove)
     {
-        lm::main()->info("removing hydrogens...");
+        lm::main()->info("[fix hydrogens] removing hydrogens...");
         gemmi::remove_hydrogens(structure);
     }
     else
@@ -69,7 +67,7 @@ void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
 
         fs::path monomer_dir = exec_path().parent_path() / std::filesystem::path{ cfg::monomer_lib_name };
 
-        lm::main()->info("reading monomer library: {}", monomer_dir.string());
+        lm::main()->info("[fix hydrogens] reading monomer library at: {}", monomer_dir.string());
 
         std::optional<gemmi::MonLib> monlib{std::nullopt};
         try
@@ -84,8 +82,7 @@ void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
         }
         catch (std::exception const& e)
         {
-            lm::main()->error("[gemmi] exception in fix_hydrogens: {}", e.what());
-            lm::main()->warn("fixing hydrogens not performed");
+            lm::main()->error("[fix hydrogens] gemmi threw an exception: {}", e.what());
             return;
         }
 
@@ -93,7 +90,7 @@ void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
         std::ostream warn{&buff};
         for (size_t i = 0; i < structure.models.size(); ++i)
         {
-            lm::main()->info("fixing hydrogens in model {} of {}...", i+1, structure.models.size());
+            lm::main()->info("[fix hydrogens] processing model {} of {}...", i+1, structure.models.size());
             prepare_topology(structure, *monlib, i, what, false, &warn);
         }
 
@@ -101,6 +98,6 @@ void fix_hydrogens(gemmi::Structure& structure, gemmi::HydrogenChange what)
 
     auto h2 = gemmi::count_hydrogen_sites(structure);
     lm::main()->info(
-        "hydrogen count (across {} models) before fix: {} after fix: {}",
+        "[fix hydrogens] hydrogen count (summing all {} models) before: {}, after: {}",
         structure.models.size(), h1, h2);
 }
