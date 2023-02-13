@@ -108,13 +108,24 @@ array<double, 3> center_of_mass(vector<atom> const& atoms)
     return centroid;
 }
 
+/**
+ * This function compares actual information of the atom group to what was expected.
+ * <br/>
+ * If there is a mismatch, it throws with a message locating the illformed group.
+ * <br/>
+ * Otherwise, it does nothing.
+ *
+ * @tparam AtomGroup ring or ionic_group.
+ * @param residue The residue that we are checking.
+ * @param model The model where the residue is located.
+ * Necessary for identification of the illformed group.
+ * @param expected_atom_names The names of the expected atoms.
+ * @param actual_atoms The atoms found during the parsing phase.
+ */
+template <typename AtomGroup>
 void assert_atom_group_correctness(
-    aminoacid const& residue,
-    gemmi::Model const& model,
-    vector<string> const& expected_atom_names,
-    vector<atom> const& actual_atoms,
-    string const& group_name
-    )
+    aminoacid const& residue, gemmi::Model const& model,
+    vector<string> const& expected_atom_names, vector<atom> const& actual_atoms)
 {
     vector<string> actual_atom_names;
     actual_atom_names.reserve(actual_atoms.size());
@@ -122,59 +133,79 @@ void assert_atom_group_correctness(
     for(auto const& atom : actual_atoms)
         actual_atom_names.push_back(atom.get_name());
 
+    static std::string const group_name = std::is_same_v<AtomGroup, ring> ? "ring" : "ionic group";
+
     for(auto const& expected_atom : expected_atom_names)
     {
+        // If the guard is true at least once, then the group is illformed and we need to throw.
         if (find(actual_atom_names.begin(), actual_atom_names.end(), expected_atom) == actual_atom_names.end())
         {
             auto const expected_atoms_str = join_strings(expected_atom_names, ",");
             auto const actual_atoms_str = get_name_from_atoms(actual_atoms, ",");
 
-            string msg = "illformed " + group_name + " in model " + model.name;
-            msg += " residue " + residue.get_id();
-            msg += " expected atoms={";
-            msg += expected_atoms_str;
-            msg += "} actual atoms={";
-            msg += actual_atoms_str;
-            msg += "}";
+            auto msg =
+                std::string{}
+                    .append("illformed " + group_name + " in: model=" + model.name)
+                    .append(", residue=" + residue.get_id())
+                    .append("; expected atoms={" + expected_atoms_str + "}")
+                    .append(", actual atoms={" + actual_atoms_str + "}");
 
-            // here always throw
             throw std::runtime_error{msg};
         }
     }
 }
 
-template<typename Entity>
+/**
+ * This function tries to build an atom group (ring or ionic group) starting from its atoms.
+ * <br/>
+ * If everything is valid, then it builds the atom group and assigns it to destination.
+ * <br/>
+ * Otherwise, it throws/behaves according to the illformed policy.
+ *
+ * @tparam AtomGroup ring or ionic_group.
+ * @param residue The aminoacid we are going to check.
+ * @param model The model where the aminoacid is located.
+ * @param expected_atom_names The atom names expected in the atom group.
+ * @param actual_atoms The atom names actually found.
+ * @param illformed_policy What to do in case of illformed group.
+ * @param destination Where to assign the actual atom group.
+ * @param producer The function that will produce the actual atom group from the atom names.
+ */
+template<typename AtomGroup>
 void try_assignment(
     aminoacid const& residue,
     gemmi::Model const& model,
     vector<string> const& expected_atom_names,
     vector<atom> const& actual_atoms,
-    string const& group_name,
     rin::parameters::illformed_policy_t illformed_policy,
-    std::optional<Entity>& destination,
-    std::function<Entity(void)> const& producer
+    std::optional<AtomGroup>& destination,
+    std::function<AtomGroup(void)> const& producer
     )
 {
     try
     {
-        assert_atom_group_correctness(residue, model, expected_atom_names, actual_atoms, group_name);
+        assert_atom_group_correctness<AtomGroup>(residue, model, expected_atom_names, actual_atoms);
+
+        // This line is reachable iff no exceptions have been thrown during assertion.
         destination = producer();
     }
-    catch (std::exception const& e)
+    catch (std::runtime_error const& e)
     {
         switch(illformed_policy)
         {
-        case rin::parameters::illformed_policy_t::FAIL:
-        case rin::parameters::illformed_policy_t::SKIP_RES:
-            log_manager::main()->warn("caught: {}", e.what());
-            throw;
         case rin::parameters::illformed_policy_t::KEEP_RES:
-            log_manager::main()->warn("skipping: {}", e.what());
+            log_manager::main()->warn("skipping atoms: {}", e.what());
             break;
         case rin::parameters::illformed_policy_t::KEEP_ALL:
-            log_manager::main()->warn("(unstable) keeping: {}", e.what());
+            log_manager::main()->warn("[undefined behaviour] keeping atoms: {}", e.what());
+
+            // Then, build and assign (if it fails it is user responsibility).
             destination = producer();
             break;
+
+        // If fail or skip res, then it cannot be controlled here; just rethrow.
+        default:
+            throw;
         }
     }
 }
@@ -277,7 +308,6 @@ chemical_entity::aminoacid::aminoacid(
             model,
             ring1_names,
             ring1,
-            "ring",
             params.illformed_policy(),
             _pimpl->primary_ring,
             create_ring_1
@@ -289,9 +319,8 @@ chemical_entity::aminoacid::aminoacid(
         try_assignment<ring>(
             *this,
             model,
-            ring1_names,
-            ring1,
-            "ring",
+            ring2_names,
+            ring2,
             params.illformed_policy(),
             _pimpl->secondary_ring,
             create_ring_2
@@ -311,7 +340,6 @@ chemical_entity::aminoacid::aminoacid(
             model,
             ionic_group_names,
             ionic_group_atoms,
-            "ionic group",
             params.illformed_policy(),
             _pimpl->positive_ionic_group,
             create_positive_ionic_group
@@ -325,7 +353,6 @@ chemical_entity::aminoacid::aminoacid(
             model,
             ionic_group_names,
             ionic_group_atoms,
-            "ionic group",
             params.illformed_policy(),
             _pimpl->negative_ionic_group,
             create_negative_ionic_group
