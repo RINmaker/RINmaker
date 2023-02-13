@@ -31,21 +31,24 @@ using std::vector, std::string, std::list, std::set, std::map, std::unordered_ma
 
 using rin::parameters;
 
-// for use in sorted structures, such as std::map
-// (see std::map requirements @ cppreference.com)
-//
-// semantics:
-// a < b means "interval a comes before interval b and they do not overlap"
-// a > b means b < a
-// a == b means !(a < b) && !(b < a)
-//
-// equality means "overlapping"
-//
+/**
+ * To be used in sorted structures, such as std::map (see std::map requirements @ cppreference.com).
+ * <br/>
+ * <br/>
+ * Semantics:
+ * <br/>
+ * - a < b means "interval a comes before interval b and they do not overlap"
+ * <br/>
+ * - a > b means b < a
+ * <br/>
+ * - a == b means overlapping.
+ */
 template<typename T>
 struct interval final
 {
 private:
-    T _inf, _sup;
+    T _inf;
+    T _sup;
 
 public:
     interval(T const &a, T const &b) : _inf(a < b ? a : b), _sup(a < b ? b : a)
