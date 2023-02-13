@@ -163,13 +163,14 @@ void assert_atom_group_correctness(
  * Otherwise, it throws/behaves according to the illformed policy.
  *
  * @tparam AtomGroup ring or ionic_group.
- * @param residue The aminoacid we are going to check.
- * @param model The model where the aminoacid is located.
- * @param expected_atom_names The atom names expected in the atom group.
- * @param actual_atoms The atom names actually found.
+ * @param residue The residue that we are checking.
+ * @param model The model where the residue is located.
+ * Necessary for identification of the illformed group.
+ * @param expected_atom_names The names of the expected atoms.
+ * @param actual_atoms The atoms found during the parsing phase.
  * @param illformed_policy What to do in case of illformed group.
  * @param destination Where to assign the actual atom group.
- * @param producer The function that will produce the actual atom group from the atom names.
+ * @param producer The function that will produce the actual atom group from the atoms.
  */
 template<typename AtomGroup>
 void try_assignment(
