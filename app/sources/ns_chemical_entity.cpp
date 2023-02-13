@@ -443,7 +443,6 @@ double atom::get_mass() const
     if (element == "S") return 32.065;
 
     return _pimpl->record.element.weight();
-    //throw std::invalid_argument("atom::get_mass(): unsupported element " + element);
 }
 
 double atom::get_vdw_radius() const
@@ -455,7 +454,6 @@ double atom::get_vdw_radius() const
     if (element == "N") return 1.60;
 
     return _pimpl->record.element.vdw_r();
-    //throw std::invalid_argument("atom::get_vdw_radius(): unsupported element " + element);
 }
 
 bool atom::is_cation() const
@@ -525,7 +523,7 @@ int atom::how_many_hydrogen_can_donate() const
             (res_name == "ASN" && n == "ND2") ||
             (res_name == "GLN" && n == "NE2"))
             return 2;
-        else if ((res_name == "LYS" && n == "NZ"))
+        else if (res_name == "LYS" && n == "NZ")
             return 3;
         else
             return 1;
@@ -582,11 +580,6 @@ bool atom::is_vdw_candidate() const
     auto element = get_symbol();
 
     return has_vdw_opsl_values(res_name, name, element);
-
-    //return (res_name == "GLN" && (name == "NE1" || name == "OE1"))
-    //    || (res_name == "ASN" && (name == "ND2" || name == "OD1"))
-    //    || element == "C"
-    //    || element == "S";
 }
 
 vector<atom> atom::get_attached_hydrogens() const
@@ -605,9 +598,6 @@ vector<atom> atom::get_attached_hydrogens() const
 ring::ring(vector<atom> const& atoms, aminoacid const& res) : kdpoint<3>({0, 0, 0}), component(res)
 {
     auto tmp_pimpl = std::make_shared<impl>();
-
-    // already taken care of in assert_ring_correctness
-    //if (atoms.size() < 3) throw invalid_argument("rings should have at least 3 atoms");
 
     tmp_pimpl->atoms = atoms;
 
