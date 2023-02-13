@@ -16,6 +16,7 @@
 
 #include "config.h"
 #include "rin_graph.h"
+#include "rin_params.h"
 
 #include "spatial/kdpoint.h"
 

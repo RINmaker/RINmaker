@@ -12,8 +12,6 @@
 #include <filesystem>
 #include <unordered_map>
 
-#include "rin_params.h"
-
 namespace chemical_entity
 {
 class aminoacid;
@@ -137,7 +135,6 @@ private:
 public:
     graph(
         std::string const& name,
-        parameters const& params,
         std::vector<chemical_entity::aminoacid> const& aminoacids,
         std::vector<std::shared_ptr<bond::base const>> const& bonds);
 

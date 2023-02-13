@@ -492,5 +492,5 @@ rin::graph rin::maker::operator()(parameters const& params) const
     // results = remove_duplicates(results);
     lm::main()->info("there are {} valid bonds after filtering", results.size());
 
-    return {pimpl->pdb_name, params, pimpl->aminoacids, results};
+    return {pimpl->pdb_name, pimpl->aminoacids, results};
 }

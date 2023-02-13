@@ -12,11 +12,10 @@ struct rin::graph::impl final
 {
 public:
     std::string name;
-    rin::parameters params;
     std::unordered_map<std::string, rin::node> nodes;
     std::vector<rin::edge> edges;
 
-    impl(std::string nm, rin::parameters const& pr) : name{std::move(nm)}, params{pr}
+    explicit impl(std::string nm) : name{std::move(nm)}
     {}
 };
 

@@ -230,11 +230,10 @@ void edge::append_to(xml_node& rin, bool with_metadata) const
 
 graph::graph(
     string const& name,
-    parameters const& params,
     vector<aminoacid> const& aminoacids,
     vector<std::shared_ptr<bond::base const>> const& bonds)
 {
-    auto tmp_pimpl = std::make_shared<impl>(name, params);
+    auto tmp_pimpl = std::make_shared<impl>(name);
     for (const auto& a: aminoacids)
     {
         auto n = (rin::node) a;
@@ -284,10 +283,6 @@ void graph::write_to_file(fs::path const& out_path) const
     graphml.append_attribute("xmlns:xsi") = "http://www.w3.org/2001/XMLSchema-instance";
     graphml.append_attribute("xsi:schemaLocation") =
             "http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd";
-
-    // parameters summary
-    auto comment = graphml.parent().insert_child_before(pugi::node_comment, graphml);
-    comment.set_value(pimpl->params.pretty().c_str());
 
     // <graph>
     pugi::xml_node graph_node = graphml.append_child("graph");
