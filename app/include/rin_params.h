@@ -72,6 +72,12 @@ private:
 
     parameters() = default;
 
+    [[nodiscard]]
+    std::string serialize_rin() const;
+
+    [[nodiscard]]
+    std::string serialize_cmap() const;
+
 public:
     struct configurator;
 
