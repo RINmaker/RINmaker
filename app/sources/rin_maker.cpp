@@ -120,6 +120,27 @@ public:
     { return chain_to_map.empty(); }
 };
 
+/**
+ * This function tries to check that all parsed residues as actual aminoacids.
+ * <br/>
+ * For now it just issues a warning if it does not find any.
+ * @param residues
+ */
+void warn_if_not_protein(std::vector<chemical_entity::aminoacid> const& residues)
+{
+    static std::set<std::string, std::less<>> names{
+        "ALA", "ARG", "ASN", "ASP", "CYS", "GLN", "GLU", "GLY", "HIS", "ILE",
+        "LEU", "LYS", "MET", "PHE", "PRO", "SER", "THR", "TRP", "TYR", "VAL",
+        "SEC", "PYL"
+    };
+
+    for(auto const& res : residues)
+        if(auto const match = names.find(res.get_name()); match != names.end())
+            return;
+
+    lm::main()->warn("it seems that the pdb/cif file does not contain any valid aminoacid!");
+}
+
 rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  rin::parameters const& params)
 {
     secondary_structure_helper_map<gemmi::Helix> helix_map;
@@ -172,6 +193,8 @@ rin::maker::maker(gemmi::Model const& model, gemmi::Structure const& protein,  r
         for (auto const& residue: chain.residues)
             if (!residue.is_water() || !params.skip_water())
                 try_build_aminoacid(residue, chain);
+
+    warn_if_not_protein(tmp_pimpl->aminoacids);
 
     lm::main()->info("extracting ionic groups, rings and other entities...");
 
