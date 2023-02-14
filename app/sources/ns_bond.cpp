@@ -448,10 +448,7 @@ hydrophobic::hydrophobic(chemical_entity::atom const& c1, chemical_entity::atom 
 
 std::string hydrophobic::get_interaction() const
 {
-    return "HYDROPHOBIC:" +
-        get_source().get_id() +
-        ":" +
-        get_target().get_id();
+    return "HYDROPHOBIC";
 }
 
 std::shared_ptr<contact const> contact::test(parameters const& params, atom const& a, atom const& b)
