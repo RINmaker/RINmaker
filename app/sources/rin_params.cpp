@@ -102,7 +102,7 @@ string rin::parameters::pretty() const
     else
     {
         strs
-            << R"("output": ")" << std::get<rin::parameters::output_directory>(out).value.string() << "\", "
+            << R"("output": ")" << std::get<rin::parameters::output_file>(out).value.string() << "\", "
             << "\"-d\": false, ";
     }
 
