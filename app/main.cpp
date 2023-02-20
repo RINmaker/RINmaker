@@ -100,6 +100,14 @@ int main(int argc, const char* argv[])
 #       endif
     }
 
+    catch(CLI::ParseError const& e)
+    {
+        if (e.get_name() == "CallForHelp" || e.get_name() == "CallForAllHelp" || e.get_name() == "CallForVersion")
+            return 0;
+        else
+            return 1;
+    }
+
     catch (spdlog::spdlog_ex const& e)
     {
         cerr << "log initialization failed: " << e.what() << endl;

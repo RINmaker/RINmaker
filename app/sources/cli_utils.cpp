@@ -187,12 +187,12 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
     // rin XOR cmap REQUIRED
     app.require_subcommand(1, 1);
 
-    //CLI11_PARSE(app, argc, argv);
     try {
         app.parse(argc, argv);
     } catch(const CLI::ParseError &e) {
+        // This will perform some useful things, such as displaying formatted helpers or version.
         app.exit(e);
-        return nullopt;
+        throw;
     }
 
     auto pcfg = rin::parameters::configurator()
