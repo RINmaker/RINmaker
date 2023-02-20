@@ -20,9 +20,9 @@ char const* const monomer_lib_name = "monomers";
 namespace ver
 {
 char const* const app_name = "RINmaker";
-const unsigned int major = 0;
-const unsigned int minor = 1;
-const unsigned int rev = 3;
+const unsigned int major = 1;
+const unsigned int minor = 0;
+const unsigned int rev = 0;
 }
 
 namespace log
