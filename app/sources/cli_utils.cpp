@@ -90,7 +90,7 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
         {"kall", rin::parameters::illformed_policy_t::KEEP_ALL}};
 
     app.add_option(
-            "-f,--illformed", illformed, "Behaviour in case of malformed ring or ionic group")
+            "--illformed", illformed, "Behaviour in case of malformed ring or ionic group")
         ->transform(
             CLI::CheckedTransformer(ill_map, CLI::ignore_case).description(
                 CLI::detail::generate_map(CLI::detail::smart_deref(ill_map), true)))
