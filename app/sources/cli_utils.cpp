@@ -51,7 +51,11 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
     app.set_help_all_flag("-H,--help-expanded", "Print this help message (expanded) and exit");
     app.get_formatter()->column_width(64);
 
-    app.set_version_flag("--version", app_full_name());
+    app.set_version_flag("--version",[]() -> string {
+        char buf[500];
+        snprintf(buf, sizeof(buf), "v%d.%d.%d build %s\n", cfg::ver::major, cfg::ver::minor, cfg::ver::rev, __DATE__);
+        return buf;
+    }());
 
     filesystem::path pdb_path;
     app.add_option("-i, --input", pdb_path, "Path to .pdb or .cif file")
