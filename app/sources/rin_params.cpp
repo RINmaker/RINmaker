@@ -61,56 +61,52 @@ string to_string(rin::parameters::illformed_policy_t illformed_policy)
 
 string rin::parameters::serialize_rin() const
 {
-    return (std::ostringstream{}
-        << "{"
-        << "\"--policy\": " << to_string(network_policy()) << ", "
-        << "\"--hydrogen-bond\": " << query_dist_hbond() << ", "
-        << "\"--vdw-bond\": " << surface_dist_vdw() << ", "
-        << "\"--ionic-bond\": " << query_dist_ionic() << ", "
-        << "\"--pication-bond\": " << query_dist_pica() << ", "
-        << "\"--pipistack-bond\": " << query_dist_pipi() << ", "
-        << "\"--h-bond-realistic\": " << (hbond_realistic() ? "true" : "false") << ", "
-        << "\"--h-bond-angle\": " << hbond_angle() << ", "
-        << "\"--pication-angle\": " << pication_angle() << ", "
-        << "\"--pipistack-normal-normal\": " << pipistack_normal_normal_angle_range() << ", "
-        << "\"--pipistack-normal-centre\": " << pipistack_normal_centre_angle_range() << "}"
-    ).str();
+    std::ostringstream os;
+    os << "{"
+       << "\"--policy\": " << to_string(network_policy()) << ", "
+       << "\"--hydrogen-bond\": " << query_dist_hbond() << ", "
+       << "\"--vdw-bond\": " << surface_dist_vdw() << ", "
+       << "\"--ionic-bond\": " << query_dist_ionic() << ", "
+       << "\"--pication-bond\": " << query_dist_pica() << ", "
+       << "\"--pipistack-bond\": " << query_dist_pipi() << ", "
+       << "\"--h-bond-realistic\": " << (hbond_realistic() ? "true" : "false") << ", "
+       << "\"--h-bond-angle\": " << hbond_angle() << ", "
+       << "\"--pication-angle\": " << pication_angle() << ", "
+       << "\"--pipistack-normal-normal\": " << pipistack_normal_normal_angle_range() << ", "
+       << "\"--pipistack-normal-centre\": " << pipistack_normal_centre_angle_range() << "}";
+    return os.str();
 }
 
 string rin::parameters::serialize_cmap() const
 {
-    return (std::ostringstream{}
-        << "{"
-        << "\"--type\": " << to_string(cmap_type()) << ","
-        << "\"--distance\": " << query_dist_cmap() << "}"
-    ).str();
+    std::ostringstream os;
+    os << "{"
+       << "\"--type\": " << to_string(cmap_type()) << ","
+       << "\"--distance\": " << query_dist_cmap() << "}";
+    return os.str();
 }
 
 string rin::parameters::pretty() const
 {
-    std::ostringstream strs{};
-    strs
-        << "{"
-        << "\"--input\":" << '\"' << input().string() << '\"' << ", ";
+    std::ostringstream strs;
+    strs << "{"
+         << "\"--input\":" << '\"' << input().string() << '\"' << ", ";
 
     if(auto out = output(); std::holds_alternative<rin::parameters::output_directory> (out))
     {
-        strs
-            << R"("--output": ")" << std::get<rin::parameters::output_directory>(out).value.string() << "\", "
-            << "\"-d\": true, " ;
+        strs << R"("--output": ")" << std::get<rin::parameters::output_directory>(out).value.string() << "\", "
+             << "\"-d\": true, " ;
     }
     else
     {
-        strs
-            << R"("--output": ")" << std::get<rin::parameters::output_file>(out).value.string() << "\", "
-            << "\"-d\": false, ";
+        strs << R"("--output": ")" << std::get<rin::parameters::output_file>(out).value.string() << "\", "
+             << "\"-d\": false, ";
     }
 
-    strs
-        << "\"--no-hydrogen\": " << (no_hydrogen() ? "true" : "false") << ", "
-        << "\"--keep-water\": " << (skip_water() ? "false" : "true") << ", "
-        << "\"--sequence-separation\": " << sequence_separation() << ", "
-        << "\"--illformed\": " << to_string(illformed_policy()) << ", ";
+    strs << "\"--no-hydrogen\": " << (no_hydrogen() ? "true" : "false") << ", "
+         << "\"--keep-water\": " << (skip_water() ? "false" : "true") << ", "
+         << "\"--sequence-separation\": " << sequence_separation() << ", "
+         << "\"--illformed\": " << to_string(illformed_policy()) << ", ";
 
     switch (interaction_type())
     {
