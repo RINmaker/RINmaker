@@ -11,6 +11,7 @@
         * [cmap](#cmap)
 * [Build instructions](#build)
     * [App](#app)
+        * [monlib](#monlib)
     * [Tests](#tests)
 
 ## CLI Usage <a name="usage"></a>
@@ -145,17 +146,20 @@ cmake --build build --target RINmaker
 ```
 The application's executable will be located at: `./build/app/RINmaker`.
 
-**NOTE**: we perform hydrogen fixing using GEMMI, but it needs an additional non-software dependency, that is a suitable monomer library. 
-The CCP4 monomer library is suggested by GEMMI, but we do not distribute it.
-You must get it either from your copy of the CCP4 software suite, or by following the process detailed in [this paper](https://journals.iucr.org/d/issues/2022/04/00/rr5213/) (section _6. Open research data: availability and reproducibility_).
+#### monlib <a name="monlib"></a>
 
-We report the updated instructions using [breezy](https://www.breezy-vcs.org/), a fork of bazaar:
+Hydrogen fixing is performed internally by the third-party library GEMMI.
+It needs an additional non-software dependency, that is a suitable monomer library.
+The GEMMI documentation suggests to use the CCP4 monomer library, which we do not distribute.
+There are at least 3 ways to get it.
 
-```bash
-brz checkout https://ccp4serv6.rc-harwell.ac.uk/anonscm/bzr/monomers/trunk monomers
-```
+1. **(git)** In your terminal, move where the `RINmaker` executable is located and prompt: `git clone --depth=1 --branch ccp4-8.0.011 https://github.com/MonomerLibrary/monomers.git`.
 
-The `monomers` directory must reside alongside the `RINmaker` executable.
+2. **([breezy](https://www.breezy-vcs.org/))** In your terminal, move where the `RINmaker` executable is located and prompt: `brz checkout https://ccp4serv6.rc-harwell.ac.uk/anonscm/bzr/monomers/trunk monomers` (see [this paper](https://journals.iucr.org/d/issues/2022/04/00/rr5213/), section _6. Open research data: availability and reproducibility_).
+
+3. **([CCP4 download](https://www.ccp4.ac.uk/))** The monomer library should be included in your local copy of the CCP4 software suite.
+
+The `monomers` directory must always reside alongside the `RINmaker` executable.
 
 ### Tests <a name="tests"></a>
 
