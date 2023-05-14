@@ -2,6 +2,7 @@
 
 #pragma warning(push, 0)
 
+#include <cstdint> // apparently, gemmi does not include it properly (but it needs it).
 #include <gemmi/pdb.hpp>
 
 #pragma warning(pop)
