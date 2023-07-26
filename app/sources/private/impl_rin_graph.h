@@ -51,4 +51,5 @@ public:
     std::string donor;
     std::string cation;
     std::string positive;
+    std::string vdw_overlap;
 };

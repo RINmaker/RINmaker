@@ -50,6 +50,7 @@ edge::edge(bond::ss const& bond)
     tmp_pimpl->interaction = bond.get_interaction();
     tmp_pimpl->source_atom = "SG"; // TODO config
     tmp_pimpl->target_atom = "SG"; // TODO config
+    tmp_pimpl->vdw_overlap = cfg::graphml::null;
     tmp_pimpl->donor = cfg::graphml::none;
     tmp_pimpl->cation = cfg::graphml::none;
     tmp_pimpl->positive = cfg::graphml::none;
@@ -68,6 +69,12 @@ edge::edge(bond::vdw const& bond)
     tmp_pimpl->interaction = bond.get_interaction();
     tmp_pimpl->source_atom = bond.get_source_atom().get_name();
     tmp_pimpl->target_atom = bond.get_target_atom().get_name();
+
+    auto const ra = bond.get_source_atom().get_vdw_radius();
+    auto const rb = bond.get_target_atom().get_vdw_radius();
+    auto const d = bond.get_source_atom().distance(bond.get_target_atom());
+    tmp_pimpl->vdw_overlap = std::to_string(ra + rb - d);
+
     tmp_pimpl->donor = cfg::graphml::none;
     tmp_pimpl->angle = cfg::graphml::null;
     tmp_pimpl->cation = cfg::graphml::none;
@@ -87,6 +94,7 @@ edge::edge(bond::ionic const& bond)
     tmp_pimpl->source_atom = bond.get_source_positive().get_name();
     tmp_pimpl->target_atom = bond.get_target_negative().get_name();
     tmp_pimpl->positive = bond.get_source_positive().get_residue().get_id();
+    tmp_pimpl->vdw_overlap = cfg::graphml::null;
     tmp_pimpl->angle = cfg::graphml::null;
     tmp_pimpl->donor = cfg::graphml::none;
     tmp_pimpl->cation = cfg::graphml::none;
@@ -106,6 +114,7 @@ edge::edge(bond::hydrogen const& bond)
     tmp_pimpl->target_atom = bond.get_target_atom().get_name();
     tmp_pimpl->angle = std::to_string(bond.get_angle());
     tmp_pimpl->donor = bond.get_donor().get_residue().get_id();
+    tmp_pimpl->vdw_overlap = cfg::graphml::null;
     tmp_pimpl->cation = cfg::graphml::none;
     tmp_pimpl->positive = cfg::graphml::none;
     tmp_pimpl->orientation = cfg::graphml::none;
@@ -123,6 +132,7 @@ edge::edge(bond::pipistack const& bond)
     tmp_pimpl->source_atom = bond.get_source_ring().get_name();
     tmp_pimpl->target_atom = bond.get_target_ring().get_name();
     tmp_pimpl->angle = std::to_string(bond.get_angle());
+    tmp_pimpl->vdw_overlap = cfg::graphml::null;
     tmp_pimpl->donor = cfg::graphml::none;
     tmp_pimpl->cation = cfg::graphml::none;
     tmp_pimpl->positive = cfg::graphml::none;
@@ -142,6 +152,7 @@ edge::edge(bond::pication const& bond)
     tmp_pimpl->target_atom = bond.get_target_cation().get_name();
     tmp_pimpl->cation = bond.get_target_cation().get_residue().get_id();
     tmp_pimpl->angle = std::to_string(bond.get_angle());
+    tmp_pimpl->vdw_overlap = cfg::graphml::null;
     tmp_pimpl->donor = cfg::graphml::none;
     tmp_pimpl->positive = cfg::graphml::none;
     tmp_pimpl->orientation = cfg::graphml::none;
@@ -158,6 +169,7 @@ edge::edge(bond::generic_bond const& bond)
     tmp_pimpl->interaction = bond.get_interaction();
     tmp_pimpl->source_atom = bond.get_source().get_name();
     tmp_pimpl->target_atom = bond.get_target().get_name();
+    tmp_pimpl->vdw_overlap = cfg::graphml::null;
     tmp_pimpl->angle = cfg::graphml::null;
     tmp_pimpl->donor = cfg::graphml::none;
     tmp_pimpl->cation = cfg::graphml::none;
@@ -226,6 +238,8 @@ void edge::append_to(xml_node& rin, bool with_metadata) const
     add_data(pugi_node, "e_", "edge", "Cation", pimpl->cation, "string", with_metadata);
     add_data(pugi_node, "e_", "edge", "Positive", pimpl->positive, "string", with_metadata);
     add_data(pugi_node, "e_", "edge", "Orientation", pimpl->orientation, "string", with_metadata);
+
+    add_data(pugi_node, "e_", "edge", "VdWOverlap", pimpl->vdw_overlap, "double", with_metadata);
 }
 
 graph::graph(
