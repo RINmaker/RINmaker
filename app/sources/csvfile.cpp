@@ -38,10 +38,9 @@ void csvfile::endrow()
 template <class T>
 csvfile& csvfile::operator<<(const T& x)
 {
-    std::stringstream oss;
+    std::ostringstream oss;
     oss << x;
-    std::string s;
-    oss >> s;
+    std::string s(oss.str());
     if (!newrow) fs << separator;
     newrow = false;
     if (s.find(separator) != std::string::npos) fs << std::quoted(s);
