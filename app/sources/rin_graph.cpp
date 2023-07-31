@@ -291,7 +291,7 @@ void graph::write_to_file(fs::path const& out_path) const
 
     // graphml requires all key attributes to be listed before the actual node/edges
     bool first_time = true;
-    for (const auto& e: pimpl->edges)
+    for (const auto& e : pimpl->edges)
     {
         if (first_time)
         {
@@ -303,7 +303,7 @@ void graph::write_to_file(fs::path const& out_path) const
     }
 
     first_time = true;
-    for (auto const& [_, node] :  pimpl->nodes)
+    for (auto const& [_, node] : pimpl->nodes)
     {
         if (node.get_degree() > 0)
         {
