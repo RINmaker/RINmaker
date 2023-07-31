@@ -13,10 +13,9 @@ csvfile::csvfile(const std::string filename, const std::string separator_, const
 {
     fs.exceptions(std::ios::failbit | std::ios::badbit);
     fs.open(filename);
-    for (auto s : column_names)
-    {
-        fs << s << separator;
-    }
+    for (const auto& s : column_names)
+        *this << s;
+    endrow();
 }
 
 csvfile::~csvfile()
@@ -33,6 +32,7 @@ void csvfile::flush()
 void csvfile::endrow()
 {
     fs << std::endl;
+    newrow = true;
 }
 
 template <class T>
