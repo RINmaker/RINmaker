@@ -126,4 +126,4 @@ fabric.properties
 
 # Custom exclusions
 build/*
-
+**/.vs/*
