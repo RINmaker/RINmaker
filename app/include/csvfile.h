@@ -6,7 +6,7 @@
 
 class csvfile
 {
-    std::fstream fs;
+    std::ofstream fs;
     const std::string separator;
     bool newrow;
 
