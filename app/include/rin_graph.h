@@ -12,6 +12,8 @@
 #include <filesystem>
 #include <unordered_map>
 
+#include "csvfile.h"
+
 namespace chemical_entity
 {
 class aminoacid;
@@ -98,6 +100,8 @@ public:
     std::string const& get_orientation() const;
 
     void append_to(pugi::xml_node& rin, bool with_metadata = false) const;
+
+    void append_to(csvfile& csv) const;
 };
 
 class node
@@ -124,6 +128,8 @@ public:
     std::string const& get_id() const;
 
     void append_to(pugi::xml_node& graphml, bool with_metadata = false) const;
+
+    void append_to(csvfile& csv) const;
 };
 
 class graph
@@ -142,7 +148,11 @@ public:
 
     ~graph();
 
+    // this writes to graphml
     void write_to_file(std::filesystem::path const& out_path) const;
+
+    // this writes to csv
+    void write_to_csv(std::filesystem::path const& nodes, std::filesystem::path const& edges) const;
 
     [[nodiscard]]
     std::string get_name() const;
