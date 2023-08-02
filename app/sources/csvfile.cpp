@@ -32,19 +32,3 @@ void csvfile::endrow()
     fs << std::endl;
     newrow = true;
 }
-
-template <typename T>
-csvfile& csvfile::operator<<(const T& x)
-{
-    std::ostringstream oss;
-    oss << x;
-    std::string s(oss.str());
-    if (!newrow) fs << separator;
-    newrow = false;
-    if (s.find(separator) != std::string::npos) fs << std::quoted(s);
-    else fs << s;
-    return *this;
-}
-
-template csvfile& csvfile::operator<<(int const& x);
-template csvfile& csvfile::operator<<(std::string const& x);

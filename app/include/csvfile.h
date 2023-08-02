@@ -18,5 +18,15 @@ public:
     void endrow();
 
     template <typename T>
-    csvfile& operator<<(const T& x);
+    csvfile& operator<<(const T& x)
+    {
+        std::ostringstream oss;
+        oss << x;
+        std::string s(oss.str());
+        if (!newrow) fs << separator;
+        newrow = false;
+        if (s.find(separator) != std::string::npos) fs << std::quoted(s);
+        else fs << s;
+        return *this;
+    }
 };
