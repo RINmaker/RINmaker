@@ -67,6 +67,25 @@ int main(int argc, const char* argv[])
 
         lm::main()->info("n. of models found: {}", protein.models.size());
 
+        auto const process = [&parsed_args](
+            gemmi::Model const& model,
+            gemmi::Structure const& protein,
+            std::filesystem::path const& filename)
+        {
+            auto graph = rin::maker{model, protein, parsed_args}(parsed_args);
+
+            if (parsed_args.use_csv())
+            {
+                std::filesystem::path const nodes_file = filename.string() + "_v.csv";
+                std::filesystem::path const edges_file = filename.string() + "_e.csv";
+                graph.write_to_csv(nodes_file, edges_file);
+            }
+            else
+            {
+                graph.write_to_file(filename.string() + ".graphml");
+            }
+        };
+
         // If -d, then do all models and output the results in the directory specified with --output.
         if (holds_alternative<rin::parameters::output_directory>(parsed_args.output()))
         {
@@ -77,10 +96,7 @@ int main(int argc, const char* argv[])
             for (auto const& model: protein.models)
             {
                 lm::main()->info("processing model: {}", cnt++);
-                std::filesystem::path file = protein.name + "_" + model.name + ".graphml";
-
-                // create rin::maker, create graph and write to graphml
-                rin::maker{model, protein, parsed_args}(parsed_args).write_to_file(dir / file);
+                process(model, protein, dir / (protein.name + "_" + model.name));
             }
         }
 
@@ -89,9 +105,7 @@ int main(int argc, const char* argv[])
         {
             lm::main()->info("processing only first model...");
             auto const file = get<rin::parameters::output_file>(parsed_args.output()).value;
-
-            // create rin::maker, create graph and write to graphml
-            rin::maker{protein.first_model(), protein, parsed_args}(parsed_args).write_to_file(file);
+            process(protein.first_model(), protein, file);
         }
 
         lm::main()->info("done.");
