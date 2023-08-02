@@ -242,6 +242,26 @@ void edge::append_to(xml_node& rin, bool with_metadata) const
     add_data(pugi_node, "e_", "edge", "VdWOverlap", pimpl->vdw_overlap, "double", with_metadata);
 }
 
+void edge::append_to(csvfile& csv) const
+{
+    csv
+        << pimpl->source       // NodeId1
+        << pimpl->target       // NodeId2
+        << pimpl->energy       // Energy
+        << pimpl->distance     // Distance
+        << pimpl->interaction  // Interaction
+        << pimpl->source_atom  // Atom1
+        << pimpl->target_atom  // Atom2
+        << pimpl->angle        // Angle
+        << pimpl->donor        // Donor
+        << pimpl->cation       // Cation
+        << pimpl->positive     // Positive
+        << pimpl->orientation  // Orientation
+        << pimpl->vdw_overlap; // VdWOverlap
+
+    csv.endrow();
+}
+
 graph::graph(
     string const& name,
     vector<aminoacid> const& aminoacids,
@@ -334,6 +354,53 @@ void graph::write_to_file(fs::path const& out_path) const
     doc.save_file(out_path.c_str());
 }
 
+void graph::write_to_csv(fs::path const& nodes, fs::path const& edges) const
+{
+    csvfile nodes_file(nodes, ",", {
+        "Degree",
+        "NodeId",
+        "Residue",
+        "Chain",
+        "Position",
+        "Name",
+        "x",
+        "y",
+        "z",
+        "Bfactor_CA",
+        "Secondary_Structure",
+        "PdbName",
+        });
+
+    csvfile edges_file(edges, ",", {
+        "NodeId1",
+        "NodeId2",
+        "Energy",
+        "Distance",
+        "Interaction",
+        "Atom1",
+        "Atom2",
+        "Angle",
+        "Donor",
+        "Cation",
+        "Positive",
+        "Orientation",
+        "VdWOverlap",
+    });
+
+    for (auto const& [_, node] : pimpl->nodes)
+    {
+        if (node.get_degree() > 0)
+        {
+            node.append_to(nodes_file);
+        }
+    }
+
+    for (auto const& edge : pimpl->edges)
+    {
+        edge.append_to(edges_file);
+    }
+}
+
 node::node(chemical_entity::aminoacid const& res) : pimpl{std::make_unique<impl>()}
 {
     pimpl->id = res.get_id();
@@ -394,4 +461,23 @@ void node::append_to(xml_node& graph, bool with_metadata) const
     add_data(pugi_node, "v_", "node", "Secondary_Structure", pimpl->secondary_structure, "string", with_metadata);
 
     add_data(pugi_node, "v_", "node", "PdbName", pimpl->pdb_name, "string", with_metadata);
+}
+
+void node::append_to(csvfile& csv) const
+{
+    csv
+        << pimpl->degree              // Degree
+        << pimpl->id                  // NodeId
+        << pimpl->id                  // Residue
+        << pimpl->chain               // Chain
+        << pimpl->sequence_number     // Position
+        << pimpl->name                // Name
+        << pimpl->x                   // x
+        << pimpl->y                   // y
+        << pimpl->z                   // z
+        << pimpl->bfactor_ca          // Bfactor_CA
+        << pimpl->secondary_structure // Secondary_Structure
+        << pimpl->pdb_name;           // PdbName
+
+    csv.endrow();
 }
