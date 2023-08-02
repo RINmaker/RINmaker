@@ -17,6 +17,6 @@ public:
     void flush();
     void endrow();
 
-    template <class T>
+    template <typename T>
     csvfile& operator<<(const T& x);
 };

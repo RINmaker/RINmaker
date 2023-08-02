@@ -1,5 +1,3 @@
-#pragma once
-
 #include <iostream>
 #include <fstream>
 #include <vector>
@@ -35,7 +33,7 @@ void csvfile::endrow()
     newrow = true;
 }
 
-template <class T>
+template <typename T>
 csvfile& csvfile::operator<<(const T& x)
 {
     std::ostringstream oss;
@@ -47,3 +45,6 @@ csvfile& csvfile::operator<<(const T& x)
     else fs << s;
     return *this;
 }
+
+template csvfile& csvfile::operator<<(int const& x);
+template csvfile& csvfile::operator<<(std::string const& x);
