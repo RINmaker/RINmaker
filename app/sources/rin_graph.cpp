@@ -165,7 +165,7 @@ edge::edge(bond::generic_bond const& bond)
     tmp_pimpl->source = bond.get_source().get_id();
     tmp_pimpl->target = bond.get_target().get_id();
     tmp_pimpl->distance = std::to_string(bond.get_length());
-    tmp_pimpl->energy = cfg::graphml::null;
+    tmp_pimpl->energy = bond.has_energy() ? std::to_string(bond.get_energy()) : cfg::graphml::null;
     tmp_pimpl->interaction = bond.get_interaction();
     tmp_pimpl->source_atom = bond.get_source().get_name();
     tmp_pimpl->target_atom = bond.get_target().get_name();

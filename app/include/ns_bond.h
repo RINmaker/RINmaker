@@ -21,11 +21,10 @@ namespace bond
 {
 class base
 {
-private:
-    double const _length;
-    double const _energy;
-
 protected:
+    double _length;
+    double _energy;
+
     base(double length, double energy);
 
 public:
@@ -83,6 +82,9 @@ public:
     [[nodiscard]]
     explicit operator rin::edge() const override
     { return rin::edge(*this); }
+
+    [[nodiscard]]
+    virtual bool has_energy() const = 0;
 };
 
 class hydrophobic final : public generic_bond
@@ -94,6 +96,10 @@ public:
 
     [[nodiscard]]
     std::string get_interaction() const override;
+
+    [[nodiscard]]
+    bool has_energy() const override
+    { return true; }
 };
 
 class contact final : public generic_bond
@@ -102,6 +108,10 @@ public:
     static std::shared_ptr<contact const> test(rin::parameters const& params, chemical_entity::atom const& a, chemical_entity::atom const& b);
 
     contact(chemical_entity::atom const& a, chemical_entity::atom const& b);
+
+    [[nodiscard]]
+    bool has_energy() const override
+    { return false; }
 };
 
 class hydrogen final : public base

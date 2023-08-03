@@ -1,6 +1,7 @@
 #include "ns_bond.h"
 
 #include <utility>
+#include <map>
 #include <set>
 
 using chemical_entity::aminoacid, chemical_entity::atom, chemical_entity::ring, chemical_entity::ionic_group;
@@ -430,7 +431,7 @@ string ss::get_id_simple() const
 
 std::shared_ptr<hydrophobic const> hydrophobic::test(rin::parameters const&, chemical_entity::atom const& a, chemical_entity::atom const& b)
 {
-    static set<string> const names = {"ILE", "LEU", "VAL", "MET", "PHE", "ALA", "TRP", "GLY"};
+    static set<string> const names = {"ILE", "LEU", "VAL", "MET", "PHE", "ALA", "TRP", "CYS", "GLY"};
     auto res_a = a.get_residue();
     auto res_b = b.get_residue();
 
@@ -444,7 +445,45 @@ std::shared_ptr<hydrophobic const> hydrophobic::test(rin::parameters const&, che
 
 hydrophobic::hydrophobic(chemical_entity::atom const& c1, chemical_entity::atom const& c2) :
     generic_bond(c1, c2, geom::distance((std::array<double, 3>) c1, (std::array<double, 3>) c2))
-{}
+{
+    // Tab. 4 p. 13
+    static std::map<string, double> const alpha = {
+        {"ILE", 95.2},
+        {"LEU", 94.5},
+        {"VAL", 81.5},
+        {"MET", 102.1},
+        {"PHE", 122.9},
+        {"ALA", 55.9},
+        {"TRP", 157.8},
+        {"CYS", 77}, // computed
+        {"GLY", 44.3},
+    };
+
+    static constexpr auto get_alpha = [](auto const& atom)
+        {
+            auto it = alpha.find(atom.get_residue().get_name());
+            if (it == alpha.end())
+            {
+                // At this stage it is necessary to "know" about the error (in theory) but it will never be thrown.
+                // If it happens, fix immediately.
+                // TODO: even if it does not happen, think of a better way.
+                throw std::runtime_error("residue name out of mapping's domain");
+            }
+            return it->second;
+        };
+
+    auto const a1 = get_alpha(c1);
+    auto const a2 = get_alpha(c2);
+
+    static constexpr auto h = 6.6260700e-34;
+    static constexpr auto ni = 1.0;
+    static constexpr auto e0 = 8.854e-12;
+    static constexpr auto pi = 3.1415927;
+
+    // FIXME: calculations (in S.I.) are basically screwed up, because of numbers that are too small.
+    // TODO: use more appropriate units of measure.
+    _energy = -3*h*ni*a1*a2/(4*pow(4*pi*e0,2)*pow(_length,6));
+}
 
 std::string hydrophobic::get_interaction() const
 {
