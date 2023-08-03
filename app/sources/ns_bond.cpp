@@ -476,12 +476,10 @@ hydrophobic::hydrophobic(chemical_entity::atom const& c1, chemical_entity::atom 
     auto const a2 = get_alpha(c2);
 
     static constexpr auto h = 6.6260700e-34;
-    static constexpr auto ni = 1.0;
+    static constexpr auto ni = 4e13;
     static constexpr auto e0 = 8.854e-12;
     static constexpr auto pi = 3.1415927;
 
-    // FIXME: calculations (in S.I.) are basically screwed up, because of numbers that are too small.
-    // TODO: use more appropriate units of measure.
     _energy = -3*h*ni*a1*a2/(4*pow(4*pi*e0,2)*pow(_length,6));
 }
 
