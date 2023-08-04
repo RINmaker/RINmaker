@@ -74,7 +74,7 @@ int main(int argc, const char* argv[])
         {
             auto graph = rin::maker{model, protein, parsed_args}(parsed_args);
 
-            if (parsed_args.use_csv())
+            if (parsed_args.csv_out())
             {
                 std::filesystem::path const nodes_file = filename.string() + "_v.csv";
                 std::filesystem::path const edges_file = filename.string() + "_e.csv";

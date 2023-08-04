@@ -22,7 +22,7 @@ namespace ver
 char const* const app_name = "RINmaker";
 const unsigned int major = 1;
 const unsigned int minor = 0;
-const unsigned int rev = 0;
+const unsigned int rev = 1;
 }
 
 namespace log

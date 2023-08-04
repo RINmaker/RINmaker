@@ -35,7 +35,7 @@ Will parse the first model in the *6j8j* pdb.
 ### Help <a name="help"></a>
 
 ```
-RINmaker v0.1.3 build Jan 10 2023 17:29:50 (Linux) 
+RINmaker v1.0.1 build Jan 10 2023 17:29:50 (Linux) 
 (C) 2020-23 Ca' Foscari University of Venice
 
 Usage: ./RINmaker [OPTIONS] SUBCOMMAND

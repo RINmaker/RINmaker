@@ -74,8 +74,8 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
     app.add_option("-l,--log", log_dir, "Log file")
         ->default_str(cfg::log::default_file_logger_filename);
 
-    bool use_csv;
-    app.add_flag("-c,--use-csv", use_csv, "Use csv output instead of graphml. This will output two files per model.");
+    bool csv_out;
+    app.add_flag("--csv-out", csv_out, "Output in CSV format rather than GraphML. This will output two CSV files per model, one for the nodes and one for the edges of the RIN");
 
     bool verbose{false};
     app.add_flag("-v,--verbose", verbose, "Log also to stdout");
@@ -229,7 +229,7 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
 
             .set_input(pdb_path)
             .set_output(out_path, output_as_directory)
-            .set_csv_usage(use_csv);
+            .set_csv_usage(csv_out);
 
     if(rin_app->parsed())
         pcfg.set_interaction_type(rin::parameters::interaction_type_t::NONCOVALENT_BONDS);

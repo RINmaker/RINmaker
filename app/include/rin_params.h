@@ -66,7 +66,7 @@ private:
     std::filesystem::path _input{};
     std::variant<output_file, output_directory> _output{};
 
-    bool _skip_water{false}, _no_hydrogen{false}, _use_csv{false};
+    bool _skip_water{false}, _no_hydrogen{false}, _csv_out{false};
 
     illformed_policy_t _illformed{};
 
@@ -170,8 +170,8 @@ public:
     { return _illformed; }
 
     [[nodiscard]]
-    auto use_csv() const
-    { return _use_csv; }
+    auto csv_out() const
+    { return _csv_out; }
 };
 
 struct parameters::configurator final
@@ -311,7 +311,7 @@ public:
 
     configurator& set_csv_usage(bool should_use)
     {
-        params._use_csv = should_use;
+        params._csv_out = should_use;
         return *this;
     }
 };
