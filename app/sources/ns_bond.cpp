@@ -476,7 +476,8 @@ hydrophobic::hydrophobic(chemical_entity::atom const& c1, chemical_entity::atom 
     auto const a2 = get_alpha(c2);
 
     static constexpr auto h = 6.6260700e-34;
-    static constexpr auto ni = 4e13;
+    static constexpr auto n = 1.;
+    static constexpr auto ni = 4e13 * n;
     static constexpr auto e0 = 8.854e-12;
     static constexpr auto pi = 3.1415927;
 

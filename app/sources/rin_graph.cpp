@@ -356,7 +356,7 @@ void graph::write_to_file(fs::path const& out_path) const
 
 void graph::write_to_csv(fs::path const& nodes, fs::path const& edges) const
 {
-    csvfile nodes_file(nodes, ",", {
+    csvfile nodes_file(nodes.string(), ",", {
         "Degree",
         "NodeId",
         "Residue",
@@ -371,7 +371,7 @@ void graph::write_to_csv(fs::path const& nodes, fs::path const& edges) const
         "PdbName",
         });
 
-    csvfile edges_file(edges, ",", {
+    csvfile edges_file(edges.string(), ",", {
         "NodeId1",
         "NodeId2",
         "Energy",
