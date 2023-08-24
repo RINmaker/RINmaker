@@ -49,7 +49,7 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
 
     CLI::App app(app_full_name());
     app.set_help_all_flag("-H,--help-expanded", "Print this help message (expanded) and exit");
-    app.get_formatter()->column_width(64);
+    app.get_formatter()->column_width(72);
 
     app.set_version_flag("--version",[]() -> string {
         char buf[500];
@@ -74,8 +74,12 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
     app.add_option("-l,--log", log_dir, "Log file")
         ->default_str(cfg::log::default_file_logger_filename);
 
+    char const* csv_help_text =
+            "Output in CSV format rather than GraphML.\n"
+            "This will output two CSV files per model, one for the nodes and one for the edges of the RIN.";
+
     bool csv_out;
-    app.add_flag("--csv-out", csv_out, "Output in CSV format rather than GraphML. This will output two CSV files per model, one for the nodes and one for the edges of the RIN");
+    app.add_flag("--csv-out", csv_out, csv_help_text);
 
     bool verbose{false};
     app.add_flag("-v,--verbose", verbose, "Log also to stdout");
@@ -115,8 +119,16 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
             {"one", rin::parameters::network_policy_t::BEST_ONE},
             {"multiple", rin::parameters::network_policy_t::BEST_PER_TYPE}};
 
+    char const* policy_help_text =
+            "Affects how bonds appear in the output RIN. Mind that hydrophobic bonds are treated in a special way.\n"
+            "all: all bonds.\n"
+            "one: only the least energetic bond per pair of aminoacids, excluding hydrophobic bonds.\n"
+            "     Hydrophobic bonds are then added separately.\n"
+            "multiple: one bond per each type, including the hydrophobic.\n"
+            "Default: all.";
+
     rin_app->add_option(
-            "--policy", network_policy, "Affects which bonds are kept per pair of aminoacids. Hydrophobic interactions are not affected by this option.")
+            "--policy", network_policy, policy_help_text)
             ->transform(
                     CLI::CheckedTransformer(netp_map, CLI::ignore_case).description(
                             CLI::detail::generate_map(CLI::detail::smart_deref(netp_map), true)))
