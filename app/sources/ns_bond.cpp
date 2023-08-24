@@ -9,6 +9,130 @@ using rin::parameters;
 
 using std::string, std::pair, std::make_pair, std::array, std::set;
 
+// vv fixing "one/multiple" bug vv
+
+template<typename Bond>
+struct get;
+
+template<>
+struct get<bond::ss>
+{
+    static constexpr auto source_id = [](bond::ss const& bond)
+        { return bond.get_source_id(); };
+
+    static constexpr auto target_id = [](bond::ss const& bond)
+    { return bond.get_target_id(); };
+};
+
+template<>
+struct get<bond::ionic>
+{
+    static constexpr auto source_id = [](bond::ionic const& bond)
+        { return bond.get_source_positive().get_residue().get_id(); };
+
+    static constexpr auto target_id = [](bond::ionic const& bond)
+    { return bond.get_target_negative().get_residue().get_id(); };
+};
+
+template<>
+struct get<bond::hydrogen>
+{
+    static constexpr auto source_id = [](bond::hydrogen const& bond)
+        { return bond.get_source_atom().get_residue().get_id(); };
+
+    static constexpr auto target_id = [](bond::hydrogen const& bond)
+    { return bond.get_target_atom().get_residue().get_id(); };
+};
+
+template<>
+struct get<bond::pipistack>
+{
+    static constexpr auto source_id = [](bond::pipistack const& bond)
+        { return bond.get_source_ring().get_residue().get_id(); };
+
+    static constexpr auto target_id = [](bond::pipistack const& bond)
+    { return bond.get_target_ring().get_residue().get_id(); };
+};
+
+template<>
+struct get<bond::pication>
+{
+    static constexpr auto source_id = [](bond::pication const& bond)
+        { return bond.get_source_ring().get_residue().get_id(); };
+
+    static constexpr auto target_id = [](bond::pication const& bond)
+    { return bond.get_target_cation().get_residue().get_id(); };
+};
+
+template<>
+struct get<bond::vdw>
+{
+    static constexpr auto source_id = [](bond::vdw const& bond)
+        { return bond.get_source_atom().get_residue().get_id(); };
+
+    static constexpr auto target_id = [](bond::vdw const& bond)
+    { return bond.get_target_atom().get_residue().get_id(); };
+};
+
+template<>
+struct get<bond::generic_bond>
+{
+    static constexpr auto source_id = [](bond::generic_bond const& bond)
+        { return bond.get_source().get_id(); };
+
+    static constexpr auto target_id = [](bond::generic_bond const& bond)
+        { return bond.get_target().get_id(); };
+};
+
+static constexpr auto lexicord = [](std::string const& a, std::string const& b)
+{ return a < b ? a + b : b + a; };
+
+template<typename Bond>
+static std::string get_pair_id(Bond const& bond)
+{
+    using get = ::get<Bond>;
+    auto s = get::source_id(bond);
+    auto t = get::target_id(bond);
+    return lexicord(s, t);
+}
+
+std::string bond::ss::get_pair_id() const
+{
+    return ::get_pair_id(*this);
+}
+
+std::string bond::vdw::get_pair_id() const
+{
+    return ::get_pair_id(*this);
+}
+
+std::string bond::hydrogen::get_pair_id() const
+{
+    return ::get_pair_id(*this);
+}
+
+std::string bond::generic_bond::get_pair_id() const
+{
+    return ::get_pair_id(*this);
+}
+
+std::string bond::pipistack::get_pair_id() const
+{
+    return ::get_pair_id(*this);
+}
+
+std::string bond::pication::get_pair_id() const
+{
+    return ::get_pair_id(*this);
+}
+
+std::string bond::ionic::get_pair_id() const
+{
+    return ::get_pair_id(*this);
+}
+
+// ^^ fixing "one/multiple" bug ^^
+
 using namespace bond;
 
 base::base(double length, double energy) : _length(length), _energy(energy)

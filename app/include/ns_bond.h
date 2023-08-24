@@ -50,6 +50,10 @@ public:
     [[nodiscard]]
     virtual std::string get_id_simple() const = 0;
 
+    // returns the id of the pair of aminoacids
+    [[nodiscard]]
+    virtual std::string get_pair_id() const = 0;
+
     [[nodiscard]]
     virtual explicit operator rin::edge() const = 0;
 };
@@ -78,6 +82,9 @@ public:
 
     [[nodiscard]]
     std::string get_id_simple() const override;
+
+    [[nodiscard]]
+    std::string get_pair_id() const override;
 
     [[nodiscard]]
     explicit operator rin::edge() const override
@@ -163,6 +170,9 @@ public:
     std::string get_id_simple() const override;
 
     [[nodiscard]]
+    std::string get_pair_id() const override;
+
+    [[nodiscard]]
     explicit operator rin::edge() const override
     { return rin::edge(*this); }
 };
@@ -198,6 +208,9 @@ public:
 
     [[nodiscard]]
     std::string get_id_simple() const override;
+
+    [[nodiscard]]
+    std::string get_pair_id() const override;
 };
 
 class pication : public base
@@ -236,6 +249,9 @@ public:
 
     [[nodiscard]]
     std::string get_id_simple() const override;
+
+    [[nodiscard]]
+    std::string get_pair_id() const override;
 
     static double getKappa(const chemical_entity::atom &cation);
 
@@ -281,6 +297,9 @@ public:
 
     [[nodiscard]]
     std::string get_id_simple() const override;
+
+    [[nodiscard]]
+    std::string get_pair_id() const override;
 };
 
 class ss final : public base
@@ -315,6 +334,9 @@ public:
 
     [[nodiscard]]
     std::string get_id_simple() const override;
+
+    [[nodiscard]]
+    std::string get_pair_id() const override;
 };
 
 class vdw final : public base
@@ -350,5 +372,8 @@ public:
 
     [[nodiscard]]
     std::string get_id_simple() const override;
+
+    [[nodiscard]]
+    std::string get_pair_id() const override;
 };
 }

@@ -390,7 +390,7 @@ vector<shared_ptr<Bond const>> filter_best(vector<shared_ptr<Bond const>> const&
     unordered_map<string, shared_ptr<Bond const>> res_pairs;
     for (auto const& b: unfiltered)
     {
-        auto const pair_id = b->get_id_simple();
+        auto const pair_id = b->get_pair_id();
         auto const pair = res_pairs.find(pair_id);
         if (pair == res_pairs.end() || *b < *pair->second)
             res_pairs.insert_or_assign(pair_id, b);

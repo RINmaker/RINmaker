@@ -116,7 +116,7 @@ optional<rin::parameters> read_args(int argc, char const* argv[])
             {"multiple", rin::parameters::network_policy_t::BEST_PER_TYPE}};
 
     rin_app->add_option(
-            "--policy", network_policy, "Affects which edges are kept per pair of aminoacids")
+            "--policy", network_policy, "Affects which bonds are kept per pair of aminoacids. Hydrophobic interactions are not affected by this option.")
             ->transform(
                     CLI::CheckedTransformer(netp_map, CLI::ignore_case).description(
                             CLI::detail::generate_map(CLI::detail::smart_deref(netp_map), true)))
