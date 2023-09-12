@@ -13,6 +13,7 @@
     * [App](#app)
         * [monlib](#monlib)
     * [Tests](#tests)
+* [How to cite RINmaker](#cite)
 
 ## CLI Usage <a name="usage"></a>
 
@@ -156,3 +157,11 @@ To run the _full_ test suite (assuming you are in the project's root):
 ```bash
 ./build/test/RINmaker_test
 ```
+
+## How to cite RINmaker <a name="cite"></a>
+
+RINmaker: a fast, versatile and reliable tool to determine residue interaction networks in proteins.
+
+Alvise Spanò, Lorenzo Fanton, Davide Pizzolato, Jacopo Moi, Francesco Vinci, Alberto Pesce, Cedrix J. Dongmo Foumthuim, Achille  Giacometti, Marta Simeoni
+
+[BMC Bioinformatics, 24:1, 2023](https://rdcu.be/dlTEC)
